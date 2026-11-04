@@ -53,9 +53,23 @@ class DashboardTests(unittest.TestCase):
         self.assertEqual(status,200)
         import json
         account=json.loads(body)
-        self.assertEqual(account['status'],'not_connected')
+        self.assertIn(account['status'],('refreshing','not_connected'))
         self.assertIsNone(account['balances'])
         self.assertIsNone(account['measured_net_return'])
+
+    def test_demo_does_not_run_until_requested_and_is_cached(self):
+        original=self.handler;calls=[]
+        self.handler=server.make_handler(None,'test',hashlib.sha256(b'test-password').hexdigest(),
+            account_provider=lambda:server.configured_snapshot({}),
+            report_factory=lambda:(calls.append(1) or {'status':'synthetic'}))
+        try:
+            self.assertEqual(calls,[])
+            self.assertEqual(self.get('/health')[0],200);self.assertEqual(calls,[])
+            self.assertEqual(self.get('/',self.auth())[0],200);self.assertEqual(calls,[])
+            self.assertEqual(self.get('/api/research',self.auth())[0],200)
+            self.assertEqual(self.get('/api/research',self.auth())[0],200)
+            self.assertEqual(calls,[1])
+        finally:self.handler=original
 
 
 if __name__=='__main__':unittest.main()

@@ -19,7 +19,9 @@ Supabase project details are supplied through environment configuration; credent
 - Initial price/relative-activity benchmark replay and sensitivity scenarios.
 - Deduplicated, versioned SQLite research data, run lineage and consistent snapshots.
 - Cost/sizing arithmetic preflight.
-- 168 research/replay/storage/import/selection/decision/UI checks and 7 sizing checks.
+- 175 research/replay/storage/import/selection/decision/UI checks and 7 sizing checks.
+- Nonblocking account refresh with stale-number suppression, request timing and on-demand demo computation; free-host wake-up remains a separate limitation.
+- Measured hypothesis/data readiness: see docs/HYPOTHESIS_READINESS.md. The five-symbol captured archive supports diagnostics, not representative strategy validation.
 - Authenticated Tradier account-data endpoint with pinned read-only GET routes. Requires a securely configured environment/token before any real account connection is claimed; unavailable values remain null, and measured account return stays unavailable without a reconciled baseline and cash flows.
 - Comparative acquisition research with conditional ROI/risk metrics and shared cash/risk reservations; see docs/ACQUISITION_FUNNEL.md.
 - Allocation-bound outcome replay preserves selection, quantity, cash, risk, costs and price ceilings; independent controls remain separate from portfolio returns.
