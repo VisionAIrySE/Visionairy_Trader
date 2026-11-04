@@ -1,10 +1,20 @@
 import unittest
 from decimal import Decimal as D
 from datetime import datetime,timezone
-from pilot_study import canonical_time,rvol_at
+from pilot_study import canonical_time,rvol_at,run
+from unittest.mock import patch
 from replay import DataError
 
 class PilotTests(unittest.TestCase):
+ def test_convenience_acquisition_cannot_prompt_or_fetch_by_default(self):
+  from acquire_pilot import main
+  with patch('acquire_pilot.getpass.getpass') as token, patch('acquire_pilot.request_data') as fetch:
+   with self.assertRaises(DataError):main()
+   token.assert_not_called();fetch.assert_not_called()
+ def test_legacy_pilot_cannot_run_as_strategy_study(self):
+  with patch('pilot_study.mark_outcome') as model:
+   with self.assertRaises(DataError):run()
+   model.assert_not_called()
  def test_tick_ms_maps_to_utc(self):
   r={"timestamp":1793716200000,"time":"2026-11-03T14:30:00"}
   self.assertEqual(canonical_time(r,"tick"),1793716200000)

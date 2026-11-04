@@ -23,7 +23,8 @@ def comparison(rows,**conditions):
 def build(rows):
     # A fixed reference case, not a best-performing case selected after results.
     ref=dict(delay_seconds=60,hold_minutes=15,budget=500,assumed_spread='0.002',assumed_fee='0')
-    detectors=sorted({r['detector'] for r in rows})
+    detectors=sorted({r['detector'] for r in rows} | {'B01_raw_2pct','B01_aligned_1pct',
+        'B01_aligned_2pct','B02_aligned_1pct_rvol3','B02_aligned_2pct_rvol3'})
     detector_cases=[dict(detector=k,**comparison(rows,**ref,detector=k)) for k in detectors]
     raw=[r for r in rows if r['detector']=='B01_raw_2pct']
     sweeps={}
@@ -31,10 +32,12 @@ def build(rows):
                          ('budget',[25,50,100,250,500]),('assumed_spread',['0.002','0.01','0.03']),
                          ('assumed_fee',['0','0.35'])]:
         sweeps[field]=[dict(value=v,**comparison(raw,**{**ref,field:v})) for v in values]
-    return dict(stage='exploratory_not_validation',reference_case=ref,
+    return dict(stage='infrastructure_control_not_target_cohort_evidence',
+        intent_fit=False,target_cohort_evidence=False,reference_case=ref,
         total=summarize(rows),detectors=detector_cases,sensitivity=sweeps,
         independent_sample_count=None,portfolio_return=None,
-        limitations=['AAPL/AMD/AMZN convenience sample; not a market-wide universe.',
+        limitations=['Withdrawn as evidence for the intended quiet-to-active strategy: no intent-linked universe or quiet-stock selection was implemented.',
+        'AAPL/AMD/AMZN convenience sample; not a market-wide universe.',
         'Scenario rows reuse overlapping events and are not independent trades.',
         'Budget is per standalone hypothetical order, not portfolio capital.',
         'Whole shares; no fractional-share execution modeled.',
@@ -43,19 +46,19 @@ def build(rows):
         'No held-out comparison or evidence of a profitable strategy.'])
 
 def money(value):
-    return '�' if value is None else f'${D(value):.4f}'
+    return '-' if value is None else f'${D(value):.4f}'
 
 def table(cases,label):
     lines=[f'| {label} | Modeled / cases | Mean net per modeled case | Positive | Days |',
            '|---|---:|---:|---:|---:|']
     for r in cases:
-        positive='�' if r['positive_fraction'] is None else f"{D(r['positive_fraction'])*100:.1f}%"
+        positive='-' if r['positive_fraction'] is None else f"{D(r['positive_fraction'])*100:.1f}%"
         lines.append(f"| {r.get('detector',r.get('value'))} | {r['modeled']} / {r['scenario_rows']} | {money(r['mean_net_dollars'])} | {positive} | {r['days']} |")
     return '\n'.join(lines)
 
 def markdown(report,digest):
-    lines=['# VisionAIry Trader � historical pilot results','',
-        '**Exploratory results. No live money used. No trading edge established.**','',
+    lines=['# VisionAIry Trader - historical pilot results','',
+        '**Infrastructure-control sample only. Withdrawn as evidence for the intended quiet-to-active strategy.**','',
         f"Source outcomes SHA-256: `{digest}`",'',
         f"{report['total']['scenario_rows']:,} counterfactual rows; {report['total']['modeled']:,} modeled. These are not independent trades.",
         '', 'Reference: $500 per standalone order, 60-second entry delay, 15-minute hold, 0.2% full spread, $0 fee per side.',

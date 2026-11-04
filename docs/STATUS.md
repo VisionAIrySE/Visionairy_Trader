@@ -2,7 +2,9 @@
 
 Recorded November 3, 2026, Pacific time.
 
-The preserved research pilot has finished importing into the designated private Supabase database. All 15 imported tables match the original typed records. The dataset is frozen and its exploration run is complete.
+The preserved infrastructure-control pilot has finished importing into the designated private Supabase database. All 15 imported tables match the original typed records. The dataset is frozen and its exploration run is complete. Its standing as evidence for the intended quiet-to-active strategy is withdrawn; an additive database quality annotation records that mismatch. Import completion does not establish research suitability.
+
+After correction, all 77 local tests pass (70 research/selection plus 7 sizing). The earlier 54-test import checkpoint below remains historical. See INTENT_REQUIREMENTS.md for measured fit and acceptance evidence. A corrected representative strategy study has not yet run.
 
 | Record | Verified count |
 |---|---:|

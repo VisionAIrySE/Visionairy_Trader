@@ -2,6 +2,8 @@
 
 Verified November 3, 2026, Pacific time. Data foundation complete; trading application unfinished.
 
+Correction: this document establishes transfer integrity only. The imported convenience pilot is withdrawn as evidence for the intended quiet-to-active strategy. Selection repair and measured scope failure appear in INTENT_REQUIREMENTS.md; no replacement strategy result is claimed.
+
 ## What was completed
 
 Recovered the existing source into the VDT workspace without changing the originals. Regenerated the import from the preserved integrity-checked SQLite snapshot and original Decimal-string outcomes. Finished the interrupted import without deleting or resetting database records.

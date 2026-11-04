@@ -8,6 +8,15 @@ def outcome(event='a',status='modeled',net='0.123456789123456789'):
     return row
 
 class ReportTests(unittest.TestCase):
+    def test_legacy_results_are_withdrawn_as_target_strategy_evidence(self):
+        report=build([outcome()])
+        self.assertFalse(report['intent_fit'])
+        self.assertFalse(report['target_cohort_evidence'])
+    def test_zero_signal_rules_are_explicit(self):
+        report=build([outcome()])
+        empty=next(r for r in report['detectors'] if r['detector']=='B02_aligned_2pct_rvol3')
+        self.assertEqual(empty['scenario_rows'],0)
+        self.assertIsNone(empty['mean_net_dollars'])
     def test_censored_is_not_a_zero_return(self):
         x=summarize([outcome(),outcome('b','missing_exit')])
         self.assertEqual(x['mean_net_dollars'],'0.123456789123456789')

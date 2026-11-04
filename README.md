@@ -19,11 +19,12 @@ Supabase project details are supplied through environment configuration; credent
 - Initial price/relative-activity benchmark replay and sensitivity scenarios.
 - Deduplicated, versioned SQLite research data, run lineage and consistent snapshots.
 - Cost/sizing arithmetic preflight.
-- 47 research/replay/storage/import checks and 7 sizing checks.
+- 70 research/replay/storage/import/selection checks and 7 sizing checks.
+- Intent-linked quiet-to-active research selector and coverage gates; numerical settings remain experimental.
 - Private research, learning and retrieval schema with 32 database acceptance checks.
 - Resumable typed imports with conflict detection and whole-table reconciliation before completion.
 
-The completed pilot covered three convenience-sample stocks. It is not broad-market validation, a complete 32-variant implementation, or proof of profitability.
+The earlier pilot covered three convenience-sample stocks. Its standing as evidence for the intended quiet-to-active strategy is withdrawn. It remains an infrastructure control only. See docs/INTENT_REQUIREMENTS.md for the correction and measured fit failure. A corrected representative strategy study has not yet run.
 
 ## Run checks
 

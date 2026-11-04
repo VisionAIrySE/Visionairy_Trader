@@ -8,8 +8,9 @@ from statistics import mean
 from replay import parse_bars,benchmark_events,mark_outcome,DataError
 
 ROOT=Path("pilot_data")
-OUT=Path("pilot_results");OUT.mkdir(exist_ok=True)
-MANIFEST={"version":"pilot_0.1","scope":"13-symbol convenience sample; exploratory only",
+OUT=Path("pilot_results")
+MANIFEST={"version":"infrastructure_control_0.2","scope":"explicit infrastructure-control files only",
+    "study_role":"infrastructure_control","intent_fit":False,"target_cohort_evidence":False,
     "detectors":["B01_raw_2pct","B01_aligned_1pct","B02_aligned_1pct_rvol3",
                  "B01_aligned_2pct","B02_aligned_2pct_rvol3"],
     "entry_delays_seconds":[0,60,120],"holding_minutes":[5,15,60],
@@ -21,7 +22,6 @@ MANIFEST={"version":"pilot_0.1","scope":"13-symbol convenience sample; explorato
     "counterfactual_counts_not_independent":True,
     "bar_time_semantics":"start labeled; signals available after completed minute",
     "unavailable_data":"retained/censored, not automatically a loss or a win"}
-(OUT/"trial_manifest.json").write_text(json.dumps(MANIFEST,indent=2))
 
 def canonical_time(row,interval):
     stamp=int(row["timestamp"])
@@ -89,7 +89,11 @@ def all_qualified_events(bars,threshold):
                 "observed_return":str(change),"threshold":str(threshold),"window_minutes":5})
     return result
 
-def run():
+def run(infrastructure_only=False):
+    if not infrastructure_only:
+        raise DataError('Legacy convenience pilot is not target-cohort research. Use the intent-linked selection path; --infrastructure-only is required for this control.')
+    OUT.mkdir(exist_ok=True)
+    (OUT/"trial_manifest.json").write_text(json.dumps(MANIFEST,indent=2))
     summary=[]; all_events=[];all_outcomes=[];timing=[];diagnostics=[]
     for path in sorted(ROOT.glob("*_1min.json")):
         symbol=path.name.split("_")[0]
@@ -167,5 +171,10 @@ def run():
              and s["delay_seconds"]==60 and s["hold_minutes"]==15]
     print(json.dumps(display,indent=2))
 
-if __name__=="__main__":run()
+if __name__=="__main__":
+    import argparse
+    parser=argparse.ArgumentParser(description='Legacy infrastructure control, not momentum-strategy validation')
+    parser.add_argument('--infrastructure-only',action='store_true')
+    args=parser.parse_args()
+    run(infrastructure_only=args.infrastructure_only)
 
