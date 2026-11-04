@@ -90,3 +90,32 @@ python research/archive_diagnostic.py --database data/original/research_snapshot
 The output remains excluded private research data. Seven targeted checks cover deterministic reproduction, unchanged archive bytes, duplicate handling, conflicting timestamps, missing baseline preservation, future-bar invariance of earlier decisions and refusal to create a missing database. The full suites pass 182 research/UI plus 7 sizing checks (189 total). These validate software safeguards, not strategy returns.
 
 The next evidence requirement is earlier history for the minute cohort and a dated, independently selected broader cohort with qualified calendars and follow-through. Historical executable quotes or declared cost/fill stress assumptions, and predeclared target rules, are needed before connecting these observations to comparative acquisition and joint portfolio outcomes. No purchase or resource upgrade is implied.
+
+## Existing-access historical collection completed November 4
+
+The authenticated service now supports bounded GET-only `/api/history` and `/api/calendar` research reads using the existing server-side production credential. Credentials are not returned or copied to client code. Requests validate the fixed provider path, symbol, interval and date bounds; concurrent historical reads return promptly with busy status, reads are paced, provider size/time limits remain enforced, and arbitrary URLs/order/funding endpoints are not allowed. These endpoints are behind the dashboard login and are not called automatically by its interface. No paid resource or plan change was made.
+
+Application commit `c864cb49b0b9277a0487d10d41a247171646fd3d` became live as `dep-dblqq7uq1p3s738s9vr0`. The authenticated October calendar read returned observed evidence. The missing KOPN five-minute history returned 1,872 bars spanning October 1-November 3. The old archive was not edited.
+
+`history_collection.py` froze a 16-member deterministic hash sample from the 13,239-entry captured directory before requesting those histories. Five preserved symbols were explicit controls. The sample has no price, volume, affordability or return filter. Its seed, source/snapshot identities, selected symbols and failed requests remain recorded. Symbols failing mapping/download are not replaced. This is an availability/prospective-baseline probe: directory membership captured after the historical diagnostic start cannot qualify a retrospective strategy study. Non-ETF security types still require qualification.
+
+Plan SHA-256: `77fbc3a167e5b06b296c4de7d9175cf2dd1ede69ed468fe6ef37f711685f0f3d`.
+
+The collector retained 21 planned identities: 19 observed histories with 23,746 five-minute bars; one unavailable request; one blocked symbol mapping. Both October and November calendars were captured. Six histories have all 24 expected regular sessions complete; the other 13 observed histories have missing expected slots, including entirely absent sessions for some symbols. Missing bars cannot be asserted to mean no trading without provider evidence.
+
+`collection_diagnostic.py` joins these captures to their frozen requests and provider calendar. `scan_symbol` now accepts explicit expected sessions, so an entirely absent trading date blocks the baseline instead of selecting older observed days around it. Captured short-session lengths are explicit; absent calendar dates and conflicting calendar revisions are rejected. Existing callers retain their behavior unless they supply expected sessions; qualification of those callers' adapters remains required.
+
+For October 21-November 3, each of the three unchanged quiet-volume cutoffs yields 9,861 observed decision windows: 5,241 insufficient-evidence windows and 4,620 already-active windows with no activation. No quiet-cohort window or quiet-to-active candidate qualifies. These are repeated diagnostic alternatives, not trades. No financial outcomes or portfolio returns were generated. No outcome-based change to thresholds was made.
+
+Reproduce the plan and analysis (the collector requires the existing private dashboard access file and saves only under excluded `data/history_collection`):
+
+```powershell
+python research/history_collection.py --snapshot data/universe/snapshot.json --start '2026-10-01 09:30' --end '2026-11-03 16:00' --controls AAPL AMD AMZN KOPN SPY --output data/history_collection/plan.json
+python research/collection_diagnostic.py --folder data/history_collection --start 1792540800 --end 1793750400 --output data/history_collection_diagnostic_v1.json
+```
+
+`collect_history.mjs` exports `collect(workspaceRoot, batchLimit)` for sequential, resumable batches of at most eight requests. It uses the fixed HTTPS service, rejects redirects, bounds time/size, preserves failures and response identities, skips existing captures and never overwrites them. Provider credentials remain server-side. No schedule or always-on collector is enabled.
+
+Full verification now passes 197 research/UI checks plus 7 sizing checks (204 total), with the Node collector syntax checked and the actual collection exercised. Synthetic checks validate software behavior only.
+
+The consequential remaining data issue is distinguishing genuinely inactive intervals from missing provider bars without fabricating zero volume, plus qualifying instrument mappings/types and dated cohort membership. More requests alone do not solve this. A representative historical momentum/management comparison still requires that evidence, corporate-action checks, explicit execution/target assumptions and complete holding-period follow-through. Accepted breakout, pullback, catalyst and context experiments remain in scope; this quiet-to-active diagnostic is not the entire platform.

@@ -83,13 +83,18 @@ def validate_observations(observations, policy):
         seen.add((row.session, row.minute))
 
 
-def scan_symbol(symbol, observations, policy, known_discontinuities=()):
+def scan_symbol(symbol, observations, policy, known_discontinuities=(), expected_sessions=None):
     """Return a decision record for every observable window, including failures.
 
     Historical inputs must have exchange-session labels/calendar lengths supplied
     and qualified by their adapter. Missing bars are unknown, never zero activity.
     """
     validate_observations(observations, policy)
+    if expected_sessions is not None:
+        if (list(expected_sessions)!=sorted(set(expected_sessions)) or
+                any(date.fromisoformat(s).isoformat()!=s for s in expected_sessions) or
+                any(row.session not in expected_sessions for row in observations)):
+            raise DataError('Explicit ordered calendar sessions must cover observed sessions')
     days = defaultdict(dict)
     day_opens = {}
     day_lengths = {}
@@ -121,7 +126,7 @@ def scan_symbol(symbol, observations, policy, known_discontinuities=()):
             record['reasons'] = ['insufficient_same_session_price_window']
             decisions.append(record)
             continue
-        previous_sessions = sorted(s for s in days if s < row.session)
+        previous_sessions = sorted(s for s in (days if expected_sessions is None else expected_sessions) if s < row.session)
         recent = previous_sessions[-policy.prior_sessions:]
         # Do not cherry-pick older complete days around recent missing evidence.
         if len(recent) < policy.prior_sessions or any(s not in complete for s in recent):

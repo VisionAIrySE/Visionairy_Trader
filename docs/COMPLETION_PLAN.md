@@ -1,5 +1,7 @@
 # Intent and completion gates
 
+November 4 continuation: existing-access historical price/calendar reads are deployed and verified. A frozen directory coverage probe and calendar-aware diagnostic are implemented; see HYPOTHESIS_READINESS.md. The original archive remains preserved. 204 local software checks pass. Data availability has improved, but sparse bars, historical membership, security qualification, corporate actions and execution/target/follow-through evidence still prevent representative strategy evaluation. Treat the collection portion of the checklist below as partially completed, not the complete strategy-study gate.
+
 ## Active checklist - November 4, 2026, Pacific time
 
 This section supersedes the historical status table below. It continues the accepted hypotheses and capital-allocation objective; it does not restart Discovery. Typical holding experiments must cover 1-2 days and extensions up to approximately a week. No live trading, funding or paid provisioning is authorized.

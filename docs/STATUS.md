@@ -2,6 +2,12 @@
 
 ## Current release
 
+### Historical API access and broader coverage probe
+
+The existing server credential now supplies authenticated bounded historical-price/calendar GETs. Commit c864cb49b0b9277a0487d10d41a247171646fd3d was verified live as dep-dblqq7uq1p3s738s9vr0, and actual provider reads succeeded. A frozen 16-directory-member sample plus five preserved controls produced 19 observed histories (23,746 five-minute bars), one failed request and one mapping block. Both calendar months were captured; six histories are complete across 24 expected sessions, 13 are sparse. Failures were retained, not replaced; the original archive was untouched. This is a coverage/control probe, not historical-universe qualification.
+
+The calendar-aware diagnostic retains 9,861 windows per unchanged cutoff: 5,241 insufficient-evidence and 4,620 already-active/no-activation windows; zero quiet candidates and no financial outcomes. Explicit expected sessions now prevent skipping an entirely absent trading day for an older baseline. Collection/diagnostic code is verified locally; 197 research/UI + 7 sizing = 204 checks pass. See HYPOTHESIS_READINESS.md for exact reproduction and limits. No live scanner, order, funding, paid service or scheduled collection was enabled.
+
 ### Historical archive diagnostic continuation
 
 Implemented and verified the read-only `archive_diagnostic.py` adapter and seven focused safeguards. Full local suites: 182 research/UI + 7 sizing = 189 checks passing. The October 21-November 3 captured-data run used 24,982 unique bar observations, removed 3,900 duplicate-import memberships from counting while retaining provenance, and retained every decision. All minute windows lack sufficient baseline/reference evidence; five-minute control histories yield no quiet-to-active candidate at the three existing diagnostic cutoffs. No financial outcomes or portfolio return were generated. See HYPOTHESIS_READINESS.md for exact definitions, reproduction and evidence limitations.

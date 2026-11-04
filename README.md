@@ -71,3 +71,7 @@ No open-source license grant has been made.
 ## Preserved-archive control diagnostic
 
 Run `python research/archive_diagnostic.py --database data/original/research_snapshot.sqlite --start 1792540800 --end 1793750400 --output data/archive_diagnostic.json` from the workspace root. It opens the existing private archive read-only, pins source/code/policy evidence, deduplicates repeated imports and retains failed/blocked completed-bar decisions. It does not infer a qualified historical universe, executable prices, target forecasts or returns. See `docs/HYPOTHESIS_READINESS.md` for the observed limits and remaining evaluation requirements. Current verification: 182 research/UI checks and 7 sizing checks.
+
+## Existing-access historical collection
+
+Authenticated `/api/history` and `/api/calendar` expose only bounded server-side research GETs; the production token remains in Render secrets. `research/history_collection.py` freezes a price-blind directory coverage sample; `research/collect_history.mjs` exports a bounded, resumable `collect(workspaceRoot, batchLimit)` using the existing private dashboard access file. `research/collection_diagnostic.py` preserves failures/gaps and uses explicit expected calendar sessions. Captures/results remain excluded under `data/`; they do not establish historical membership, execution prices or profitable returns. Current verification: 197 research/UI + 7 sizing = 204 software checks. See docs/HYPOTHESIS_READINESS.md for reproduction and actual evidence limits.
