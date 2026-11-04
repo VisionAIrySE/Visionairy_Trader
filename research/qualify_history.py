@@ -7,7 +7,7 @@ from tkinter import ttk
 from replay import request_data, parse_bars, qualify, dump
 
 root=tk.Tk()
-root.title("VisionAIry — Historical Data Check")
+root.title("VisionAIry � Historical Data Check")
 root.geometry("690x420")
 root.columnconfigure(1, weight=1)
 ttk.Label(root,text="Ghost research only. No funding or orders.",font=("Segoe UI",12,"bold")).grid(row=0,column=0,columnspan=2,padx=16,pady=12)

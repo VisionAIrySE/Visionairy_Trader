@@ -19,5 +19,5 @@ Before importing:
 4. Import a small dataset/run, compare counts and identifiers, then qualify full migration.
 5. Verify backup/restore, quota/cost and bounded query performance.
 
-Do not create permissive anonymous write policies to make a publishable key work. Server secrets remain server-side. No schema or records have been changed by this repository setup.
+Do not create permissive anonymous write policies to make a publishable key work. Server secrets remain server-side. The initial setup was read-only; the private trader schema, learning/retrieval guards and verified pilot import are now installed. See STATUS.md and INTEGRATION_VERIFICATION.md. No deployed application is connected yet.
 
