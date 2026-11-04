@@ -46,18 +46,18 @@ def build(rows):
         'No held-out comparison or evidence of a profitable strategy.'])
 
 def money(value):
-    return '-' if value is None else f'${D(value):.4f}'
+    return '—' if value is None else f'${D(value):.4f}'
 
 def table(cases,label):
     lines=[f'| {label} | Modeled / cases | Mean net per modeled case | Positive | Days |',
            '|---|---:|---:|---:|---:|']
     for r in cases:
-        positive='-' if r['positive_fraction'] is None else f"{D(r['positive_fraction'])*100:.1f}%"
+        positive='—' if r['positive_fraction'] is None else f"{D(r['positive_fraction'])*100:.1f}%"
         lines.append(f"| {r.get('detector',r.get('value'))} | {r['modeled']} / {r['scenario_rows']} | {money(r['mean_net_dollars'])} | {positive} | {r['days']} |")
     return '\n'.join(lines)
 
 def markdown(report,digest):
-    lines=['# VisionAIry Trader - historical pilot results','',
+    lines=['# VisionAIry Trader — historical pilot results','',
         '**Infrastructure-control sample only. Withdrawn as evidence for the intended quiet-to-active strategy.**','',
         f"Source outcomes SHA-256: `{digest}`",'',
         f"{report['total']['scenario_rows']:,} counterfactual rows; {report['total']['modeled']:,} modeled. These are not independent trades.",

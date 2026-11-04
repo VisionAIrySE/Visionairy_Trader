@@ -25,9 +25,9 @@ The frozen original run's five-minute baseline sources show these prior-ten-sess
 
 | Stock | Prior daily baseline range |
 |---|---:|
-| AAPL | 25,105,506-29,114,606.5 shares |
-| AMD | 14,549,363.5-16,318,452 shares |
-| AMZN | 25,846,555.5-26,816,428.5 shares |
+| AAPL | 25,105,506–29,114,606.5 shares |
+| AMD | 14,549,363.5–16,318,452 shares |
+| AMZN | 25,846,555.5–26,816,428.5 shares |
 
 All three are already-active under each diagnostic quiet cutoff of 50,000, 100,000 and 500,000 daily shares. These were untuned sensitivity checks, not selected strategy settings. The sample contains no quiet-cohort evidence under those definitions. Study readiness is false for universe, instrument/calendar qualification and cohort-fit reasons. This demonstrates the earlier study's mismatch, not replacement trades.
 

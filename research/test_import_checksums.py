@@ -11,8 +11,8 @@ class ImportChecksumTests(unittest.TestCase):
         self.assertNotEqual(pg_json({'n': Decimal('1.000000000000001')}), pg_json({'n': Decimal('1')}))
 
     def test_jsonb_unicode_and_null_preserved(self):
-        self.assertEqual(pg_json({'�': [None, True, 'line\nbreak']}),
-                         '{"�": [null, true, "line\\nbreak"]}')
+        self.assertEqual(pg_json({'é': [None, True, 'line\nbreak']}),
+                         '{"é": [null, true, "line\\nbreak"]}')
 
     def test_timestamp_offsets_normalize_to_same_instant(self):
         row = dict(id='a', provider='p', source_key='s', sha256='h', instrument_id='i',
