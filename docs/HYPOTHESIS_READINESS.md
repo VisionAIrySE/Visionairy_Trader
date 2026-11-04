@@ -64,3 +64,29 @@ Live scanning, Telegram, real orders and account funding are not prerequisites f
 Run `python research/hypothesis_readiness.py --database data/original/research_snapshot.sqlite --output data/hypothesis_readiness.json`. This opens the archive read-only and emits no signals or P&L. The generated JSON and captured market data remain private/excluded from publication.
 
 Source manifest SHA-256: `ae275b0e40878964bad0eea6b18c0be8c492dbc4d089d1f51090d5006157f313`.
+
+## Captured-data diagnostic completed November 4
+
+`research/archive_diagnostic.py` now connects the preserved SQLite source memberships to the existing completed-bar selection engine. It freezes the existing 50,000/100,000/500,000 daily-share diagnostic cutoffs, 2% five-minute rise, 3x comparable volume, $10,000 recent dollar proxy and ten prior sessions. One-minute/five-minute resolutions use the same five-minute decision window and remain separate alternatives. These are experimental definitions, not optimized or adopted trading settings.
+
+The read-only October 21-November 3 run consumed 24,982 unique bar observations. It preserved both import identities for 3,900 duplicate AAPL minute memberships while counting their price observations once. Tick prints were retained in the source manifest but excluded from bar decisions.
+
+| Diagnostic evidence | Result under each of the three existing cutoffs |
+|---|---|
+| AAPL/AMD/AMZN/KOPN/SPY minute histories | 19,366 observable windows; all lack sufficient evidence. 250 lack the initial same-session reference window; 19,116 lack ten earlier complete sessions. |
+| AAPL/AMD/AMZN five-minute histories | 2,340 windows: 30 lack a same-session reference; 2,310 have already-active baselines and fail activation. Zero quiet-to-active candidates. |
+| Acquisition/portfolio results | Withheld: unsuitable cohort, unqualified calendar/instruments, missing historical quotes and point-in-time targets. No financial outcomes generated. |
+
+Windows across cutoffs/resolutions are not independent trades. No result here rejects momentum or establishes a profitable edge. The other accepted setup/catalyst hypotheses remain pending their own experiments. The archive adapter does not silently promote the old sample into a qualified `purpose_runner` study or fabricate targets from later prices.
+
+Every decision, including failures and missing baselines, is retained in the private JSON ledger. Its manifest pins source IDs/hashes, normalized source-linked bar content, source-code hashes, explicit evaluation bounds and policy assumptions. Session interpretation uses the preserved provider-local label with a checked UTC offset and an explicitly unqualified 390-minute assumption. Missing edges, absent sessions, corporate actions and historical membership still require independent qualification.
+
+Reproduce from the workspace root:
+
+```powershell
+python research/archive_diagnostic.py --database data/original/research_snapshot.sqlite --start 1792540800 --end 1793750400 --output data/archive_diagnostic.json
+```
+
+The output remains excluded private research data. Seven targeted checks cover deterministic reproduction, unchanged archive bytes, duplicate handling, conflicting timestamps, missing baseline preservation, future-bar invariance of earlier decisions and refusal to create a missing database. The full suites pass 182 research/UI plus 7 sizing checks (189 total). These validate software safeguards, not strategy returns.
+
+The next evidence requirement is earlier history for the minute cohort and a dated, independently selected broader cohort with qualified calendars and follow-through. Historical executable quotes or declared cost/fill stress assumptions, and predeclared target rules, are needed before connecting these observations to comparative acquisition and joint portfolio outcomes. No purchase or resource upgrade is implied.

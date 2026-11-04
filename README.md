@@ -67,3 +67,7 @@ All experiments use simulated capital. Any eventual live release requires separa
 
 No open-source license grant has been made.
 
+
+## Preserved-archive control diagnostic
+
+Run `python research/archive_diagnostic.py --database data/original/research_snapshot.sqlite --start 1792540800 --end 1793750400 --output data/archive_diagnostic.json` from the workspace root. It opens the existing private archive read-only, pins source/code/policy evidence, deduplicates repeated imports and retains failed/blocked completed-bar decisions. It does not infer a qualified historical universe, executable prices, target forecasts or returns. See `docs/HYPOTHESIS_READINESS.md` for the observed limits and remaining evaluation requirements. Current verification: 182 research/UI checks and 7 sizing checks.
