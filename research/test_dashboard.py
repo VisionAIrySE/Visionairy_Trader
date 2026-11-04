@@ -30,7 +30,7 @@ class DashboardTests(unittest.TestCase):
         return int(lines[0].split()[1]),dict(line.split(': ',1) for line in lines[1:]),body
     def auth(self):return 'Basic '+base64.b64encode(b'test:test-password').decode()
     def test_all_dashboard_and_api_routes_are_private(self):
-        for path in ('/','/app.js','/style.css','/api/research','/api/account','/../README.md'):
+        for path in ('/','/app.js','/style.css','/api/research','/api/account','/api/history?symbol=TEST','/api/calendar?month=10','/../README.md'):
             self.assertEqual(self.get(path)[0],401)
     def test_invalid_credentials_and_malformed_base64_are_rejected(self):
         for value in ('Basic invalid','Basic '+base64.b64encode(b'test:wrong').decode(),'Bearer fake'):
@@ -69,6 +69,17 @@ class DashboardTests(unittest.TestCase):
             self.assertEqual(self.get('/api/research',self.auth())[0],200)
             self.assertEqual(self.get('/api/research',self.auth())[0],200)
             self.assertEqual(calls,[1])
+        finally:self.handler=original
+
+    def test_history_query_is_authenticated_and_repeated_parameters_rejected(self):
+        original=self.handler;calls=[]
+        self.handler=server.make_handler({},'test',hashlib.sha256(b'test-password').hexdigest(),
+            history_provider=lambda kind,params:(calls.append((kind,params)) or (200,{'status':'observed'})))
+        try:
+            self.assertEqual(self.get('/api/history?symbol=TEST',self.auth())[0],200)
+            self.assertEqual(calls,[('history',{'symbol':'TEST'})])
+            self.assertEqual(self.get('/api/history?symbol=A&symbol=B',self.auth())[0],400)
+            self.assertEqual(len(calls),1)
         finally:self.handler=original
 
 

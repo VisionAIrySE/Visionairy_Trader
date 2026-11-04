@@ -8,8 +8,30 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from datetime import datetime
 
 from replay import DataError, NoRedirect
+
+
+def validate_history_params(path,params):
+    if path=='markets/timesales':
+        if set(params)!={'symbol','start','end','interval','session_filter'}:
+            raise DataError('Explicit bounded historical parameters required')
+        if not re.fullmatch(r'[A-Z][A-Z0-9.\-]{0,14}',params['symbol']):
+            raise DataError('Unqualified historical symbol')
+        if params['interval'] not in ('1min','5min') or params['session_filter']!='open':
+            raise DataError('Regular-session minute bars only')
+        try:
+            start=datetime.strptime(params['start'],'%Y-%m-%d %H:%M')
+            end=datetime.strptime(params['end'],'%Y-%m-%d %H:%M')
+        except (ValueError,TypeError):raise DataError('Explicit provider-local historical dates required') from None
+        if not 0<(end-start).total_seconds()<=40*86400:
+            raise DataError('Historical request must span at most 40 calendar days')
+    elif path=='markets/calendar':
+        if (set(params)!={'month','year'} or not re.fullmatch(r'20\d{2}',params['year'])
+                or not re.fullmatch(r'0?[1-9]|1[0-2]',params['month'])):
+            raise DataError('Explicit calendar month and year required')
+    else:raise DataError('Unsupported historical endpoint')
 
 
 def decimal_text(value):
@@ -38,11 +60,13 @@ class TradierReader:
         self._opener=opener or urllib.request.build_opener(NoRedirect())
 
     def get(self,path,params=None):
-        if not (path in ('user/profile','markets/quotes','markets/clock') or
+        if not (path in ('user/profile','markets/quotes','markets/clock','markets/timesales','markets/calendar') or
                 re.fullmatch(r'accounts/[A-Za-z0-9_-]{1,40}/(balances|positions)',path)):
             raise DataError('Endpoint outside read-only allowlist')
         params=params or {}
-        if path=='markets/quotes':
+        if path in ('markets/timesales','markets/calendar'):
+            validate_history_params(path,params)
+        elif path=='markets/quotes':
             if set(params)!={'symbols'} or not re.fullmatch(r'[A-Z0-9./^-]+(?:,[A-Z0-9./^-]+){0,49}',params['symbols']):
                 raise DataError('Bounded explicit symbol list required')
         elif params:raise DataError('Unexpected endpoint parameters')

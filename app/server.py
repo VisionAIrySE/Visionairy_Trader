@@ -9,18 +9,21 @@ from pathlib import Path
 import sys
 import threading
 import time
+from urllib.parse import urlsplit,parse_qs
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'research'))
 from mechanics_demo import run_demo
 from broker_readonly import configured_snapshot
 from account_cache import AccountCache
+from history_gateway import HistoryGateway
 
 
-def make_handler(report,username,password_hash,account_provider=configured_snapshot,report_factory=run_demo):
+def make_handler(report,username,password_hash,account_provider=configured_snapshot,report_factory=run_demo,history_provider=None):
     if not username or len(password_hash)!=64 or any(c not in '0123456789abcdef' for c in password_hash):
         raise ValueError('Private dashboard credentials must be configured')
     account_cache=AccountCache(account_provider)
+    history_provider=history_provider or HistoryGateway().read
     report_cache={'report':report};report_lock=threading.Lock()
     class Handler(BaseHTTPRequestHandler):
         def log_message(self,*args):pass  # Never log Authorization headers or research payloads.
@@ -53,6 +56,14 @@ def make_handler(report,username,password_hash,account_provider=configured_snaps
                 return self.send(200,data)
             if self.path=='/api/account':
                 return self.send(200,account_cache.get())
+            route=urlsplit(self.path)
+            if route.path in ('/api/history','/api/calendar'):
+                if len(route.query)>500:return self.send(400,dict(error='Research query too long'))
+                try:params=parse_qs(route.query,keep_blank_values=True,max_num_fields=8,strict_parsing=True)
+                except ValueError:return self.send(400,dict(error='Invalid research query'))
+                if any(len(v)!=1 for v in params.values()):return self.send(400,dict(error='Repeated query parameter'))
+                status,data=history_provider(route.path.split('/')[-1],{k:v[0] for k,v in params.items()})
+                return self.send(status,data)
             files={'/':('index.html','text/html; charset=utf-8'),'/app.js':('app.js','text/javascript; charset=utf-8'),'/style.css':('style.css','text/css; charset=utf-8')}
             if self.path in files:
                 name,kind=files[self.path];return self.send(200,(ROOT/'app'/'static'/name).read_bytes(),kind)
