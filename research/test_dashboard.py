@@ -14,7 +14,8 @@ class DashboardTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.handler=server.make_handler({'status':'synthetic','orders_submitted':0},
-                                        'test',hashlib.sha256(b'test-password').hexdigest())
+                                        'test',hashlib.sha256(b'test-password').hexdigest(),
+                                        account_provider=lambda:server.configured_snapshot({}))
     def get(self,path,auth=None,method='GET'):
         class Transport:
             def __init__(self,request):self.request=io.BytesIO(request);self.response=io.BytesIO()
@@ -29,7 +30,7 @@ class DashboardTests(unittest.TestCase):
         return int(lines[0].split()[1]),dict(line.split(': ',1) for line in lines[1:]),body
     def auth(self):return 'Basic '+base64.b64encode(b'test:test-password').decode()
     def test_all_dashboard_and_api_routes_are_private(self):
-        for path in ('/','/app.js','/style.css','/api/research','/../README.md'):
+        for path in ('/','/app.js','/style.css','/api/research','/api/account','/../README.md'):
             self.assertEqual(self.get(path)[0],401)
     def test_invalid_credentials_and_malformed_base64_are_rejected(self):
         for value in ('Basic invalid','Basic '+base64.b64encode(b'test:wrong').decode(),'Bearer fake'):
@@ -46,6 +47,15 @@ class DashboardTests(unittest.TestCase):
         self.assertEqual(self.get('/api/order',self.auth(),method='POST')[0],405)
     def test_server_refuses_empty_credentials(self):
         with self.assertRaises(ValueError):server.make_handler({},'','')
+
+    def test_account_route_does_not_turn_missing_data_into_synthetic_balance(self):
+        status,_,body=self.get('/api/account',self.auth())
+        self.assertEqual(status,200)
+        import json
+        account=json.loads(body)
+        self.assertEqual(account['status'],'not_connected')
+        self.assertIsNone(account['balances'])
+        self.assertIsNone(account['measured_net_return'])
 
 
 if __name__=='__main__':unittest.main()

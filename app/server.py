@@ -7,15 +7,19 @@ import json
 import os
 from pathlib import Path
 import sys
+import threading
+import time
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'research'))
 from mechanics_demo import run_demo
+from broker_readonly import configured_snapshot
 
 
-def make_handler(report,username,password_hash):
+def make_handler(report,username,password_hash,account_provider=configured_snapshot):
     if not username or len(password_hash)!=64 or any(c not in '0123456789abcdef' for c in password_hash):
         raise ValueError('Private dashboard credentials must be configured')
+    account_cache={};account_lock=threading.Lock()
     class Handler(BaseHTTPRequestHandler):
         def log_message(self,*args):pass  # Never log Authorization headers or research payloads.
         def send(self,status,body,kind='application/json'):
@@ -39,6 +43,13 @@ def make_handler(report,username,password_hash):
                 self.send_response(401);self.send_header('WWW-Authenticate','Basic realm="VisionAIry Trader", charset="UTF-8"')
                 self.send_header('Cache-Control','no-store');self.send_header('Content-Length','0');self.end_headers();return
             if self.path=='/api/research':return self.send(200,report)
+            if self.path=='/api/account':
+                with account_lock:
+                    now=time.monotonic()
+                    if not account_cache or now-account_cache['retrieved']>=15:
+                        account_cache.update(data=account_provider(),retrieved=time.monotonic())
+                    data=dict(account_cache['data'],cache_age_seconds=round(time.monotonic()-account_cache['retrieved'],2))
+                return self.send(200,data)
             files={'/':('index.html','text/html; charset=utf-8'),'/app.js':('app.js','text/javascript; charset=utf-8'),'/style.css':('style.css','text/css; charset=utf-8')}
             if self.path in files:
                 name,kind=files[self.path];return self.send(200,(ROOT/'app'/'static'/name).read_bytes(),kind)
