@@ -19,7 +19,11 @@ Supabase project details are supplied through environment configuration; credent
 - Initial price/relative-activity benchmark replay and sensitivity scenarios.
 - Deduplicated, versioned SQLite research data, run lineage and consistent snapshots.
 - Cost/sizing arithmetic preflight.
-- 70 research/replay/storage/import/selection checks and 7 sizing checks.
+- 156 research/replay/storage/import/selection/decision/UI checks and 7 sizing checks.
+- Comparative acquisition research with conditional ROI/risk metrics and shared cash/risk reservations; see docs/ACQUISITION_FUNNEL.md.
+- Allocation-bound outcome replay preserves selection, quantity, cash, risk, costs and price ceilings; independent controls remain separate from portfolio returns.
+- Optional joint paper-account experiments track reservations, positions, marks, partial exits, session settlement and daily pause. Management alternatives are not independent trades or adopted rules.
+- Password-protected read-only mechanics dashboard: `python app/server.py`; configure `DASHBOARD_USERNAME` and `DASHBOARD_PASSWORD_SHA256` through the runtime environment. No private data or broker credentials are needed for its synthetic walkthrough.
 - Intent-linked quiet-to-active research selector and coverage gates; numerical settings remain experimental.
 - Private research, learning and retrieval schema with 32 database acceptance checks.
 - Resumable typed imports with conflict detection and whole-table reconciliation before completion.
@@ -43,6 +47,10 @@ Market datasets, databases, results, backups and local environments are excluded
 Use environment variables or service secret settings. Do not commit credentials or place them in issue bodies.
 The sample environment file has variable names only; a publishable key is not an administrative/server credential.
 No production-order API methods are implemented.
+
+## Purpose and connected research
+
+See [PURPOSE_ALIGNMENT.md](docs/PURPOSE_ALIGNMENT.md) for all accepted SOT items, [DECISION_MODEL.md](docs/DECISION_MODEL.md) for decision/outcome connections, and [INTENT_REQUIREMENTS.md](docs/INTENT_REQUIREMENTS.md) for cohort acceptance. Run `python research/purpose_runner.py --bundle YOUR_PRIVATE_BUNDLE.json --output data/purpose_result.json` with explicit source/clock/policy evidence. It does not acquire data or submit orders. Conditional research output cannot claim an operating assistant or validated trading edge.
 
 ## Next delivery stages
 

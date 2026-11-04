@@ -2,9 +2,13 @@
 
 Recorded November 3, 2026, Pacific time.
 
+Latest local checkpoint: 163 checks pass (156 research/UI and 7 sizing). Comparative allocation now connects to allocation-bound outcomes and optional joint paper-account experiments with positions, settlement, partial profits, trailing protection and daily pause. A password-protected, read-only mechanics dashboard is implemented. See PORTFOLIO_MECHANICS.md for the exact boundary. Earlier counts below describe historical checkpoints. The latest work remains local; no representative market performance result is established.
+
+Publication was attempted for 62 reviewed source/document/UI files, excluding credentials, datasets, databases and generated reports. Automatic approval review rejected the create-tree upload to the public VisionAIrySE/Visionairy_Trader repository, stating that general deployment authorization did not explicitly authorize that payload and public destination. No tree, commit/ref update or deployment resulted. Do not bypass this block; explicit approval for that source-only public upload remains necessary. A local browser verification attempt timed out reaching localhost; visual browser and hosted verification are incomplete. Serialized HTTP handler tests and JavaScript syntax checks pass.
+
 The preserved infrastructure-control pilot has finished importing into the designated private Supabase database. All 15 imported tables match the original typed records. The dataset is frozen and its exploration run is complete. Its standing as evidence for the intended quiet-to-active strategy is withdrawn; an additive database quality annotation records that mismatch. Import completion does not establish research suitability.
 
-After correction, all 77 local tests pass (70 research/selection plus 7 sizing). The earlier 54-test import checkpoint below remains historical. See INTENT_REQUIREMENTS.md for measured fit and acceptance evidence. A corrected representative strategy study has not yet run.
+After the connected-purpose alignment, all 117 local tests pass (110 research/decision checks plus 7 sizing). The earlier 54-test import and 77-test selection checkpoints remain historical. See INTENT_REQUIREMENTS.md for measured fit and acceptance evidence. A corrected representative strategy study has not yet run.
 
 | Record | Verified count |
 |---|---:|
@@ -25,9 +29,11 @@ Verification: 54 local tests passed (47 research/import plus 7 sizing); 21 gener
 
 Security advisor: no findings; all 48 trader tables have RLS. Performance advisor has informational unused-index and Auth connection-allocation notices; no indexes removed or settings changed. One cached 390-row historical lookup used the intended index and executed in 0.366 ms server-side. This is not end-to-end latency or a load guarantee.
 
+Purpose alignment now connects quiet-to-active discovery, separate breakout/pullback setups, a dated conditional opportunity/cost/risk assessment, independent hours-to-days replay and a linked decision graph. All 56 accepted SOT items are mapped; no operational completion is claimed. See PURPOSE_ALIGNMENT.md and DECISION_MODEL.md.
+
 Still unfinished:
 - Broad, point-in-time discovery universe and representative historical coverage, including quiet stocks and failures.
-- Full opportunity families, protective stops, targets, additions, overnight rules, correlated exposure, portfolio cash and settlement simulation.
+- Remaining opportunity families, validated target models, additions/partial management, actual protective-order and overnight policies, correlated exposure, portfolio cash and settlement simulation. Initial conditional stop/target/time/gap research is implemented; this does not qualify live execution.
 - Operational document ingestion, real embeddings and evaluated retrieval/learning jobs. Tables/functions exist; no production pipeline is running.
 - Hosted scanner, private dashboard, Telegram interaction, authenticated runtime and Render deployment.
 - Replay/forward paper acceptance criteria and sufficient later independent observations. No profitable edge established.

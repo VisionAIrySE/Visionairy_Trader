@@ -33,7 +33,7 @@ All three are already-active under each diagnostic quiet cutoff of 50,000, 100,0
 
 ## Current completion boundary
 
-Implemented: explicit cohort measurements/reasons, control separation, legacy guard, reporting withdrawal and coverage checks. All 77 local tests pass, including 23 added regression checks. Synthetic cases prove software behavior only.
+Implemented at the selection-correction checkpoint: explicit cohort measurements/reasons, control separation, legacy guard, reporting withdrawal and coverage checks; 77 local checks passed then. The subsequent connected-purpose implementation has 116 passing checks. See DECISION_MODEL.md and PURPOSE_ALIGNMENT.md. Synthetic cases prove software behavior only.
 
 Remaining: qualify stock/ETF identities and exchange calendars, obtain dated market membership and representative histories including quiet and failed cases, run the corrected study, and review actual candidates/outcomes. Quotes, remaining opportunity and realistic risk/exit/portfolio evaluation remain unfinished. No genuine replacement strategy result is claimed.
 
