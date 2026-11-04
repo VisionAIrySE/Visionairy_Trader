@@ -1,6 +1,6 @@
 # Hosting and persistence
 
-Render is the application runtime. Supabase is the intended authoritative hosted data store. No Render service has been created for this project.
+Render is the application runtime. A free password-protected research preview is deployed at https://visionairy-trader-research.onrender.com; it computes a synthetic mechanics demonstration and is not an always-on market scanner. Supabase remains the intended authoritative hosted data store. No private database or broker credentials are connected to the preview.
 
 Structured Postgres records should hold sources/dataset versions, runs, signals, experiment parameters, simulated outcomes, summaries, approvals and audit records. Private object storage should hold compressed original datasets and older archives where cost/licensing allow.
 

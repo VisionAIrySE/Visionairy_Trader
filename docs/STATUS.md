@@ -1,5 +1,13 @@
 # Verified development status
 
+## Current release
+
+The user explicitly approved the reviewed 62-file source-only public upload after the automatic-review rejection described below. The block was resolved; it was not bypassed. All 62 source contents matched remote Git blob hashes and the 70-file tree retained prior records. GitHub main release commit: f77e7ad18bc5b0435e5e55b2771618b1bba0890a. GitHub Actions run 41779452461 succeeded.
+
+The free Render service `visionairy-trader-research` deployed that commit and reached live status. URL: https://visionairy-trader-research.onrender.com. Hosted build passed 156 research/UI and 7 sizing checks. Verified HTTP behavior: public health 200; unauthenticated page/data 401; authenticated page/data/JavaScript/CSS 200 with no-store. Data explicitly reports synthetic_acceptance_fixture. Browser visual verification is incomplete; localhost navigation timed out. An in-conversation preview was prepared from the same UI and computed synthetic output, with no network calls.
+
+The service uses password authentication over Render TLS, no private datasets, no Supabase credentials and no broker credentials. Login details are retained locally under ignored data/dashboard_login.json; never publish that file. No new paid resource or database modification occurred. Continuous market scanning, durable hosted research records, actual approvals and real trades remain unimplemented. Representative ROI/strategy validation remains blocked by insufficient suitable market evidence. Earlier status paragraphs below are historical and are superseded by this release entry.
+
 Recorded November 3, 2026, Pacific time.
 
 Latest local checkpoint: 163 checks pass (156 research/UI and 7 sizing). Comparative allocation now connects to allocation-bound outcomes and optional joint paper-account experiments with positions, settlement, partial profits, trailing protection and daily pause. A password-protected, read-only mechanics dashboard is implemented. See PORTFOLIO_MECHANICS.md for the exact boundary. Earlier counts below describe historical checkpoints. The latest work remains local; no representative market performance result is established.

@@ -2,7 +2,7 @@
 
 Personal momentum research and ghost-trading platform.
 
-**Status:** research prototype. The preserved pilot is imported and verified in private Supabase storage. No live trading, hosted scanner, Telegram application, dashboard or Render deployment is running.
+**Status:** research prototype with a deployed password-protected mechanics dashboard at https://visionairy-trader-research.onrender.com. It displays synthetic account/management experiments only. The preserved pilot remains private in Supabase. No live trading, hosted market scanner, Telegram application or demonstrated profitable strategy is running.
 
 ## Architecture
 
