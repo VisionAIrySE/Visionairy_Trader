@@ -2,6 +2,14 @@
 
 ## Current release
 
+### Final historical collection release verified
+
+Commit `4a898c6dbfab78fcfe5ceadd094960914c9e3206` is live as Render deploy `dep-dblqtmhsrm7s7386fspg` (finished November 4, 22:17:39 UTC). Build/local verification passes 197 research/UI + 7 sizing = 204 checks, plus Node collector syntax validation. Hosted post-release health returned 200; unauthenticated historical data returned 401; authenticated November calendar returned 200 observed with zero orders submitted. Resuming the completed collector issued zero new requests and left all 20 terminal capture files byte-for-byte unchanged (19 observed, one failed; the separate mapping block remains in the plan).
+
+The completed coverage diagnostic is private at `data/history_collection_diagnostic_v1.json`; its source and evidence boundaries are documented in HYPOTHESIS_READINESS.md. The original archive and all prior records remain preserved. No dataset, credential or generated decision ledger was published.
+
+The main Library SOT remains document v0.52 (stored version 51). A direct materialization attempt failed with a file-download error, so no replacement was attempted or claimed. This project checkpoint, reproduction instructions and published code preserve the continuation without requiring the user to reconstruct decisions. Reconcile the SOT when its transfer path is available.
+
 ### Historical API access and broader coverage probe
 
 The existing server credential now supplies authenticated bounded historical-price/calendar GETs. Commit c864cb49b0b9277a0487d10d41a247171646fd3d was verified live as dep-dblqq7uq1p3s738s9vr0, and actual provider reads succeeded. A frozen 16-directory-member sample plus five preserved controls produced 19 observed histories (23,746 five-minute bars), one failed request and one mapping block. Both calendar months were captured; six histories are complete across 24 expected sessions, 13 are sparse. Failures were retained, not replaced; the original archive was untouched. This is a coverage/control probe, not historical-universe qualification.
