@@ -1,0 +1,37 @@
+# Credentials and local environments
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.venv/
+venv/
+# Market data, research databases and outputs
+**/*.sqlite
+**/*.sqlite-*
+**/*.sqlite3
+**/*.db
+**/*.db-*
+**/sample/
+**/qualified_samples/
+**/pilot_data/
+**/pilot_results/
+**/run_code/
+research/research/
+**/*_history_sample.json*
+**/preflight_results.json
+outputs/
+data/
+backups/
+logs/
+*.log
+*.zip
+# Python and editor artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+.vscode/
+.DS_Store
+Thumbs.db
+
