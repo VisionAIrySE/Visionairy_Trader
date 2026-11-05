@@ -101,3 +101,17 @@ async function controlScanner(action){
 document.getElementById('scanner-start').addEventListener('click',()=>controlScanner('start'));
 document.getElementById('scanner-stop').addEventListener('click',()=>controlScanner('stop'));
 loadScanner();
+
+let candidatePage=0;
+async function loadCandidates(){
+ const status=document.getElementById('candidate-status'),root=document.getElementById('candidate-results');root.replaceChildren();
+ try{const r=await fetch(`/api/candidates?page=${candidatePage}`,{cache:'no-store',signal:AbortSignal.timeout(15000)});if(!r.ok)throw Error();const d=await r.json();
+ if(d.status!=='historical_detection_diagnostic'){status.textContent='No retained candidate diagnostic is available.';return;}
+ status.textContent=`${d.total} historical setups: ${d.setup_counts.initial_breakout??0} independent breakouts, ${d.setup_counts.pullback_continuation??0} pullback resumptions. These remain unqualified for buy recommendations.`;
+ root.append(el('p','Rank and size remain unset when fresh quotes, a supported target or reconciled paper capital are missing. Detected patterns alone do not establish profit potential.','muted'));
+ if(d.source_range.first)root.append(el('p',`Detected-event range: ${new Date(d.source_range.first*1000).toISOString()} to ${new Date(d.source_range.last*1000).toISOString()}. This is captured historical data.`,'muted'));
+ (d.rows??[]).forEach(row=>{const item=el('article');item.append(el('strong',`${row.symbol}: ${clean(row.setup)}`),el('p',`${new Date(row.available_at*1000).toISOString()} | pattern close ${money(row.entry_reference)} | proposed structural stop ${money(row.proposed_stop)}`),el('p',`Review: ${clean(row.state)}. ${row.reasons.map(clean).join('; ')}.`));root.append(item);});
+ const previous=el('button','Previous candidates'),next=el('button','Next candidates');previous.disabled=candidatePage===0;next.disabled=(candidatePage+1)*d.page_size>=d.total;previous.onclick=()=>{candidatePage--;loadCandidates();};next.onclick=()=>{candidatePage++;loadCandidates();};root.append(previous,next);
+ }catch{status.textContent='Candidate review could not be retrieved. No recommendation is assumed.';}
+}
+loadCandidates();

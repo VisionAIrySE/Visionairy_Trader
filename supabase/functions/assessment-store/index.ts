@@ -17,6 +17,20 @@ Deno.serve(async req => {
     const { operation, payload: p } = JSON.parse(raw);
     if (!p || typeof p !== 'object') throw Error();
     const result = await sql.begin(async tx => {
+      if (operation === 'candidate_snapshot_put') {
+        if (p.version!=='candidate-diagnostic-v1' || p.orders_submitted!==0 || p.recommendation_qualified!==false
+            || !/^[0-9a-f]{64}$/.test(p.sha256 || '') || typeof p.packed_report!=='string'
+            || p.packed_report.length>500000) throw Error();
+        await tx`insert into trader.jobs(kind,idempotency_key,payload,status,checkpoint)
+          values ('candidate_diagnostic_v1',${'candidate_diagnostic:'+p.sha256},${tx.json(p)},'complete','{}'::jsonb)
+          on conflict(idempotency_key) do nothing`;
+        return { saved:true };
+      }
+      if (operation === 'candidate_snapshot_get') {
+        const rows=await tx`select payload from trader.jobs where kind='candidate_diagnostic_v1'
+          and status='complete' order by available_at desc limit 1`;
+        return rows[0]?.payload || { status:'not_started' };
+      }
       if (operation === 'scan_universe_put') {
         if (!/^[0-9a-f]{64}$/.test(p.sha256 || '') || typeof p.packed_universe !== 'string'
             || p.packed_universe.length > 450000) throw Error();

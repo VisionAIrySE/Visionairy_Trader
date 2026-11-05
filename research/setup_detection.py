@@ -78,7 +78,8 @@ def trailing_atr(bars, index, count):
     return sum(ranges,D(0))/len(ranges)
 
 
-def classify_setups(symbol,bars,decisions,selection_policy,setup_policy):
+def classify_setups(symbol,bars,decisions,selection_policy,setup_policy,*,
+                    activation_state="quiet_to_active_candidate",cohort="quiet_to_active"):
     """Emit the initial breakout and subsequent controlled-pullback resumption separately.
 
     A candidate cannot be created from bars that became observable after its event.
@@ -94,7 +95,7 @@ def classify_setups(symbol,bars,decisions,selection_policy,setup_policy):
     for available,index in sorted(by_time.items()):
         row=bars[index]
         decision=decisions_by_time.get(available)
-        if decision and decision['state']=='quiet_to_active_candidate':
+        if decision and decision['state']==activation_state:
             activation=dict(id=decision['event_id'],at=available,session=row.session,
                             origin=D(decision['first_price']),peak=row.high,peak_at=index,
                             floor=None,pullback_volume=None,resumption_emitted=False)
@@ -118,7 +119,7 @@ def classify_setups(symbol,bars,decisions,selection_policy,setup_policy):
             identity=fingerprint([symbol,kind,available,activation['id'],policy_hash])
             return dict(event_id=identity,symbol=symbol,setup=kind,available_at=available,
                         activation_id=activation['id'],activation_at=activation['at'],
-                        cohort='quiet_to_active',basis='price_volume',
+                        cohort=cohort,basis='price_volume',
                         catalyst_status='unknown',entry_reference=str(row.close),
                         proposed_stop=str(stop),stop_percent=str(distance/row.close*100),
                         atr=str(atr),structure_stop=str(structure_stop),details=detail,

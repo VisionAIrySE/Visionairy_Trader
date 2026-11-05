@@ -1,0 +1,23 @@
+{
+  "version": "independent_structure_probe_v1",
+  "role": "exploratory_detection_only_not_strategy_adoption",
+  "bar_minutes": 5,
+  "minimum_breakout_volume_ratio": "3",
+  "setup": {
+    "version": "independent_structure_probe_v1",
+    "structure_bars": 3,
+    "atr_bars": 3,
+    "stop_atr_multiple": "1",
+    "maximum_extension_atr": "3",
+    "minimum_pullback_fraction": "0.1",
+    "maximum_pullback_fraction": "0.6",
+    "minimum_resumption_volume_ratio": "1.2",
+    "activation_lifetime_minutes": 60
+  },
+  "entry_execution": "not_simulated",
+  "targets_and_exits": "not_simulated",
+  "financial_outcomes_permitted": false,
+  "selection": "existing_frozen_coverage_probe_all_members_retained",
+  "missing_bars": "unknown_no_imputation",
+  "thresholds": "experimental_not_approved_trading_rules"
+}

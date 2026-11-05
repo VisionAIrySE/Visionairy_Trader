@@ -32,7 +32,7 @@ class DashboardTests(unittest.TestCase):
         return int(lines[0].split()[1]),dict(line.split(': ',1) for line in lines[1:]),body
     def auth(self):return 'Basic '+base64.b64encode(b'test:test-password').decode()
     def test_all_dashboard_and_api_routes_are_private(self):
-        for path in ('/','/app.js','/style.css','/api/research','/api/account','/api/assessment','/api/scanner','/api/quotes?symbols=TEST','/api/clock','/api/history?symbol=TEST','/api/calendar?month=10','/api/lookup?q=PSA','/../README.md'):
+        for path in ('/','/app.js','/style.css','/api/research','/api/account','/api/assessment','/api/scanner','/api/candidates','/api/quotes?symbols=TEST','/api/clock','/api/history?symbol=TEST','/api/calendar?month=10','/api/lookup?q=PSA','/../README.md'):
             self.assertEqual(self.get(path)[0],401)
     def test_invalid_credentials_and_malformed_base64_are_rejected(self):
         for value in ('Basic invalid','Basic '+base64.b64encode(b'test:wrong').decode(),'Bearer fake'):
@@ -123,6 +123,18 @@ class DashboardTests(unittest.TestCase):
                 self.assertEqual(self.get('/api/scanner/'+action,self.auth(),method='POST',payload=body,
                     extra_headers={'X-Research-Scan':'1'})[0],202)
             self.assertEqual(scanner.calls,[('latest',1),('start',True),('stop',)])
+        finally:self.handler=original
+
+    def test_candidate_pages_are_private_and_bounded(self):
+        class Candidate:
+            def latest(self,page):return {'page':page,'status':'historical_detection_diagnostic'}
+        original=self.handler
+        self.handler=server.make_handler({},'test',hashlib.sha256(b'test-password').hexdigest(),candidate_service=Candidate())
+        try:
+            self.assertEqual(self.get('/api/candidates')[0],401)
+            self.assertEqual(self.get('/api/candidates?page=1',self.auth())[0],200)
+            self.assertEqual(self.get('/api/candidates?page=-1',self.auth())[0],400)
+            self.assertEqual(self.get('/api/candidates?page=1&page=2',self.auth())[0],400)
         finally:self.handler=original
 
 if __name__=='__main__':unittest.main()
