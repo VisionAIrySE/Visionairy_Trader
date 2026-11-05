@@ -1,4 +1,5 @@
 from datetime import datetime,timezone
+from decimal import Decimal as D
 import threading
 import unittest
 from market_monitor import pack,unpack,digest,ScanCancelled
@@ -35,6 +36,7 @@ class SessionTests(unittest.TestCase):
             provider_creation_label='File Creation Time: 1105202615:41') for k in ('nasdaq','other')])
         class Store:
             def call(self,op,p):
+                if op=='paper_review_config_get':return {'status':'not_configured'}
                 if op=='scan_universe_get':return {'packed_universe':pack(universe)}
                 if op=='scan_state':return dict(cycle_id='fixture',summary={'market_clock':{'date':'2026-11-05'}},
                     packed_state=pack({'TEST':{'security_status':'directory_and_broker_common_share_indicated'}}))
@@ -79,3 +81,38 @@ class SessionTests(unittest.TestCase):
         worker.reader.get_many_quotes=quotes
         with self.assertRaises(ScanCancelled):worker.run()
         self.assertEqual(saved,[])
+
+    def test_fresh_open_session_connects_owner_budget_targets_and_shared_risk(self):
+        worker,saved,calls=self.make();now=OPEN+1800;worker.now=lambda:now
+        config=dict(cash='1000.00',target_multiple='3',version='paper-review-v1',mode='comparison_only',
+            updated_at=now-1,target_support='unvalidated_geometry_not_forecast',orders_submitted=0)
+        config['sha256']=digest(config)
+        original_store=worker.store.call
+        def call(op,p):
+            if op=='paper_review_config_get':return config
+            result=original_store(op,p)
+            if op=='scan_universe_get':
+                universe=unpack(result['packed_universe']);universe['available_at']=now-10
+                for source in universe['sources']:source['provider_creation_label']='File Creation Time: 1105202609:59'
+                return {'packed_universe':pack(universe)}
+            return result
+        worker.store.call=call
+        original_get=worker.reader.get
+        def get(path,params=None):
+            if path=='markets/clock':return {'clock':{'date':'2026-11-05','state':'open'}},{'payload_sha256':'a'*64,'retrieved_at':now}
+            if path=='markets/timesales':
+                payload=bars_payload()
+                for i,row in enumerate(payload['series']['data']):
+                    price=10 if i<5 else 11
+                    row.update(open=price,high=price+.01,low=price-.01,close=price,volume=1000 if i<5 else 5000)
+                return payload,{'payload_sha256':'a'*64,'retrieved_at':now}
+            return original_get(path,params)
+        worker.reader.get=get
+        worker.reader.get_many_quotes=lambda symbols:({'quotes':{'quote':dict(symbol='TEST',bid='10.99',ask='11',
+            bid_date=now*1000,ask_date=now*1000)}},{'payload_sha256':'b'*64,'retrieved_at':now})
+        report=worker.run();rows=report['review']['allocation']['reviews']
+        self.assertEqual(len(rows),1);self.assertEqual(rows[0]['state'],'conditional_research_reservation')
+        self.assertGreater(rows[0]['quantity'],0)
+        self.assertLessEqual(D(rows[0]['planned_risk']),D(10))
+        self.assertFalse(report['recommendation_qualified']);self.assertEqual(report['orders_submitted'],0)
+        self.assertEqual(len(report['target_hypotheses'][rows[0]['event_id']]),2)

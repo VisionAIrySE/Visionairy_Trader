@@ -125,7 +125,7 @@ async function loadSessionCandidates(){
  if(w.progress_at&&running&&Date.now()/1000-w.progress_at>30)root.append(el('p','The session test has not advanced for over 30 seconds. Stop is available.'));
  if(d.finished_at){root.append(el('p',`Saved session ${d.session?.date}: ${new Date(d.finished_at*1000).toISOString()}. Observed histories: ${(d.coverage??[]).filter(x=>x.status==='observed').length}/${d.coverage?.length??0}.`));
  root.append(el('p','Targets, liquidity qualification and reconciled paper capital remain required. A fresh download does not make an old bid/ask current.','muted'));
- (d.rows??[]).forEach(({event:e,review:v})=>root.append(el('p',`${e.symbol}: ${clean(e.setup)} at ${new Date(e.available_at*1000).toISOString()}. ${v.reasons.map(clean).join('; ')}.`)));
+ (d.rows??[]).forEach(({event:e,review:v,targets,liquidity})=>{const item=el('article');item.append(el('p',`${e.symbol}: ${clean(e.setup)} at ${new Date(e.available_at*1000).toISOString()}. ${v.reasons.map(clean).join('; ')}.`));if(targets?.length)item.append(el('p',`Experimental targets: ${targets.map(t=>t.risk_multiple+'R = '+money(t.price)).join(' / ')}. Support: unvalidated geometry; no win probability estimated.`,'muted'));if(liquidity)item.append(el('p',`Paper capacity: ${liquidity.maximum_quantity??'unavailable'} shares. ${(liquidity.reasons??[]).map(clean).join('; ')}. Participation assumptions do not establish a fill.`,'muted'));root.append(item);});
  const previous=el('button','Previous session patterns'),next=el('button','Next session patterns');previous.disabled=sessionPage===0;next.disabled=(sessionPage+1)*25>=d.total;previous.onclick=()=>{sessionPage--;loadSessionCandidates();};next.onclick=()=>{sessionPage++;loadSessionCandidates();};root.append(previous,next);}
  clearTimeout(sessionTimer);if(running)sessionTimer=setTimeout(loadSessionCandidates,3000);
  }catch{status.textContent='Session test status is unavailable. No completed test is assumed.';clearTimeout(sessionTimer);sessionTimer=setTimeout(loadSessionCandidates,10000);}
@@ -137,3 +137,17 @@ async function sessionControl(action){
 document.getElementById('session-start').addEventListener('click',()=>sessionControl('start'));
 document.getElementById('session-stop').addEventListener('click',()=>sessionControl('stop'));
 loadSessionCandidates();
+
+async function loadPaperConfig(){
+ const status=document.getElementById('paper-config-status');
+ try{const r=await fetch('/api/paper-review',{cache:'no-store',signal:AbortSignal.timeout(15000)});if(!r.ok)throw Error();const d=await r.json();
+ if(d.version==='paper-review-v1'){document.getElementById('paper-cash').value=d.cash;document.getElementById('paper-target').value=d.target_multiple;status.textContent=`Saved comparison cash ${money(d.cash)}; ${d.target_multiple}R experimental hypothesis. Applies to the next session test. Existing saved reports retain their original assumptions.`;}
+ else status.textContent=d.status==='not_configured'?'No comparison cash selected. Enter the simulation amount you want to review.':'Comparison settings unavailable.';
+ }catch{status.textContent='Saved comparison settings could not be loaded.';}
+}
+document.getElementById('paper-review-form').addEventListener('submit',async e=>{
+ e.preventDefault();const button=document.getElementById('paper-save'),status=document.getElementById('paper-config-status');button.disabled=true;
+ try{const r=await fetch('/api/paper-review/config',{method:'POST',headers:{'Content-Type':'application/json','X-Paper-Review':'1'},body:JSON.stringify({cash:document.getElementById('paper-cash').value,target_multiple:document.getElementById('paper-target').value}),signal:AbortSignal.timeout(15000)});if(!r.ok)throw Error();await loadPaperConfig();}
+ catch{status.textContent='Save response unavailable. Checking the saved setting before another submission.';await loadPaperConfig();}finally{button.disabled=false;}
+});
+loadPaperConfig();

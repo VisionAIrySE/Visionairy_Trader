@@ -17,6 +17,22 @@ Deno.serve(async req => {
     const { operation, payload: p } = JSON.parse(raw);
     if (!p || typeof p !== 'object') throw Error();
     const result = await sql.begin(async tx => {
+      if (operation === 'paper_review_config_get') {
+        const rows=await tx`select payload from trader.jobs where kind='paper_review_config_v1'
+          and status='complete' order by available_at desc limit 1`;
+        return rows[0]?.payload || { status:'not_configured',orders_submitted:0 };
+      }
+      if (operation === 'paper_review_config_put') {
+        if (p.version!=='paper-review-v1' || p.mode!=='comparison_only' || p.orders_submitted!==0
+            || typeof p.cash!=='string' || !/^[0-9]{1,7}\.[0-9]{2}$/.test(p.cash)
+            || Number(p.cash)<.01 || Number(p.cash)>1000000 || !['2','3'].includes(p.target_multiple)
+            || !Number.isSafeInteger(p.updated_at) || p.updated_at<946684800 || p.updated_at>Date.now()/1000+5
+            || !/^[0-9a-f]{64}$/.test(p.sha256 || '')) throw Error();
+        await tx`insert into trader.jobs(kind,idempotency_key,payload,status,checkpoint)
+          values ('paper_review_config_v1',${'paper_review_config:'+p.sha256},${tx.json(p)},'complete','{}'::jsonb)
+          on conflict(idempotency_key) do nothing`;
+        return { saved:true };
+      }
       if (operation === 'candidate_snapshot_put' || operation === 'session_candidate_put') {
         const session=operation==='session_candidate_put';
         const candidateKind=session?'session_candidate_v1':'candidate_diagnostic_v1';

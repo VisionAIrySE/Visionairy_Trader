@@ -22,6 +22,14 @@ def review_candidates(events,quotes,targets,evidence_groups,liquidity,account,
             setup=c['event']['setup'],assessment=c['assessment'],rank=None,quantity=0,
             state='wait_for_evidence',reasons=list(c['assessment']['reasons'])+['reconciled_paper_capital_required'])
             for c in candidates]
+        for candidate,row in zip(candidates,reviews):
+            for group in allocation_policy.required_evidence_groups:
+                evidence=candidate['evidence_groups'].get(group)
+                if not evidence or evidence.get('status')=='unknown':row['reasons'].append('missing_'+group)
+                elif evidence.get('status')!='pass':row['reasons'].append('failed_'+group)
+                elif (type(evidence.get('available_at')) is not int
+                      or not 0<=now-evidence['available_at']<=allocation_policy.maximum_evidence_age_seconds):
+                    row['reasons'].append('unqualified_'+group)
         allocation=dict(status='paper_capital_unavailable',reviews=reviews,comparisons=[],orders_submitted=0)
     else:allocation=plan_acquisitions(candidates,account,allocation_policy,now)
     return dict(version='candidate-review-v1',assessed_at=now,input_sha256=fingerprint(dict(

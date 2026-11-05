@@ -21,9 +21,11 @@ from assessment_service import AssessmentService
 from scanner_service import ScannerService
 from candidate_service import CandidateService
 from session_candidate_service import SessionCandidateService
+from paper_review_config import PaperReviewConfig
+from replay import DataError
 
 
-def make_handler(report,username,password_hash,account_provider=configured_snapshot,report_factory=run_demo,history_provider=None,assessment_service=None,scanner_service=None,candidate_service=None,session_candidate_service=None):
+def make_handler(report,username,password_hash,account_provider=configured_snapshot,report_factory=run_demo,history_provider=None,assessment_service=None,scanner_service=None,candidate_service=None,session_candidate_service=None,paper_review_config=None):
     if not username or len(password_hash)!=64 or any(c not in '0123456789abcdef' for c in password_hash):
         raise ValueError('Private dashboard credentials must be configured')
     account_cache=AccountCache(account_provider)
@@ -32,6 +34,7 @@ def make_handler(report,username,password_hash,account_provider=configured_snaps
     scanner_service=scanner_service or ScannerService()
     candidate_service=candidate_service or CandidateService()
     session_candidate_service=session_candidate_service or SessionCandidateService()
+    paper_review_config=paper_review_config or PaperReviewConfig()
     report_cache={'report':report};report_lock=threading.Lock()
     class Handler(BaseHTTPRequestHandler):
         def log_message(self,*args):pass  # Never log Authorization headers or research payloads.
@@ -64,6 +67,8 @@ def make_handler(report,username,password_hash,account_provider=configured_snaps
                 return self.send(200,data)
             if self.path=='/api/account':
                 return self.send(200,account_cache.get())
+            if self.path=='/api/paper-review':
+                return self.send(200,paper_review_config.read())
             if self.path=='/api/assessment':
                 return self.send(200,assessment_service.latest())
             route=urlsplit(self.path)
@@ -88,9 +93,18 @@ def make_handler(report,username,password_hash,account_provider=configured_snaps
             return self.send(404,dict(error='Not found'))
         def do_POST(self):
             self.request_started=time.monotonic()
-            if self.path not in ('/api/assessment/start','/api/scanner/start','/api/scanner/stop','/api/session-candidates/start','/api/session-candidates/stop'):
+            if self.path not in ('/api/assessment/start','/api/scanner/start','/api/scanner/stop','/api/session-candidates/start','/api/session-candidates/stop','/api/paper-review/config'):
                 return self.send(405,dict(error='This dashboard has no trading endpoints'))
             if not self.authorized():return self.send(401,dict(error='Authentication required'))
+            if self.path=='/api/paper-review/config':
+                if self.headers.get('X-Paper-Review')!='1':return self.send(403,dict(error='Explicit paper comparison setting required'))
+                try:
+                    length=int(self.headers.get('Content-Length','0'))
+                    if not 0<length<=128:raise ValueError()
+                    payload=json.loads(self.rfile.read(length))
+                    return self.send(200,paper_review_config.save(payload))
+                except (ValueError,TypeError,DataError):return self.send(400,dict(error='Explicit bounded comparison cash and target scenario required'))
+                except Exception:return self.send(503,dict(error='Comparison setting could not be saved'))
             if self.path in ('/api/scanner/start','/api/scanner/stop','/api/session-candidates/start','/api/session-candidates/stop'):
                 if self.headers.get('X-Research-Scan')!='1':return self.send(403,dict(error='Explicit research scan required'))
                 try:
