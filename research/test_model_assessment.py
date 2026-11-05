@@ -25,7 +25,7 @@ def context():
     return dict(mode='ghost',evidence_origin='synthetic_acceptance_fixture',as_of=100,
         options=[{'id':'paper-a','entry_cash':'20','planned_risk':'1'}],
         baseline={'choice':'paper-a'},orders_submitted=0,sources=[
-            dict(id='s1',text='A fictional issuer says approval is pending.',available_at=90,document_version='v1'),
+            dict(id='s1',kind='news',text='A fictional issuer says approval is pending.',available_at=90,document_version='v1'),
             dict(id='future',text='FUTURE SECRET: approval confirmed',available_at=110,document_version='v2')])
 
 

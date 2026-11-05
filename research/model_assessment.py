@@ -11,7 +11,7 @@ import time
 import urllib.request
 import uuid
 
-VERSION = 'ghost-assessment-v2'
+VERSION = 'ghost-assessment-v3'
 MODELS = {'news': ('inclusionai/ling-3.1-flash',),
           'research': ('nvidia/nemotron-3.5-lightning', 'inclusionai/ling-3.1-flash')}
 MAX_PRICE = {'prompt': 0.2, 'completion': 0.6}  # USD per million tokens; provider routing ceiling
@@ -100,6 +100,7 @@ Do not add sources, prices, probabilities, return forecasts, risk limits or orde
 Return only the requested JSON. Every material statement must be a claim marked fact,
 inference or unknown, with support quality strong, limited or unavailable. For each cited
 source copy a short exact quote and its supplied source_id. Facts require citations.
+Quotes must be contiguous source text; do not combine or rearrange fragments.
 Inferences must explain their limitations; a source quote does not prove an inference.
 Do not treat source repetition as independent corroboration. Unknowns stay unknown.
 Keep the response concise: at most six short claims and six missing-information items.
@@ -126,8 +127,16 @@ def build_ghost_context():
         option.update(id=f'paper-{index + 1}', status='conditional_synthetic_review_only',
                       expected_return=None, real_order_eligible=False)
         options.append(option)
+        text = (f"Synthetic engine option {option['symbol']}. Modeled quantity: {option['quantity']} shares. "
+                f"Entry price: {option['acquisition_price']} USD. Entry cash: {option['entry_cash']} USD. "
+                f"Planned risk: {option['planned_risk']} USD. Price ceiling: {option['maximum_entry_price']} USD. "
+                f"Conditional reward to risk: {option['conditional_reward_to_risk']}. "
+                f"Protective stop: {option['management']['protective_stop']} USD. "
+                f"Target hypothesis: {option['management']['target_hypothesis']} USD. "
+                'This is experimental geometry, not a validated forecast. Expected return is unavailable. '
+                'Real-order eligibility is false. Additions and overnight holding need separate review.')
         sources.append(dict(id=f'engine-{index + 1}', kind='deterministic_fixture', available_at=cutoff,
-                            document_version=VERSION, text=canonical(option)))
+                            document_version=VERSION, text=text))
     # The actual engine's shared reservations already respect cash/risk. It remains
     # an experimental baseline, not a strategy validated by these model calls.
     baseline = {'choice': options[0]['id'] if options else 'cash',
@@ -237,9 +246,12 @@ class ModelAssessment:
         started = self.clock()
         self.receipts = []
         try:
+            news_sources = [s for s in sources if s.get('kind') in ('news', 'filing', 'fictional_news')]
+            if not news_sources:
+                raise AssessmentError('No decision-time news evidence supplied')
             news, receipt = self._call(job['id'], 'news',
                 dict(task='Extract source-grounded evidence; distinguish facts, inference and missing facts',
-                     as_of=context['as_of'], sources=sources), sources, NEWS_SCHEMA)
+                     as_of=context['as_of'], sources=news_sources), news_sources, NEWS_SCHEMA)
             research_input = dict(context, extracted_news=news,
                 task='Compare every option and cash. Explain support, uncertainty and research limitations. '
                      'Choose one paper-review option or cash. This does not authorize a trade.')
