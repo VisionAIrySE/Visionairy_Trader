@@ -2,6 +2,43 @@
 
 ## Current release
 
+### November 5: market-feed coverage monitor delivered
+
+Final corrected-release verification: commit a009fe4d6d1d3d8585dab4d461368c02ea45637a is live as dep-dbmfdu6c6qcc73eeseng. Repeat cycle 4c8d6af3-1f8f-455e-b8be-5a61e9ed5856 completed in 60 seconds, reused the durable baseline and independently repeated all numeric quote-coverage counts. Its completed baseline (813,920 compressed characters) was read back and matched the cycle. Corrected instrument-status counts: {'etf_subtype_pending': 5780, 'security_type_pending': 269, 'special_security_not_ordinary_qualified': 942, 'directory_and_broker_common_share_indicated': 5607}. These are indicated/pending classifications, not trading eligibility. 223 research/dashboard and 7 sizing tests passed. The saved ghost assessment remained complete.
+
+The private dashboard now has authenticated start, progress and stop controls for a broad read-only quote sweep. The first real full-universe probe completed 27 batches in 62 seconds: 12,598 usable observations from 13,244 current directory listings (95.12%), 523 missing quotes, 13 invalid records and 110 unresolved provider-symbol mappings. The clock was postmarket: zero fresh regular-session observations, no claim of a valid no-opportunity interval and no qualified recommendations or orders. Cycle 6c6484a6-78ee-4ef1-859e-9405b99bcf9b and the 813,672-character compressed operational baseline were verified in durable storage.
+
+Duplicate starts returned the existing job in 133 ms and the database lease rejected a concurrent cycle. A real cancellation response returned in 114 ms; cycle 4fe11a51-0716-48c9-b4c0-89fad29feceb retained 1,891 partial observations after four batches while preserving the complete baseline. These are individual measured checks, not percentile latency guarantees. Authenticated HTTP and source-level UI checks passed; no successful visual browser verification is claimed.
+
+The full-feed probe exposed a name-classification edge case: plural warrants can mention common stock. The subsequent correction excludes warrants/units before considering common-share descriptions and requires a current-session directory capture. Initial security-type counts must not be treated as instrument qualification. The 95.12% numeric quote coverage finding is unaffected. An automated daily directory refresh, strategy-specific bars/baselines, live news, comparative live assessments and notification delivery remain unfinished. Auto collection is explicitly off; no new paid service is purchased.
+
+The selected hosted models are Ling 3.1 Flash for news and Nemotron 3.5 Lightning for research with the qualified Ling fallback. The saved v6 ghost assessment remains complete and separate from actual market recommendations. See MODEL_SELECTION_RESULTS.md, MODEL_RUNTIME_VERIFICATION.md and MARKET_MONITORING.md. Earlier notes below saying XFMS has no selected model are historical and superseded.
+
+
+### PSA-K download recovered and hosted correction verified
+
+The user approved publishing the nine reviewed source/documentation files and redeploying. Release 9b168a7e41aae84903d1a7274c1609126afab490 and its necessary preferred-symbol correction 3c3df2bee837800e60dd834a5ceb3868652804ff are published; the latter is live as dep-dbltiqbncjis738io7cg. Both GitHub checks passed and uploaded hashes matched. This supersedes the publication-block note below for this recovery release.
+
+Provider lookup verified PSA-K maps to PSA'K by exact description/exchange for the Series K 4.75% preferred depositary shares. The original spelling produces upstream HTTP 400, now retained as nonretryable instead of hidden behind a generic 502. Mapped retrieval recovered 811 unique five-minute bars across the original range and all 24 expected sessions. Of 1,872 expected slots, 1,061 are absent; no zero-volume or price imputation occurred. All 26 preexisting collection JSON files remain unchanged; separate source-pinned mapping/captures/validation live under data/download_recovery. Explicit integration with the frozen diagnostic remains pending. See DOWNLOAD_RECOVERY.md.
+
+Verification: 208 research/UI + 7 sizing + 5 Node checks = 220. Hosted health 200 in 120 ms, anonymous lookup 401, zero orders submitted. XFMS remains at initial discovery, without a selected model or paid benchmark. The earlier 49-task execution-plan work remains local and is not implied to have been included in this nine-file release.
+
+### Download recovery and XFMS investigation â€” local, publication blocked
+
+November 4, 2026 Pacific time: isolated local-shell DNS failure from provider failure. Through the connected Node runtime, health returned in 143 ms; AAPL returned 78 November 3 bars; PSA-K and two diagnostic spelling variants failed upstream. No mapping or recovered history is claimed. Added authenticated bounded security lookup, sanitized provider status/retry classification and DNS/timeout categories. Verification: 207 research/UI + 7 sizing + 5 Node collector checks pass (219 total). See DOWNLOAD_RECOVERY.md for the exact remaining hosted identity/mapping/retrieval steps. Original captures, frozen plan and private probes are preserved.
+
+XFMS tools were inspected at its configured MCP endpoint and initial discovery started for task-specific model selection. Raw continuation is preserved privately. No shortlist, benchmark, selected model, paid request or subscription is claimed; MODEL_JOBS.md records job/evidence boundaries. LLM01/LLM02 remain incomplete.
+
+Automatic review rejected the nine-file source/documentation create-tree publication to VisionAIrySE/Visionairy_Trader, stating that this turn did not authorize source export to that destination. No commit, branch update or deployment resulted; publication was not retried. Specific source-release approval is required by that rejection before the hosted lookup can be used. Existing live service is unchanged.
+
+### Authoritative execution plan and model responsibility
+
+`docs/EXECUTION_PLAN.md` / `.json` now define the entire remaining delivery graph: 49 tasks covering all 56 accepted/context items, all 18 hypothesis families and O01-O11. `research/execution_plan.py` validates scope/dependencies, identifies ready work and records acceptance receipts with artifact hashes. It refuses premature completion and cannot grant order authority. Separate milestones distinguish the first persisted historical buy/sell report, joint account simulation, broader evaluation, operating ghost workflow, controlled learning, forward evaluation, optional broker-paper and future separately authorized live release. Existing foundations are retained rather than rebuilt.
+
+The app currently has no production LLM calls or model routing. LLM01/LLM02 require task-specific benchmarked assignments, budget/latency/grounding checks, versions and deterministic authority boundaries; H15 requires measured incremental AI value. No model is selected merely by name or size.
+
+Local retry repair now preserves all attempts, uses bounded backoff and a three-attempt budget across resumes, treats rate limits/server/network errors as retryable and stops permissions failures. Actual failed PSA-K capture was retried twice: both additional attempts ended in network failure, preserving the original HTTP 502 and exhausting the three-attempt budget. No successful recovery or root cause is inferred. D01 retains symbol/access qualification; the remaining dataset is not held hostage to this failure. Prior evidence and the main SOT remain preserved.
+
 ### Final historical collection release verified
 
 Commit `4a898c6dbfab78fcfe5ceadd094960914c9e3206` is live as Render deploy `dep-dblqtmhsrm7s7386fspg` (finished November 4, 22:17:39 UTC). Build/local verification passes 197 research/UI + 7 sizing = 204 checks, plus Node collector syntax validation. Hosted post-release health returned 200; unauthenticated historical data returned 401; authenticated November calendar returned 200 observed with zero orders submitted. Resuming the completed collector issued zero new requests and left all 20 terminal capture files byte-for-byte unchanged (19 observed, one failed; the separate mapping block remains in the plan).
