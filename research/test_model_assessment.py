@@ -82,6 +82,20 @@ class AssessmentTests(unittest.TestCase):
         self.assertEqual(len(calls),1)
         self.assertNotIn('secret',json.dumps(store.calls))
 
+    def test_truncated_paid_news_answer_cannot_advance_to_research(self):
+        store=Store();calls=[]
+        def transport(url,headers,payload,**kwargs):
+            calls.append(payload)
+            result=reply(payload)
+            result['choices'][0]['finish_reason']='length'
+            return result
+        with self.assertRaises(AssessmentError):ModelAssessment(store,'test',transport).run(context())
+        self.assertEqual(len(calls),1)
+        receipt=next(iter(store.calls.values()))
+        self.assertEqual(receipt['error_code'],'Incomplete model response')
+        self.assertEqual(receipt['cost_usd'],'0.0001')
+        self.assertEqual(receipt['runtime_profile']['reasoning'],{'enabled':False})
+
     def test_invented_citations_unknown_options_and_monetary_overrides_fail(self):
         good=reply({'messages':[{}, {'content':json.dumps(context())}],'model':'test'})
         result=json.loads(good['choices'][0]['message']['content'])

@@ -11,11 +11,11 @@ import time
 import urllib.request
 import uuid
 
-VERSION = 'ghost-assessment-v1'
+VERSION = 'ghost-assessment-v2'
 MODELS = {'news': ('inclusionai/ling-3.1-flash',),
           'research': ('nvidia/nemotron-3.5-lightning', 'inclusionai/ling-3.1-flash')}
 MAX_PRICE = {'prompt': 0.2, 'completion': 0.6}  # USD per million tokens; provider routing ceiling
-MAX_TOKENS = 2400
+MAX_TOKENS = {'news': 1400, 'research': 5000}
 
 
 def canonical(value):
@@ -102,6 +102,7 @@ inference or unknown, with support quality strong, limited or unavailable. For e
 source copy a short exact quote and its supplied source_id. Facts require citations.
 Inferences must explain their limitations; a source quote does not prove an inference.
 Do not treat source repetition as independent corroboration. Unknowns stay unknown.
+Keep the response concise: at most six short claims and six missing-information items.
 Do not use outcome data after the decision cutoff. A synthetic fixture is not a market
 opportunity, a real account balance, a validated target or evidence of profitable trading.
 Numbers, eligibility, allocation and order authority come from code; you cannot amend them.
@@ -157,7 +158,7 @@ class ModelAssessment:
                     {'role': 'user', 'content': canonical(context)}]
         # UTF-8 bytes deliberately overestimate ordinary input token counts.
         reserve = (D(len(canonical(messages).encode()) + 4096) * D(str(MAX_PRICE['prompt']))
-                   + D(MAX_TOKENS) * D(str(MAX_PRICE['completion']))) / D(1000000)
+                   + D(MAX_TOKENS[kind]) * D(str(MAX_PRICE['completion']))) / D(1000000)
         for index, model in enumerate(MODELS[kind]):
             call_id = str(uuid.uuid4())
             metadata = dict(id=call_id, job_id=job_id, kind=kind, model=model,
@@ -165,6 +166,9 @@ class ModelAssessment:
                 sources=[dict(id=s['id'], content_sha256=digest(s['text']),
                     document_version=s['document_version'], available_at=s['available_at']) for s in sources],
                 reserved_usd=str(reserve), fallback_reason='primary_failed_validation_or_transport' if index else None)
+            metadata['runtime_profile'] = dict(max_tokens=MAX_TOKENS[kind],
+                reasoning={'enabled': False} if kind == 'news' else {'effort': 'low'},
+                provider=dict(require_parameters=True, data_collection='deny', max_price=MAX_PRICE))
             self.store.call('reserve', metadata)
             started = self.clock()
             receipt = dict(metadata, status='unknown', output=None, cost_usd=None)
@@ -173,7 +177,8 @@ class ModelAssessment:
                 response = self.transport('https://openrouter.ai/api/v1/chat/completions',
                     {'Authorization': 'Bearer ' + self.api_key, 'Content-Type': 'application/json',
                      'X-OpenRouter-Title': 'VisionAIry Trader ghost assessment'},
-                    dict(model=model, messages=messages, max_tokens=MAX_TOKENS, temperature=0,
+                    dict(model=model, messages=messages, max_tokens=MAX_TOKENS[kind], temperature=0,
+                         reasoning={'enabled': False} if kind == 'news' else {'effort': 'low'},
                          provider=dict(require_parameters=True, data_collection='deny', max_price=MAX_PRICE),
                          response_format=dict(type='json_schema', json_schema=dict(
                              name=kind + '_assessment', strict=True, schema=schema)),
@@ -197,10 +202,10 @@ class ModelAssessment:
                 if receipt['cost_usd'] is not None and D(receipt['cost_usd']) > reserve:
                     raise AssessmentError('Provider exceeded reserved cost; review billing')
                 receipt.update(status='complete', output=answer)
-            except Exception:
+            except Exception as exc:
                 # Preserve any provider receipt; never echo transport exceptions/keys.
                 receipt['status'] = 'failed' if receipt.get('raw_response') else 'unknown'
-                failure = 'model_output_or_transport_failed'
+                failure = str(exc) if isinstance(exc, AssessmentError) else 'model_output_or_transport_failed'
                 receipt['error_code'] = failure
             receipt['elapsed_ms'] = round((self.clock() - started) * 1000, 1)
             self.store.call('finish_call', receipt)
@@ -223,7 +228,7 @@ class ModelAssessment:
         if not sources or len({s['id'] for s in sources}) != len(sources):
             raise AssessmentError('Distinct decision-time evidence required')
         context['sources'] = sources
-        request_hash = digest([VERSION, MODELS, context])
+        request_hash = digest([VERSION, MODELS, MAX_TOKENS, MAX_PRICE, context])
         job = self.store.call('create', dict(request_hash=request_hash, context=context, version=VERSION))
         if job.get('status') == 'complete':
             return job['checkpoint']['result']
