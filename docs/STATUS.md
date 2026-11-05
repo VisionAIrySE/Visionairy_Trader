@@ -2,6 +2,17 @@
 
 ## Current release
 
+### November 5: daily universe refresh and visible stall detection
+
+Operational monitor status publication was explicitly authorized by the user and completed in dcc2d152f4932a1a0c56b38cf4fd15bc732a5b2b. The subsequent code release c5ec659cf111142c42c55caec862b298607af1a6 is live as dep-dbmfpgjm8hqs73e3nti0.
+
+Coverage tests refresh both pinned official Nasdaq directory files before scanning. Scheduled open-market scans refresh an obsolete saved directory; closed scheduled runs do not fetch directories. Source-session dates, bounded response/storage sizes, complete schema/footer and minimum directory counts are checked. Failure does not replace the saved universe. Refresh preparation failures are visible alongside older scan results. This preflight worker status is process-local; scan checkpoints and completed receipts remain durable.
+
+A batch-checkpoint timestamp supports an explicit thirty-second no-progress warning while retaining stop controls. Local checks passed: 229 research/dashboard tests, 7 sizing checks and JavaScript syntax. The actual hosted refresh retrieved a new directory capture and entered full-universe collection. Final hosted outcome:
+Hosted refresh verification: cycle ca3d81dc-59ae-4081-bfd4-1ed3c8d893fd completed all 27 batches in 60 seconds after a fresh directory capture at 1793916152. It retained 12598 usable observations from 13244 listings; 523 missing, 13 invalid and 110 unsupported mappings. Source hashes and the completed checkpoint remain retained. The market was postmarket; no regular-session freshness, qualified recommendation, strategy-performance or order claim follows. Continuous scheduling remains off.
+
+
+
 ### November 5: market-feed coverage monitor delivered
 
 Final corrected-release verification: commit a009fe4d6d1d3d8585dab4d461368c02ea45637a is live as dep-dbmfdu6c6qcc73eeseng. Repeat cycle 4c8d6af3-1f8f-455e-b8be-5a61e9ed5856 completed in 60 seconds, reused the durable baseline and independently repeated all numeric quote-coverage counts. Its completed baseline (813,920 compressed characters) was read back and matched the cycle. Corrected instrument-status counts: {'etf_subtype_pending': 5780, 'security_type_pending': 269, 'special_security_not_ordinary_qualified': 942, 'directory_and_broker_common_share_indicated': 5607}. These are indicated/pending classifications, not trading eligibility. 223 research/dashboard and 7 sizing tests passed. The saved ghost assessment remained complete.
