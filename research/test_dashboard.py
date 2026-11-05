@@ -32,7 +32,7 @@ class DashboardTests(unittest.TestCase):
         return int(lines[0].split()[1]),dict(line.split(': ',1) for line in lines[1:]),body
     def auth(self):return 'Basic '+base64.b64encode(b'test:test-password').decode()
     def test_all_dashboard_and_api_routes_are_private(self):
-        for path in ('/','/app.js','/style.css','/api/research','/api/account','/api/assessment','/api/scanner','/api/candidates','/api/quotes?symbols=TEST','/api/clock','/api/history?symbol=TEST','/api/calendar?month=10','/api/lookup?q=PSA','/../README.md'):
+        for path in ('/','/app.js','/style.css','/api/research','/api/account','/api/assessment','/api/scanner','/api/candidates','/api/session-candidates','/api/quotes?symbols=TEST','/api/clock','/api/history?symbol=TEST','/api/calendar?month=10','/api/lookup?q=PSA','/../README.md'):
             self.assertEqual(self.get(path)[0],401)
     def test_invalid_credentials_and_malformed_base64_are_rejected(self):
         for value in ('Basic invalid','Basic '+base64.b64encode(b'test:wrong').decode(),'Bearer fake'):
@@ -135,6 +135,21 @@ class DashboardTests(unittest.TestCase):
             self.assertEqual(self.get('/api/candidates?page=1',self.auth())[0],200)
             self.assertEqual(self.get('/api/candidates?page=-1',self.auth())[0],400)
             self.assertEqual(self.get('/api/candidates?page=1&page=2',self.auth())[0],400)
+        finally:self.handler=original
+
+    def test_session_probe_start_requires_private_bounded_explicit_request(self):
+        class Session:
+            def latest(self,page):return {'page':page}
+            def start(self):return {'status':'running'}
+            def stop(self):return {'status':'stopping'}
+        original=self.handler
+        self.handler=server.make_handler({},'test',hashlib.sha256(b'test-password').hexdigest(),session_candidate_service=Session())
+        try:
+            self.assertEqual(self.get('/api/session-candidates/start',method='POST')[0],401)
+            self.assertEqual(self.get('/api/session-candidates/start',self.auth(),method='POST')[0],403)
+            self.assertEqual(self.get('/api/session-candidates/start',self.auth(),method='POST',
+                payload=b'{"kind":"session_bar_probe"}',extra_headers={'X-Research-Scan':'1'})[0],202)
+            self.assertEqual(self.get('/api/session-candidates?page=-1',self.auth())[0],400)
         finally:self.handler=original
 
 if __name__=='__main__':unittest.main()

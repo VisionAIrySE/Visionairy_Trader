@@ -115,3 +115,25 @@ async function loadCandidates(){
  }catch{status.textContent='Candidate review could not be retrieved. No recommendation is assumed.';}
 }
 loadCandidates();
+
+let sessionTimer=null,sessionPage=0;
+async function loadSessionCandidates(){
+ const status=document.getElementById('session-status'),root=document.getElementById('session-result');
+ try{const r=await fetch(`/api/session-candidates?page=${sessionPage}`,{cache:'no-store',signal:AbortSignal.timeout(15000)});if(!r.ok)throw Error();const d=await r.json(),w=d.worker??{},running=w.status==='running';
+ root.replaceChildren();document.getElementById('session-start').disabled=running;document.getElementById('session-stop').disabled=!running;
+ status.textContent=running?`${clean(w.stage??'running')}: ${w.completed??0}/${w.total??20} stocks checked.`:w.status==='failed'?'The current session test failed. Refresh broad market coverage and review the saved result time before retrying.':d.status==='complete'?`${d.total} detected session patterns; market ${clean(d.session?.state??'unverified')}. No qualified recommendations.`:clean(w.status??d.status??'unavailable');
+ if(w.progress_at&&running&&Date.now()/1000-w.progress_at>30)root.append(el('p','The session test has not advanced for over 30 seconds. Stop is available.'));
+ if(d.finished_at){root.append(el('p',`Saved session ${d.session?.date}: ${new Date(d.finished_at*1000).toISOString()}. Observed histories: ${(d.coverage??[]).filter(x=>x.status==='observed').length}/${d.coverage?.length??0}.`));
+ root.append(el('p','Targets, liquidity qualification and reconciled paper capital remain required. A fresh download does not make an old bid/ask current.','muted'));
+ (d.rows??[]).forEach(({event:e,review:v})=>root.append(el('p',`${e.symbol}: ${clean(e.setup)} at ${new Date(e.available_at*1000).toISOString()}. ${v.reasons.map(clean).join('; ')}.`)));
+ const previous=el('button','Previous session patterns'),next=el('button','Next session patterns');previous.disabled=sessionPage===0;next.disabled=(sessionPage+1)*25>=d.total;previous.onclick=()=>{sessionPage--;loadSessionCandidates();};next.onclick=()=>{sessionPage++;loadSessionCandidates();};root.append(previous,next);}
+ clearTimeout(sessionTimer);if(running)sessionTimer=setTimeout(loadSessionCandidates,3000);
+ }catch{status.textContent='Session test status is unavailable. No completed test is assumed.';clearTimeout(sessionTimer);sessionTimer=setTimeout(loadSessionCandidates,10000);}
+}
+async function sessionControl(action){
+ document.getElementById('session-status').textContent=action==='start'?'Preparing current session evidence...':'Requesting stop after the current bounded read...';
+ try{const r=await fetch(`/api/session-candidates/${action}`,{method:'POST',headers:{'Content-Type':'application/json','X-Research-Scan':'1'},body:JSON.stringify({kind:action==='start'?'session_bar_probe':'stop_scan'}),signal:AbortSignal.timeout(15000)});if(!r.ok)throw Error();await loadSessionCandidates();}catch{document.getElementById('session-status').textContent='Control response unavailable. Checking saved status before any retry.';await loadSessionCandidates();}
+}
+document.getElementById('session-start').addEventListener('click',()=>sessionControl('start'));
+document.getElementById('session-stop').addEventListener('click',()=>sessionControl('stop'));
+loadSessionCandidates();
