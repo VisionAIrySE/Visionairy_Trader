@@ -1,6 +1,6 @@
-# Model selection results � 2026-11-05
+# Model selection results — 2026-11-05
 
-The completed XFMS comparisons support the following assignments for the momentum assistant's next research/ghost integration. Application routing has not yet been integrated.
+The completed XFMS comparisons support the following assignments for the momentum assistant's next research/ghost integration. A bounded synthetic ghost-assessment route is now deployed; see MODEL_RUNTIME.md and MODEL_RUNTIME_VERIFICATION.md. Continuous live discovery and current-market buy recommendations remain unconnected.
 
 | Job | Primary model | Fallback | Prepared cases passed | Rounded mean model-call cost | Median time to first output |
 |---|---|---|---|---|---|
@@ -21,4 +21,4 @@ The inspected XFMS engine runs up to six candidate calls concurrently inside a c
 
 The replacement news comparison reports $0.1201; research reports $0.3267; completed reports total $0.4468. The original news attempt's completion/charges remain unresolved, with its quoted maximum $0.4041 still reserved. Reported completed spend plus that reserve is $0.8509 against the user's $2 combined benchmark authorization. This is not reconciled billing. Runtime model calls incur their own usage charges; routine analysis must not repeat the full qualification benchmark.
 
-Next integrate the job-specific models with recorded provider/model/prompt versions, source-grounding and schema validation, deterministic account/risk/statistical calculations, latency/cost receipts, and safe failure handling. Verify end-to-end ghost behavior and the learning/retrieval links before claiming an operating assistant. No new fallback qualification or recurring benchmark spend is implied.
+The subsequent bounded synthetic integration records provider/model/prompt versions, source-linked claims, immutable engine terms, latency/cost receipts and safe failure handling. See MODEL_RUNTIME_VERIFICATION.md for actual results and remaining limits. Live feeds/scanning, independently qualified retrieval and learning, and incremental trading value remain unfinished. No new fallback qualification or recurring benchmark spend is implied.
