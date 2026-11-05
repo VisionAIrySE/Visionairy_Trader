@@ -5,6 +5,8 @@ import hmac
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 import json
 import os
+import secrets
+from http.cookies import SimpleCookie
 from pathlib import Path
 import sys
 import threading
@@ -35,31 +37,43 @@ def make_handler(report,username,password_hash,account_provider=configured_snaps
     candidate_service=candidate_service or CandidateService()
     session_candidate_service=session_candidate_service or SessionCandidateService()
     paper_review_config=paper_review_config or PaperReviewConfig()
+    sessions={};session_lock=threading.Lock();login_attempts={}
     report_cache={'report':report};report_lock=threading.Lock()
     class Handler(BaseHTTPRequestHandler):
         def log_message(self,*args):pass  # Never log Authorization headers or research payloads.
-        def send(self,status,body,kind='application/json'):
+        def send(self,status,body,kind='application/json',extra_headers=None):
             payload=body if isinstance(body,bytes) else json.dumps(body,default=str).encode()
             self.send_response(status);self.send_header('Content-Type',kind)
             self.send_header('Cache-Control','no-store');self.send_header('X-Content-Type-Options','nosniff')
             self.send_header('Referrer-Policy','no-referrer')
             self.send_header('Server-Timing','app;dur=%.2f' % ((time.monotonic()-getattr(self,'request_started',time.monotonic()))*1000))
             self.send_header('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
+            for name,value in (extra_headers or {}).items():self.send_header(name,value)
             self.send_header('Content-Length',str(len(payload)));self.end_headers();self.wfile.write(payload)
         def authorized(self):
+            try:
+                cookies=SimpleCookie();cookies.load(self.headers.get('Cookie',''))
+                token=cookies.get('__Host-trader_session')
+                if token:
+                    with session_lock:
+                        if sessions.get(hashlib.sha256(token.value.encode()).hexdigest(),0)>time.time():return True
+            except (ValueError,TypeError):pass
             try:
                 header=self.headers.get('Authorization','')
                 if not header.startswith('Basic '):return False
                 raw=base64.b64decode(header[6:],validate=True).decode()
                 user,password=raw.split(':',1)
-                return hmac.compare_digest(user,username) and hmac.compare_digest(hashlib.sha256(password.encode()).hexdigest(),password_hash)
+                return hmac.compare_digest(user.encode(),username.encode()) and hmac.compare_digest(hashlib.sha256(password.encode()).hexdigest(),password_hash)
             except (ValueError,UnicodeError):return False
         def do_GET(self):
             self.request_started=time.monotonic()
             if self.path=='/health':return self.send(200,dict(status='ok',mode='research_only'))
+            if self.path in ('/login','/login.js','/login.css'):
+                name,kind={'/login':('login.html','text/html; charset=utf-8'),'/login.js':('login.js','text/javascript; charset=utf-8'),'/login.css':('style.css','text/css; charset=utf-8')}[self.path]
+                return self.send(200,(ROOT/'app'/'static'/name).read_bytes(),kind)
             if not self.authorized():
-                self.send_response(401);self.send_header('WWW-Authenticate','Basic realm="VisionAIry Trader", charset="UTF-8"')
-                self.send_header('Cache-Control','no-store');self.send_header('Content-Length','0');self.end_headers();return
+                if self.path=='/':return self.send(303,b'',extra_headers={'Location':'/login'})
+                return self.send(401,dict(error='Sign in to view this private dashboard'))
             if self.path=='/api/research':
                 with report_lock:
                     if report_cache['report'] is None:report_cache['report']=report_factory()
@@ -93,6 +107,27 @@ def make_handler(report,username,password_hash,account_provider=configured_snaps
             return self.send(404,dict(error='Not found'))
         def do_POST(self):
             self.request_started=time.monotonic()
+            if self.path=='/api/login':
+                if self.headers.get('X-Trader-Login')!='1':return self.send(403,dict(error='Use the sign-in form'))
+                with session_lock:
+                    recent=[t for t in login_attempts.get(self.client_address[0],[]) if time.time()-t<60]
+                    if len(recent)>=10:return self.send(429,dict(error='Too many attempts. Try again in one minute.'))
+                    login_attempts[self.client_address[0]]=recent+[time.time()]
+                try:
+                    size=int(self.headers.get('Content-Length','0'))
+                    if not 0<size<=512:raise ValueError()
+                    values=json.loads(self.rfile.read(size))
+                    if set(values)!={'username','password'} or not all(isinstance(v,str) for v in values.values()):raise ValueError()
+                except (ValueError,TypeError):return self.send(400,dict(error='Enter your username and password'))
+                if not (hmac.compare_digest(values['username'].encode(),username.encode()) and hmac.compare_digest(hashlib.sha256(values['password'].encode()).hexdigest(),password_hash)):
+                    return self.send(401,dict(error='Username or password was not recognized'))
+                token=secrets.token_urlsafe(32);now=time.time()
+                with session_lock:
+                    expired=[key for key,until in sessions.items() if until<=now]
+                    for key in expired:del sessions[key]
+                    if len(sessions)>=1000:return self.send(503,dict(error='Sign-in capacity unavailable'))
+                    sessions[hashlib.sha256(token.encode()).hexdigest()]=now+8*3600
+                return self.send(200,dict(status='signed_in'),extra_headers={'Set-Cookie':'__Host-trader_session='+token+'; Path=/; Secure; HttpOnly; SameSite=Strict; Max-Age=28800'})
             if self.path not in ('/api/assessment/start','/api/scanner/start','/api/scanner/stop','/api/session-candidates/start','/api/session-candidates/stop','/api/paper-review/config'):
                 return self.send(405,dict(error='This dashboard has no trading endpoints'))
             if not self.authorized():return self.send(401,dict(error='Authentication required'))

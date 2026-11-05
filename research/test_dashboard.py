@@ -32,7 +32,7 @@ class DashboardTests(unittest.TestCase):
         return int(lines[0].split()[1]),dict(line.split(': ',1) for line in lines[1:]),body
     def auth(self):return 'Basic '+base64.b64encode(b'test:test-password').decode()
     def test_all_dashboard_and_api_routes_are_private(self):
-        for path in ('/','/app.js','/style.css','/api/research','/api/account','/api/assessment','/api/scanner','/api/candidates','/api/session-candidates','/api/paper-review','/api/quotes?symbols=TEST','/api/clock','/api/history?symbol=TEST','/api/calendar?month=10','/api/lookup?q=PSA','/../README.md'):
+        for path in ('/app.js','/style.css','/api/research','/api/account','/api/assessment','/api/scanner','/api/candidates','/api/session-candidates','/api/paper-review','/api/quotes?symbols=TEST','/api/clock','/api/history?symbol=TEST','/api/calendar?month=10','/api/lookup?q=PSA','/../README.md'):
             self.assertEqual(self.get(path)[0],401)
     def test_invalid_credentials_and_malformed_base64_are_rejected(self):
         for value in ('Basic invalid','Basic '+base64.b64encode(b'test:wrong').decode(),'Bearer fake'):
@@ -165,5 +165,17 @@ class DashboardTests(unittest.TestCase):
             self.assertEqual(self.get('/api/paper-review/config',self.auth(),method='POST',payload=b'{"cash":"1000","target_multiple":"3"}',extra_headers={'X-Paper-Review':'1'})[0],200)
             self.assertEqual(self.get('/api/paper-review',self.auth())[0],200)
         finally:self.handler=original
+
+    def test_normal_login_page_and_private_session_cookie(self):
+        import json
+        status,headers,_=self.get('/')
+        self.assertEqual(status,303);self.assertEqual(headers['Location'],'/login')
+        self.assertEqual(self.get('/login')[0],200)
+        status,headers,_=self.get('/api/login',method='POST',payload=json.dumps({'username':'test','password':'test-password'}).encode(),extra_headers={'X-Trader-Login':'1'})
+        self.assertEqual(status,200)
+        cookie=headers['Set-Cookie'];self.assertIn('HttpOnly',cookie);self.assertIn('Secure',cookie);self.assertIn('SameSite=Strict',cookie)
+        self.assertEqual(self.get('/api/research',extra_headers={'Cookie':cookie.split(';',1)[0]})[0],200)
+        self.assertEqual(self.get('/api/login',method='POST',payload=b'{}')[0],403)
+        self.assertEqual(self.get('/api/research',extra_headers={'Cookie':'__Host-trader_session=invalid'})[0],401)
 
 if __name__=='__main__':unittest.main()
