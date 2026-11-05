@@ -25,7 +25,7 @@ class HistoryGateway:
         try:
             if kind=='quotes':
                 if (set(query)!={'symbols'} or not isinstance(query['symbols'],str)
-                        or not re.fullmatch(r'[A-Z0-9./^-]+(?:,[A-Z0-9./^-]+){0,49}',query['symbols'])):
+                        or not re.fullmatch(r'[A-Z0-9./^-]+(?:,[A-Z0-9./^-]+){0,499}',query['symbols'])):
                     raise DataError('Bounded explicit quote symbols required')
             elif kind=='clock':
                 if query:raise DataError('Market clock takes no query parameters')
@@ -40,7 +40,9 @@ class HistoryGateway:
             token=self.env.get('TRADIER_PRODUCTION_TOKEN','')
             if not token:return 503,dict(status='unavailable',error='Server market-data credential is not configured')
             try:
-                payload,source=TradierReader(token,'production',self.opener).get(path,query)
+                reader=TradierReader(token,'production',self.opener)
+                payload,source=(reader.get_many_quotes(query['symbols'])
+                    if kind=='quotes' and len(query['symbols'].split(','))>50 else reader.get(path,query))
                 source.update(request=query)
                 result=dict(status='observed',source=source,payload=payload,
                             representative_strategy_study_ready=False,orders_submitted=0)

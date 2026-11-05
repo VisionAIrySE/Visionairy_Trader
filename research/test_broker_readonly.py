@@ -31,6 +31,18 @@ class Provider:
 
 
 class BrokerReadTests(unittest.TestCase):
+    def test_bulk_quote_post_has_fixed_read_only_destination_and_bounded_body(self):
+        import urllib.parse
+        p=Provider();reader=self.reader(p)
+        payload,source=reader.get_many_quotes(','.join(['TEST']*100))
+        request=p.calls[-1]
+        self.assertEqual(request.get_method(),'POST')
+        self.assertEqual(request.full_url,'https://api.tradier.com/v1/markets/quotes')
+        self.assertEqual(len(urllib.parse.parse_qs(request.data.decode())['symbols'][0].split(',')),100)
+        self.assertEqual(source['request_method'],'POST')
+        self.assertNotIn('test-server-only',json.dumps(source))
+        for invalid in ('../orders','A?token=bad',','.join(['A']*501)):
+            with self.assertRaises(DataError):reader.get_many_quotes(invalid)
     def reader(self,provider=None,mode='production'):
         return TradierReader('test-server-only',mode,provider or Provider(),lambda:1800000000)
     def test_exact_numbers_have_provenance_but_no_invented_roi(self):

@@ -18,7 +18,7 @@ class HistoryGatewayTests(unittest.TestCase):
         self.assertTrue(all(r.get_method()=='GET' for r in provider.calls))
         gateway=HistoryGateway({'TRADIER_PRODUCTION_TOKEN':'private-test-key'},provider)
         for kind,params in [('quotes',{'symbols':'A','url':'https://evil.example'}),
-                            ('quotes',{'symbols':','.join(['A']*51)}),('quotes',{'symbols':'../secret?token=x'}),
+                            ('quotes',{'symbols':','.join(['A']*501)}),('quotes',{'symbols':'../secret?token=x'}),
                             ('clock',{'state':'closed'})]:
             self.assertEqual(gateway.read(kind,params)[0],400)
 

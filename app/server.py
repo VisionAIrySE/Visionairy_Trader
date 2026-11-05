@@ -62,7 +62,7 @@ def make_handler(report,username,password_hash,account_provider=configured_snaps
                 return self.send(200,assessment_service.latest())
             route=urlsplit(self.path)
             if route.path in ('/api/history','/api/calendar','/api/lookup','/api/quotes','/api/clock'):
-                if len(route.query)>2000:return self.send(400,dict(error='Research query too long'))
+                if len(route.query)>10000:return self.send(400,dict(error='Research query too long'))
                 try:params=parse_qs(route.query,keep_blank_values=True,max_num_fields=8,strict_parsing=True)
                 except ValueError:return self.send(400,dict(error='Invalid research query'))
                 if any(len(v)!=1 for v in params.values()):return self.send(400,dict(error='Repeated query parameter'))

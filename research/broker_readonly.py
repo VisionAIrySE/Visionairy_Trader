@@ -83,6 +83,19 @@ class TradierReader:
         elif params:raise DataError('Unexpected endpoint parameters')
         url=self._base+path+('?' + urllib.parse.urlencode(params) if params else '')
         req=urllib.request.Request(url,method='GET',headers={'Authorization':'Bearer '+self._token,'Accept':'application/json'})
+        return self._read_request(req,path)
+
+    def get_many_quotes(self,symbols):
+        """Documented read-only bulk quote query; POST cannot target any other path."""
+        if not isinstance(symbols,str) or not re.fullmatch(r'[A-Z0-9./^-]+(?:,[A-Z0-9./^-]+){0,499}',symbols):
+            raise DataError('At most 500 explicit quote symbols required')
+        request=urllib.request.Request(self._base+'markets/quotes',method='POST',
+            data=urllib.parse.urlencode({'symbols':symbols,'greeks':'false'}).encode(),
+            headers={'Authorization':'Bearer '+self._token,'Accept':'application/json',
+                     'Content-Type':'application/x-www-form-urlencoded'})
+        return self._read_request(request,'markets/quotes')
+
+    def _read_request(self,req,path):
         try:
             with self._opener.open(req,timeout=5) as response:
                 raw=response.read(2*1024*1024+1)
@@ -105,7 +118,7 @@ class TradierReader:
         return payload,dict(provider='Tradier',endpoint=path.split('/')[-1],retrieved_at=int(self._clock()),
             payload_sha256=hashlib.sha256(raw).hexdigest(),environment=self.environment,
             provider_as_of=None,timestamp_note='Retrieval time is not a provider valuation timestamp',
-            rate_limit_headers=rate_limits)
+            rate_limit_headers=rate_limits,request_method=req.get_method())
 
     def snapshot(self,account_id=None):
         result=dict(status='unavailable',provider='Tradier',environment=self.environment,
