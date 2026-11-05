@@ -1,5 +1,6 @@
 import json
 import unittest
+import urllib.error
 from history_gateway import HistoryGateway
 from test_broker_readonly import Provider
 
@@ -45,6 +46,24 @@ class HistoryGatewayTests(unittest.TestCase):
         gateway.lock.acquire()
         try:self.assertEqual(429,gateway.read('history',self.params)[0])
         finally:gateway.lock.release()
+
+    def test_lookup_preserves_identity_evidence_without_approving_mapping(self):
+        gateway=self.gateway({})
+        payload={'securities':{'security':[{'symbol':'PSA/PK','description':'Fixture only'}]}}
+        self.provider.data['markets/lookup']=payload
+        code,result=gateway.read('lookup',{'q':'Public Storage'})
+        self.assertEqual(200,code);self.assertEqual(payload,result['payload'])
+        self.assertFalse(result['mapping_confirmed'])
+        self.assertTrue(self.provider.calls[-1].full_url.endswith('markets/lookup?q=Public+Storage'))
+        self.assertEqual(400,self.gateway({}).read('lookup',{'q':'https://evil.example'})[0])
+
+    def test_upstream_status_controls_retry_without_leaking_body(self):
+        from test_broker_readonly import Response
+        for status,retry in ((400,False),(404,False),(401,False),(403,False),(429,True),(503,True)):
+            error=urllib.error.HTTPError('url',status,'private-secret',{},Response(b'private-secret'))
+            code,result=self.gateway(error).read('history',self.params)
+            self.assertEqual(502,code);self.assertEqual(status,result['provider_http_status'])
+            self.assertEqual(retry,result['retryable']);self.assertNotIn('private-secret',json.dumps(result))
 
 
 if __name__=='__main__':unittest.main()

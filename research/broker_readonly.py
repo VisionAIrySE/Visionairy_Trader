@@ -13,11 +13,18 @@ from datetime import datetime
 from replay import DataError, NoRedirect
 
 
+class ProviderReadError(DataError):
+    """Sanitized failure category; never includes upstream body or credentials."""
+    def __init__(self,message,category,http_status=None):
+        super().__init__(message)
+        self.category=category;self.http_status=http_status
+
+
 def validate_history_params(path,params):
     if path=='markets/timesales':
         if set(params)!={'symbol','start','end','interval','session_filter'}:
             raise DataError('Explicit bounded historical parameters required')
-        if not re.fullmatch(r'[A-Z][A-Z0-9.\-]{0,14}',params['symbol']):
+        if not re.fullmatch(r'[A-Z][A-Z0-9./^\-]{0,14}',params['symbol']):
             raise DataError('Unqualified historical symbol')
         if params['interval'] not in ('1min','5min') or params['session_filter']!='open':
             raise DataError('Regular-session minute bars only')
@@ -27,6 +34,10 @@ def validate_history_params(path,params):
         except (ValueError,TypeError):raise DataError('Explicit provider-local historical dates required') from None
         if not 0<(end-start).total_seconds()<=40*86400:
             raise DataError('Historical request must span at most 40 calendar days')
+    elif path=='markets/lookup':
+        if (set(params)!={'q'} or not isinstance(params['q'],str)
+                or not re.fullmatch(r'[A-Za-z0-9 ./^\-]{1,60}',params['q'])):
+            raise DataError('Bounded security lookup required')
     elif path=='markets/calendar':
         if (set(params)!={'month','year'} or not re.fullmatch(r'20\d{2}',params['year'])
                 or not re.fullmatch(r'0?[1-9]|1[0-2]',params['month'])):
@@ -60,11 +71,11 @@ class TradierReader:
         self._opener=opener or urllib.request.build_opener(NoRedirect())
 
     def get(self,path,params=None):
-        if not (path in ('user/profile','markets/quotes','markets/clock','markets/timesales','markets/calendar') or
+        if not (path in ('user/profile','markets/quotes','markets/clock','markets/timesales','markets/calendar','markets/lookup') or
                 re.fullmatch(r'accounts/[A-Za-z0-9_-]{1,40}/(balances|positions)',path)):
             raise DataError('Endpoint outside read-only allowlist')
         params=params or {}
-        if path in ('markets/timesales','markets/calendar'):
+        if path in ('markets/timesales','markets/calendar','markets/lookup'):
             validate_history_params(path,params)
         elif path=='markets/quotes':
             if set(params)!={'symbols'} or not re.fullmatch(r'[A-Z0-9./^-]+(?:,[A-Z0-9./^-]+){0,49}',params['symbols']):
@@ -76,9 +87,11 @@ class TradierReader:
             with self._opener.open(req,timeout=5) as response:raw=response.read(2*1024*1024+1)
         except urllib.error.HTTPError as exc:
             body=exc.read(4096)
-            if exc.code==429 or b'Quota Violation' in body:raise DataError('Tradier rate limit reached') from None
-            if exc.code in (401,403):raise DataError('Tradier credentials or permissions rejected') from None
-            raise DataError('Tradier request failed') from None
+            if exc.code==429 or b'Quota Violation' in body:
+                raise ProviderReadError('Tradier rate limit reached','rate_limit',exc.code) from None
+            if exc.code in (401,403):
+                raise ProviderReadError('Tradier credentials or permissions rejected','permissions',exc.code) from None
+            raise ProviderReadError('Tradier request failed','provider_http',exc.code) from None
         except (urllib.error.URLError,TimeoutError,OSError):raise DataError('Tradier connection unavailable') from None
         if len(raw)>2*1024*1024:raise DataError('Tradier response exceeds bounded size')
         if b'Quota Violation' in raw:raise DataError('Tradier rate limit reached')

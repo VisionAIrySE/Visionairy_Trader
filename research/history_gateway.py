@@ -7,7 +7,7 @@ import threading
 import time
 from datetime import datetime,timezone
 
-from broker_readonly import TradierReader,validate_history_params
+from broker_readonly import TradierReader,validate_history_params,ProviderReadError
 from replay import DataError,parse_bars
 
 
@@ -17,7 +17,7 @@ class HistoryGateway:
         self.opener=opener;self.clock=clock;self.lock=threading.Lock();self.next_read=0
 
     def read(self,kind,params):
-        path={'history':'markets/timesales','calendar':'markets/calendar'}.get(kind)
+        path={'history':'markets/timesales','calendar':'markets/calendar','lookup':'markets/lookup'}.get(kind)
         query=dict(params)
         if kind=='history':query['session_filter']='open'
         try:validate_history_params(path,query)
@@ -51,9 +51,20 @@ class HistoryGateway:
                                     or (utc-label).total_seconds() not in (14400,18000)):
                                 raise DataError('Historical response clock or requested range disagrees')
                         result.update(bars=len(bars),first_epoch=bars[0].timestamp,last_epoch=bars[-1].timestamp)
+                elif kind=='lookup':
+                    securities=payload.get('securities')
+                    if not (securities is None or isinstance(securities,dict)):
+                        raise DataError('Invalid security lookup evidence')
+                    if 'securities' not in payload:
+                        raise DataError('Missing security lookup evidence')
+                    result['mapping_confirmed']=False
                 elif not isinstance(payload.get('calendar'),dict):
                     raise DataError('Missing calendar evidence')
                 return 200,result
+            except ProviderReadError as exc:
+                return 502,dict(status='unavailable',error=str(exc),provider_http_status=exc.http_status,
+                    failure_category=exc.category,retryable=exc.http_status==429 or exc.http_status>=500,
+                    orders_submitted=0)
             except DataError as exc:return 502,dict(status='unavailable',error=str(exc),orders_submitted=0)
             except Exception:return 502,dict(status='unavailable',error='Historical provider read failed',orders_submitted=0)
         finally:self.lock.release()
