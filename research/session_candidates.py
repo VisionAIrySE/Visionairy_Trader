@@ -109,6 +109,7 @@ class SessionCandidates:
             self.pause(2)  # at most 30 bar requests/minute, below the existing quote sweep cadence
         self.stopped()
         quote_payload,quote_source=self.reader.get_many_quotes(','.join(symbols))
+        self.stopped()
         rows=quote_payload.get('quotes',{});rows=rows.get('quote',[]) if isinstance(rows,dict) else []
         if isinstance(rows,dict):rows=[rows]
         rows=rows or []
@@ -116,6 +117,7 @@ class SessionCandidates:
         quotes_by_symbol={r['symbol']:quote_evidence(r,int(self.now())) for r in rows}
         ending_clock,ending_source=self.reader.get('markets/clock')
         starting_clock=clock;clock=ending_clock['clock']
+        self.stopped()
         assessed=int(self.now());quotes={e['event_id']:quotes_by_symbol[e['symbol']] for e in events if quotes_by_symbol.get(e['symbol'])}
         op=OpportunityPolicy('session_evidence_review_v1',300,60,1950,D('.02'),D(2),D(0),D(0),D(0))
         allocation=AllocationPolicy('session_evidence_review_v1',('momentum','liquidity'),60,D(2),D(0),D(0),D(0))

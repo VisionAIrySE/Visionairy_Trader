@@ -70,3 +70,12 @@ class SessionTests(unittest.TestCase):
         stop=threading.Event();stop.set();worker,saved,calls=self.make(cancel=stop)
         with self.assertRaises(ScanCancelled):worker.run()
         self.assertEqual(calls,[]);self.assertEqual(saved,[])
+
+    def test_stop_during_final_quote_read_prevents_completed_save(self):
+        stop=threading.Event();worker,saved,calls=self.make(cancel=stop)
+        original=worker.reader.get_many_quotes
+        def quotes(symbols):
+            result=original(symbols);stop.set();return result
+        worker.reader.get_many_quotes=quotes
+        with self.assertRaises(ScanCancelled):worker.run()
+        self.assertEqual(saved,[])
