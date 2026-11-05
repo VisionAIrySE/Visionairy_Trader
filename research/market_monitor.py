@@ -56,7 +56,7 @@ def normalize_quote(row,instrument,clock,received_at,maximum_age=60):
     name=instrument.get('name','')
     if instrument.get('etf_flag'):
         kind='etf_subtype_pending'
-    elif re.search(r'\b(preferred|warrant|rights|units|notes|debentures)\b',name,re.I):
+    elif re.search(r'\b(preferred|warrants?|rights?|units?|notes?|debentures?)\b',name,re.I):
         kind='special_security_not_ordinary_qualified'
     elif re.search(r'\b(common stock|common shares|ordinary shares?|depositary shares|depository shares)\b',name,re.I) and row.get('type')=='stock':
         kind='directory_and_broker_common_share_indicated'
@@ -125,6 +125,14 @@ class MarketMonitor:
         observations={};events=[];issues=[];sources=[]
         if clock.get('state')!='open' and not coverage_probe:
             summary.update(status='waiting_for_regular_session',stage='market_closed',finished_at=int(self.now()))
+            self.store.call('scan_finish',{'id':cycle_id,'summary':summary,'packed_events':pack([])})
+            return summary
+        available=universe.get('available_at')
+        if (not isinstance(available,(int,float)) or isinstance(available,bool)
+                or not 0<=self.now()-available<=86400
+                or datetime.fromtimestamp(available,timezone.utc).date().isoformat()!=clock.get('date')):
+            summary.update(status='failed',stage='universe_refresh_required',finished_at=int(self.now()),
+                regular_entry_review_available=False)
             self.store.call('scan_finish',{'id':cycle_id,'summary':summary,'packed_events':pack([])})
             return summary
         supported=[]

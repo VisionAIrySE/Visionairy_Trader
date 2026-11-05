@@ -23,6 +23,9 @@ class MonitorTests(unittest.TestCase):
         self.assertFalse(q['recommendation_qualified'])
         q=normalize_quote(row(),dict(INSTRUMENT,name='Fixture Preferred Stock'),CLOCK,NOW)
         self.assertEqual(q['security_status'],'special_security_not_ordinary_qualified')
+        for name in ('Fixture Warrants to purchase Common Stock','Fixture Units, each with an ordinary share'):
+            q=normalize_quote(row(),dict(INSTRUMENT,name=name),CLOCK,NOW)
+            self.assertEqual(q['security_status'],'special_security_not_ordinary_qualified')
         self.assertFalse(normalize_quote(row(),INSTRUMENT,dict(CLOCK,state='postmarket'),NOW)['fresh_regular_session'])
         self.assertFalse(normalize_quote(row(),INSTRUMENT,CLOCK,NOW+61)['fresh_regular_session'])
         for invalid in (row(symbol='OTHER'),row(trade_date=NOW),row(last='NaN'),row(trade_date=(NOW+100)*1000)):
@@ -91,3 +94,14 @@ class MonitorTests(unittest.TestCase):
         self.assertEqual(terminal['summary']['observed_count'],1)
         self.assertIsNone(terminal['packed_state'])
         self.assertEqual(terminal['summary']['orders_submitted'],0)
+
+    def test_stale_universe_requires_refresh_instead_of_claiming_current_coverage(self):
+        class Reader:
+            def get(self,*args):return {'clock':CLOCK},{}
+            def get_many_quotes(self,*args):raise AssertionError('Stale universe must not produce coverage')
+        class Store:
+            def call(self,op,p):return {'created':True} if op=='scan_begin' else {}
+        u={'symbols':['TEST'],'instruments':[INSTRUMENT],'source_sha256':'a'*64,'available_at':NOW-86401}
+        r=MarketMonitor(Reader(),Store(),now=lambda:NOW,pause=lambda _:None).run(u,True)
+        self.assertEqual(r['stage'],'universe_refresh_required')
+        self.assertEqual(r['status'],'failed');self.assertEqual(r['requested_count'],0)
