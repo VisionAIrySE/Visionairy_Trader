@@ -57,6 +57,15 @@ class HistoryGatewayTests(unittest.TestCase):
         self.assertTrue(self.provider.calls[-1].full_url.endswith('markets/lookup?q=Public+Storage'))
         self.assertEqual(400,self.gateway({}).read('lookup',{'q':'https://evil.example'})[0])
 
+    def test_provider_preferred_symbol_is_encoded_and_injection_rejected(self):
+        gateway=self.gateway({'series':{'data':[self.row]}})
+        code,result=gateway.read('history',dict(self.params,symbol="PSA'K"))
+        self.assertEqual(200,code)
+        self.assertIn('symbol=PSA%27K',self.provider.calls[-1].full_url)
+        self.assertEqual("PSA'K",result['source']['request']['symbol'])
+        for symbol in ("PSA';DROP",'../PSA','PSA?url=bad'):
+            self.assertEqual(400,self.gateway({}).read('history',dict(self.params,symbol=symbol))[0])
+
     def test_upstream_status_controls_retry_without_leaking_body(self):
         from test_broker_readonly import Response
         for status,retry in ((400,False),(404,False),(401,False),(403,False),(429,True),(503,True)):

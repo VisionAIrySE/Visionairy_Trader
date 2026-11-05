@@ -24,7 +24,7 @@ def validate_history_params(path,params):
     if path=='markets/timesales':
         if set(params)!={'symbol','start','end','interval','session_filter'}:
             raise DataError('Explicit bounded historical parameters required')
-        if not re.fullmatch(r'[A-Z][A-Z0-9./^\-]{0,14}',params['symbol']):
+        if not re.fullmatch(r"[A-Z][A-Z0-9./^'\-]{0,14}",params['symbol']):
             raise DataError('Unqualified historical symbol')
         if params['interval'] not in ('1min','5min') or params['session_filter']!='open':
             raise DataError('Regular-session minute bars only')
@@ -36,7 +36,7 @@ def validate_history_params(path,params):
             raise DataError('Historical request must span at most 40 calendar days')
     elif path=='markets/lookup':
         if (set(params)!={'q'} or not isinstance(params['q'],str)
-                or not re.fullmatch(r'[A-Za-z0-9 ./^\-]{1,60}',params['q'])):
+                or not re.fullmatch(r"[A-Za-z0-9 ./^'\-]{1,60}",params['q'])):
             raise DataError('Bounded security lookup required')
     elif path=='markets/calendar':
         if (set(params)!={'month','year'} or not re.fullmatch(r'20\d{2}',params['year'])
