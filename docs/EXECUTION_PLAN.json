@@ -1,0 +1,2373 @@
+{
+  "schema_version": 1,
+  "plan_id": "visionairy-complete-delivery",
+  "revision": 1,
+  "as_of": "2026-11-04 America/Los_Angeles",
+  "intent": "An integrated proactive long-only US stock/ETF momentum assistant comparing where, when, price and scale against competing opportunities and cash, protecting exposure and learning from complete outcomes.",
+  "scope": {
+    "hold": "Typically 1-2 days, extending to approximately a week; intraday alternatives stay separately labeled.",
+    "per_trade_planned_risk_ceiling": "0.01",
+    "aggregate_planned_risk_ceiling": "0.05",
+    "monthly_operating_cost_ceiling_usd": "25",
+    "authorized": "Research, internal ghost simulation, existing-source access, local implementation and authorized source deployment.",
+    "excluded_without_separate_authorization": [
+      "Broker order submission including sandbox",
+      "Production live orders",
+      "Funding/purchases",
+      "Paid resource or plan changes",
+      "Standing risk/preference/strategy adoption"
+    ]
+  },
+  "baseline_completed": [
+    "Preserved original archive and withdrawn pilot scope; 48 private hosted research/learning tables and reconciled earlier import.",
+    "Risk, sizing, selection, comparative allocation, multi-session replay and joint ledger/partial/trailing research components exist.",
+    "Private Render dashboard, production read-only account observations, historical/calendar GETs and nonblocking account refresh verified.",
+    "Frozen directory coverage probe returned 19 histories, one failed request and one symbol mapping block; latest hosted app remains research-only.",
+    "197 research/UI plus 7 sizing checks passed at the latest deployed checkpoint; newer local retry edits have three additional passing Node checks."
+  ],
+  "rules": [
+    "Follow this task graph and evidence receipts; historical STATUS/COMPLETION documents are records, not competing work queues.",
+    "At each task: read inputs/reuse, implement its listed steps, run meaningful checks, preserve actual evidence, review all acceptance criteria, then record completion and move to the next ready task.",
+    "A task may finish with a valid negative experiment result; that never marks the strategy effective or the platform ready.",
+    "Do not wait for full market/news/AI coverage before a supported explicitly exploratory buy/sell simulation; constrain each claim to its dataset and assumptions.",
+    "Never call synthetic checks profitability evidence; never call observed/control samples representative or unseen without support.",
+    "Do not substitute test counts, schema tables, a plan, deployment or a modeled account for integrated operating behavior.",
+    "Experimental settings are owned implementation choices with versions; standing live risk/authority and paid commitments require specific approval.",
+    "Give meaningful progress at least every 60 seconds. State the active task, user-visible result, evidence and any real blocker.",
+    "If one task is blocked, record cause/remedy and continue independent authorized ready tasks. Retry transient failures with bounded backoff; preserve all attempts.",
+    "The plan runner validates dependencies and evidence identities. It cannot manufacture statistical proof or grant trading authority."
+  ],
+  "milestones": [
+    {
+      "id": "FIRST_REPORT",
+      "requires": [
+        "T02"
+      ],
+      "claim": "A readable persisted exploratory historical buy/sell report, not proven future profitability."
+    },
+    {
+      "id": "JOINT_ACCOUNT",
+      "requires": [
+        "P03",
+        "P04",
+        "P05"
+      ],
+      "claim": "Reconciled shared-capital/management simulation."
+    },
+    {
+      "id": "BROAD_RESEARCH",
+      "requires": [
+        "V02",
+        "H10",
+        "H11",
+        "H12",
+        "H13",
+        "H14",
+        "H15"
+      ],
+      "claim": "Supported accepted families evaluated with held-out evidence and explicit unavailable families, not automatic adoption."
+    },
+    {
+      "id": "OPERATING_GHOST",
+      "requires": [
+        "Q01",
+        "A01",
+        "A02",
+        "A03",
+        "A04",
+        "U04"
+      ],
+      "claim": "Integrated hosted proactive ghost system."
+    },
+    {
+      "id": "CONTROLLED_LEARNING",
+      "requires": [
+        "L03"
+      ],
+      "claim": "Evidence-backed approval-gated learning workflow."
+    },
+    {
+      "id": "FORWARD_EVALUATED",
+      "requires": [
+        "Q02"
+      ],
+      "claim": "Forward paper evaluation completed with an explicit result, which may be revise/stop."
+    },
+    {
+      "id": "BROKER_PAPER",
+      "requires": [
+        "B02"
+      ],
+      "claim": "Optional separately authorized broker sandbox execution."
+    },
+    {
+      "id": "LIVE",
+      "requires": [
+        "LIVE03"
+      ],
+      "claim": "Only separately authorized production release; not part of current authority."
+    }
+  ],
+  "requirements": {
+    "A01": [
+      "H01",
+      "H02",
+      "H03",
+      "A01",
+      "A02"
+    ],
+    "A33": [
+      "H01",
+      "H02",
+      "H03",
+      "A01",
+      "A02"
+    ],
+    "A34": [
+      "H01",
+      "H02",
+      "H03",
+      "A01",
+      "A02"
+    ],
+    "A54": [
+      "H01",
+      "H02",
+      "H03",
+      "A01",
+      "A02"
+    ],
+    "A55": [
+      "H01",
+      "H02",
+      "H03",
+      "A01",
+      "A02"
+    ],
+    "A02": [
+      "U03",
+      "P05",
+      "B01",
+      "B02",
+      "LIVE02"
+    ],
+    "A15": [
+      "U03",
+      "P05",
+      "B01",
+      "B02",
+      "LIVE02"
+    ],
+    "A16": [
+      "U03",
+      "P05",
+      "B01",
+      "B02",
+      "LIVE02"
+    ],
+    "A38": [
+      "U03",
+      "P05",
+      "B01",
+      "B02",
+      "LIVE02"
+    ],
+    "A52": [
+      "U03",
+      "P05",
+      "B01",
+      "B02",
+      "LIVE02"
+    ],
+    "A03": [
+      "DB01",
+      "T01",
+      "T02",
+      "P01",
+      "L01"
+    ],
+    "A20": [
+      "DB01",
+      "T01",
+      "T02",
+      "P01",
+      "L01"
+    ],
+    "A21": [
+      "DB01",
+      "T01",
+      "T02",
+      "P01",
+      "L01"
+    ],
+    "A22": [
+      "DB01",
+      "T01",
+      "T02",
+      "P01",
+      "L01"
+    ],
+    "A23": [
+      "DB01",
+      "T01",
+      "T02",
+      "P01",
+      "L01"
+    ],
+    "A24": [
+      "DB01",
+      "T01",
+      "T02",
+      "P01",
+      "L01"
+    ],
+    "A48": [
+      "DB01",
+      "T01",
+      "T02",
+      "P01",
+      "L01"
+    ],
+    "A49": [
+      "DB01",
+      "T01",
+      "T02",
+      "P01",
+      "L01"
+    ],
+    "A04": [
+      "U02",
+      "U03",
+      "U04"
+    ],
+    "A36": [
+      "U02",
+      "U03",
+      "U04"
+    ],
+    "A47": [
+      "U02",
+      "U03",
+      "U04"
+    ],
+    "A50": [
+      "U02",
+      "U03",
+      "U04"
+    ],
+    "A05": [
+      "D01",
+      "D04",
+      "A04",
+      "LLM01",
+      "LLM02"
+    ],
+    "A06": [
+      "D01",
+      "D04",
+      "A04",
+      "LLM01",
+      "LLM02"
+    ],
+    "A06a": [
+      "D01",
+      "D04",
+      "A04",
+      "LLM01",
+      "LLM02"
+    ],
+    "A28": [
+      "D01",
+      "D04",
+      "A04",
+      "LLM01",
+      "LLM02"
+    ],
+    "A29": [
+      "D01",
+      "D04",
+      "A04",
+      "LLM01",
+      "LLM02"
+    ],
+    "A30": [
+      "D01",
+      "D04",
+      "A04",
+      "LLM01",
+      "LLM02"
+    ],
+    "A53": [
+      "D01",
+      "D04",
+      "A04",
+      "LLM01",
+      "LLM02"
+    ],
+    "A07": [
+      "S01",
+      "M01",
+      "H01",
+      "H02",
+      "P02",
+      "P04"
+    ],
+    "A08": [
+      "S01",
+      "M01",
+      "H01",
+      "H02",
+      "P02",
+      "P04"
+    ],
+    "A09": [
+      "S01",
+      "M01",
+      "H01",
+      "H02",
+      "P02",
+      "P04"
+    ],
+    "A10": [
+      "S01",
+      "M01",
+      "H01",
+      "H02",
+      "P02",
+      "P04"
+    ],
+    "A11": [
+      "P02",
+      "P03",
+      "P04",
+      "P05",
+      "A03"
+    ],
+    "A12": [
+      "P02",
+      "P03",
+      "P04",
+      "P05",
+      "A03"
+    ],
+    "A13": [
+      "P02",
+      "P03",
+      "P04",
+      "P05",
+      "A03"
+    ],
+    "A14": [
+      "P02",
+      "P03",
+      "P04",
+      "P05",
+      "A03"
+    ],
+    "A17": [
+      "P02",
+      "P03",
+      "P04",
+      "P05",
+      "A03"
+    ],
+    "A18": [
+      "P02",
+      "P03",
+      "P04",
+      "P05",
+      "A03"
+    ],
+    "A19": [
+      "P02",
+      "P03",
+      "P04",
+      "P05",
+      "A03"
+    ],
+    "A25": [
+      "H15",
+      "L01",
+      "L02",
+      "L03"
+    ],
+    "A35": [
+      "H15",
+      "L01",
+      "L02",
+      "L03"
+    ],
+    "A37": [
+      "H15",
+      "L01",
+      "L02",
+      "L03"
+    ],
+    "A43": [
+      "H15",
+      "L01",
+      "L02",
+      "L03"
+    ],
+    "A26": [
+      "P01",
+      "P03",
+      "P04",
+      "Q01",
+      "Q02"
+    ],
+    "A27": [
+      "P01",
+      "P03",
+      "P04",
+      "Q01",
+      "Q02"
+    ],
+    "A44": [
+      "P01",
+      "P03",
+      "P04",
+      "Q01",
+      "Q02"
+    ],
+    "A45": [
+      "P01",
+      "P03",
+      "P04",
+      "Q01",
+      "Q02"
+    ],
+    "A31": [
+      "D01",
+      "D02"
+    ],
+    "A32": [
+      "D01",
+      "D02"
+    ],
+    "A39": [
+      "H10",
+      "H11",
+      "H12",
+      "H13",
+      "H14",
+      "H15",
+      "V01"
+    ],
+    "A40": [
+      "H10",
+      "H11",
+      "H12",
+      "H13",
+      "H14",
+      "H15",
+      "V01"
+    ],
+    "A41": [
+      "H10",
+      "H11",
+      "H12",
+      "H13",
+      "H14",
+      "H15",
+      "V01"
+    ],
+    "A42": [
+      "H10",
+      "H11",
+      "H12",
+      "H13",
+      "H14",
+      "H15",
+      "V01"
+    ],
+    "A46": [
+      "A01",
+      "A02",
+      "A03",
+      "A04"
+    ],
+    "A51": [
+      "A01",
+      "A02",
+      "A03",
+      "A04"
+    ]
+  },
+  "hypotheses": {
+    "quiet_to_active": {
+      "name": "Prior quiet + upward price + unusual activity",
+      "tasks": [
+        "H03",
+        "T03",
+        "D02"
+      ]
+    },
+    "breakout": {
+      "name": "Initial upward breakout",
+      "tasks": [
+        "H01",
+        "T03"
+      ]
+    },
+    "pullback": {
+      "name": "Controlled pullback with resumed buying",
+      "tasks": [
+        "H02",
+        "T03"
+      ]
+    },
+    "relative_volume": {
+      "name": "Time-of-day relative volume",
+      "tasks": [
+        "H03",
+        "T03"
+      ]
+    },
+    "technical_variants": {
+      "name": "Compression, ADX, Bollinger, RSI/MACD and moving-average variants",
+      "tasks": [
+        "H10"
+      ]
+    },
+    "opening_previous_high": {
+      "name": "Opening-range / previous-day-high breaks",
+      "tasks": [
+        "H10"
+      ]
+    },
+    "vwap": {
+      "name": "VWAP reclaim / retest",
+      "tasks": [
+        "H11"
+      ]
+    },
+    "market_sector": {
+      "name": "Strength versus market and sector",
+      "tasks": [
+        "D05",
+        "H12"
+      ]
+    },
+    "breadth": {
+      "name": "Market breadth / sector participation",
+      "tasks": [
+        "D05",
+        "H12"
+      ]
+    },
+    "catalyst": {
+      "name": "Catalyst-only and combined catalyst/technical signals",
+      "tasks": [
+        "D06",
+        "H13"
+      ]
+    },
+    "news_novelty": {
+      "name": "New versus recycled news and price response",
+      "tasks": [
+        "D06",
+        "H13"
+      ]
+    },
+    "peer_lead_lag": {
+      "name": "Economically related-stock lead/lag",
+      "tasks": [
+        "D05",
+        "H12"
+      ]
+    },
+    "reclaim": {
+      "name": "Failed breakdown / reclaim",
+      "tasks": [
+        "H14"
+      ]
+    },
+    "persistence_exhaustion": {
+      "name": "Momentum persistence / continuation versus exhaustion",
+      "tasks": [
+        "H14"
+      ]
+    },
+    "management": {
+      "name": "1-2-day to approximately week-long holding and protection",
+      "tasks": [
+        "M01",
+        "P02",
+        "P03"
+      ]
+    },
+    "execution": {
+      "name": "Spread, liquidity, slippage and approval delay",
+      "tasks": [
+        "M01",
+        "D04"
+      ]
+    },
+    "capital_allocation": {
+      "name": "Compare opportunities, shared capital and retaining cash",
+      "tasks": [
+        "D02",
+        "P01",
+        "P03"
+      ]
+    },
+    "learning": {
+      "name": "AI/news incremental value and learning/adoption",
+      "tasks": [
+        "H15",
+        "L01",
+        "L02"
+      ]
+    }
+  },
+  "open_decisions": [
+    {
+      "id": "O01",
+      "tasks": [
+        "P04",
+        "LIVE01"
+      ],
+      "handling": "Research alternatives may be specified now; standing exposure/leverage/specialized-ETF and live risk adoption needs explicit final terms."
+    },
+    {
+      "id": "O02",
+      "tasks": [
+        "D01",
+        "P05",
+        "B01"
+      ],
+      "handling": "Qualify existing Tradier access/account/protection; no new login/funding/order authority is inferred."
+    },
+    {
+      "id": "O03",
+      "tasks": [
+        "D01",
+        "D04",
+        "D05",
+        "D06",
+        "A04"
+      ],
+      "handling": "Inspect existing access, qualify costs/rights/coverage; request approval only for actual paid commitment."
+    },
+    {
+      "id": "O04",
+      "tasks": [
+        "S01",
+        "H01",
+        "H02",
+        "H03",
+        "U04",
+        "A01"
+      ],
+      "handling": "Freeze experimental discovery/ranking settings; qualify later before operating adoption."
+    },
+    {
+      "id": "O05",
+      "tasks": [
+        "M01",
+        "P02",
+        "P03"
+      ],
+      "handling": "Test explicit protection/profit-taking alternatives; no automatic active-stop changes."
+    },
+    {
+      "id": "O06",
+      "tasks": [
+        "P04",
+        "A03",
+        "LIVE01"
+      ],
+      "handling": "Test explicit overnight alternatives; finalize active order/session/no-response behavior before that mode."
+    },
+    {
+      "id": "O07",
+      "tasks": [
+        "U03",
+        "P05",
+        "B01"
+      ],
+      "handling": "Implement ghost review/expiry now; broker action/amendment terms qualify before any authorized order transport."
+    },
+    {
+      "id": "O08",
+      "tasks": [
+        "A04",
+        "Q01"
+      ],
+      "handling": "Measure service performance and propose concrete operating objectives; do not invent an SLA or guarantee."
+    },
+    {
+      "id": "O09",
+      "tasks": [
+        "V02",
+        "Q01",
+        "Q02"
+      ],
+      "handling": "Predeclare evaluation criteria and review rules; month-long POC intent is not sufficient evidence by itself."
+    },
+    {
+      "id": "O10",
+      "tasks": [
+        "U01",
+        "U02",
+        "U03",
+        "U04",
+        "A04"
+      ],
+      "handling": "Reuse Render/Supabase and deployed preview; qualify security/recovery/cost and connect missing functions."
+    },
+    {
+      "id": "O11",
+      "tasks": [
+        "P04",
+        "Q02",
+        "LIVE01"
+      ],
+      "handling": "Implement agreed 3% paper-only pause; live daily-loss threshold remains undecided."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "R01",
+      "phase": "First historical delivery",
+      "title": "Finish collection retries and evidence recovery",
+      "depends_on": [],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "collect_history.mjs and collection_diagnostic.py have local retry edits; three Node tests passed; not yet published.",
+      "steps": [
+        "Finish bounded backoff for network, rate-limit and server failures",
+        "Preserve every failed attempt; stop retrying permissions or invalid requests",
+        "Retry the failed captured request; distinguish exhausted retries from repaired mapping; persist selected-success lineage"
+      ],
+      "deliverable": "Versioned retry collector, actual attempt ledger and loader reconciliation",
+      "acceptance": [
+        {
+          "id": "R01.1",
+          "criterion": "Temporary failure then success is retained and consumed without overwriting the failure"
+        },
+        {
+          "id": "R01.2",
+          "criterion": "Retry budget survives resume and prevents an infinite loop; permission failures stop"
+        },
+        {
+          "id": "R01.3",
+          "criterion": "Actual failed capture has a recorded recovery or explicit exhausted attempts, observed failure status and next remedy; no unsupported diagnosis is inferred"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "S01",
+      "phase": "First historical delivery",
+      "title": "Register complete executable experiment specifications",
+      "depends_on": [],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "SelectionPolicy, SetupPolicy, ReplayPolicy and 18-family readiness catalog exist.",
+      "steps": [
+        "Create versioned specs for quiet-to-active, independent breakout and resumed pullback",
+        "Declare entry, timing, stop, target/time exits, costs, risk, holding windows, controls and required data for each",
+        "Declare remaining accepted families separately; freeze each experiment before its outcome run"
+      ],
+      "deliverable": "Machine-readable strategy registry with code/spec hashes and supported/pending flags",
+      "acceptance": [
+        {
+          "id": "S01.1",
+          "criterion": "Independent breakout/pullback eligibility does not require quiet-stock eligibility"
+        },
+        {
+          "id": "S01.2",
+          "criterion": "Each runnable spec contains all buy/sell/capital and evidence conventions; missing fields fail validation"
+        },
+        {
+          "id": "S01.3",
+          "criterion": "Exploratory findings and adoption criteria are separate; no retrospectively selected target or optimized setting is called approved"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "DB01",
+      "phase": "First historical delivery",
+      "title": "Persist new captures and runs in authoritative research storage",
+      "depends_on": [
+        "R01"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "48 hosted tables and prior pilot import exist; latest captures are still local.",
+      "steps": [
+        "Inspect designated hosted schema and permissions",
+        "Map captures, calendars, attempts and source identities without inventing instrument qualifications",
+        "Import in idempotent batches with per-row conflicts, count/checksum reconciliation and complete/failed lifecycle",
+        "Keep originals and earlier pilot role intact"
+      ],
+      "deliverable": "Hosted new-source/dataset import plus repeatable writer adapter and verification receipt",
+      "acceptance": [
+        {
+          "id": "DB01.1",
+          "criterion": "Newest captures and attempt/source relationships are queryable in Supabase and reconcile to originals"
+        },
+        {
+          "id": "DB01.2",
+          "criterion": "Repeat import changes no counts; conflicting revisions fail explicitly"
+        },
+        {
+          "id": "DB01.3",
+          "criterion": "Unknown instruments remain unqualified/staged; no public writes or client secrets"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "H01",
+      "phase": "First historical delivery",
+      "title": "Run independent initial-breakout detection",
+      "depends_on": [
+        "S01"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "classify_setups currently activates only from quiet_to_active_candidate.",
+      "steps": [
+        "Implement completed-bar resistance/structure trigger without quiet-cohort prerequisite",
+        "Retain all eligible/failed windows and prior-only volatility/activity inputs",
+        "Freeze rule and identify linked opportunities without outcome-based selection"
+      ],
+      "deliverable": "Independent breakout detector and negative/future-data acceptance cases",
+      "acceptance": [
+        {
+          "id": "H01.1",
+          "criterion": "Busy-stock breakout can qualify the breakout experiment without becoming quiet-to-active evidence"
+        },
+        {
+          "id": "H01.2",
+          "criterion": "Future changes do not change earlier signals; gaps block affected evidence"
+        },
+        {
+          "id": "H01.3",
+          "criterion": "Every signal has a stable opportunity, source and strategy version"
+        }
+      ],
+      "hypotheses": [
+        "breakout"
+      ]
+    },
+    {
+      "id": "H02",
+      "phase": "First historical delivery",
+      "title": "Run independent controlled-pullback resumption",
+      "depends_on": [
+        "H01"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Existing pullback classifier and stop/ATR logic are reusable.",
+      "steps": [
+        "Track prior observable impulse, completed pullback and subsequent confirmation",
+        "Declare depth, duration, volume, invalidation and duplicate-update behavior",
+        "Preserve failed/stalled pullbacks alongside resumptions"
+      ],
+      "deliverable": "Independent pullback strategy with observable impulse/pullback/entry lineage",
+      "acceptance": [
+        {
+          "id": "H02.1",
+          "criterion": "Pullback and confirmation cannot be inferred from the same ambiguous bar"
+        },
+        {
+          "id": "H02.2",
+          "criterion": "Separate breakout and resumption outcomes are compared as dependent alternatives where appropriate"
+        }
+      ],
+      "hypotheses": [
+        "pullback"
+      ]
+    },
+    {
+      "id": "H03",
+      "phase": "First historical delivery",
+      "title": "Connect the quiet-to-active experiment without narrowing the platform",
+      "depends_on": [
+        "S01"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "discovery_selection.py, archive and calendar-aware diagnostics exist.",
+      "steps": [
+        "Keep measured prior-quiet activity and time-of-day relative volume",
+        "Supply expected calendar sessions so missing days cannot be skipped",
+        "Preserve sparse/zero baseline unknowns and no-activation controls"
+      ],
+      "deliverable": "Quiet-to-active strategy adapter and clear unavailable-evidence states",
+      "acceptance": [
+        {
+          "id": "H03.1",
+          "criterion": "Quiet, active and unknown cohorts stay distinct"
+        },
+        {
+          "id": "H03.2",
+          "criterion": "Zero candidates is a retained result for this definition, not a veto on unrelated experiments"
+        }
+      ],
+      "hypotheses": [
+        "quiet_to_active",
+        "relative_volume"
+      ]
+    },
+    {
+      "id": "M01",
+      "phase": "First historical delivery",
+      "title": "Define honest bar-level entry/exit and cost scenarios",
+      "depends_on": [
+        "S01"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "managed_replay.py and risk sizing already implement most arithmetic.",
+      "steps": [
+        "Declare targets from contemporaneous structure or a frozen risk multiple, never later highs",
+        "Model delay, opening price, spread/slippage and fee stress cases with explicit evidence labels",
+        "Require unchanged 1% trade and 5% aggregate ceilings; do not shrink stops to force size",
+        "Include 1-2-session and approximately week-long alternatives with censored horizons"
+      ],
+      "deliverable": "Versioned modeled execution/target scenario inputs",
+      "acceptance": [
+        {
+          "id": "M01.1",
+          "criterion": "Modeled quotes/fills cannot be labeled observed or broker-confirmed"
+        },
+        {
+          "id": "M01.2",
+          "criterion": "Stops win ambiguous stop/target bars; missing entry/exit evidence remains unresolved"
+        },
+        {
+          "id": "M01.3",
+          "criterion": "Scenario capital is explicit and independent of live account funding"
+        }
+      ],
+      "hypotheses": [
+        "execution",
+        "management"
+      ]
+    },
+    {
+      "id": "T01",
+      "phase": "First historical delivery",
+      "title": "Execute and persist the first actual historical buy/sell experiment",
+      "depends_on": [
+        "DB01",
+        "H01",
+        "M01"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Existing replay, decision graph, DB tables and import checks are reused.",
+      "steps": [
+        "Select a source-pinned supported cohort before reading its outcomes; label existing controls honestly",
+        "Replay fixed breakout rules using information available at each decision",
+        "Persist signals, proposed entries, modeled buys/sells, nonfills, exits, fees and unresolved cases",
+        "Reconcile quantities, P&L and source identities from database queries"
+      ],
+      "deliverable": "A completed exploratory historical run with recorded simulated orders/fills/outcomes",
+      "acceptance": [
+        {
+          "id": "T01.1",
+          "criterion": "At least one complete run reaches persisted modeled transactions or a fully explained no-entry result; report cannot be a coverage-only audit"
+        },
+        {
+          "id": "T01.2",
+          "criterion": "Every buy/sell can be recomputed from its frozen spec, data and costs"
+        },
+        {
+          "id": "T01.3",
+          "criterion": "No unsupported strategy, whole-market, independent-trade-count or portfolio-return claim"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "T02",
+      "phase": "First historical delivery",
+      "title": "Deliver the readable buy/sell and return report",
+      "depends_on": [
+        "T01"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Show hypothesis, symbol, decision/entry time, price, size, protection, exit and reason",
+        "Show gross/net result, return denominator, costs, holding time and unresolved cases",
+        "Separate per-case returns from the later shared-account curve; compare cash and matching benchmarks where supported"
+      ],
+      "deliverable": "User-readable first historical results, backed by database queries",
+      "acceptance": [
+        {
+          "id": "T02.1",
+          "criterion": "Displayed example totals exactly reconcile to stored fills and costs"
+        },
+        {
+          "id": "T02.2",
+          "criterion": "User sees actual historical examples and losses/nonfills without reading code"
+        },
+        {
+          "id": "T02.3",
+          "criterion": "Limitations constrain conclusions, not all exploratory simulation"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "T03",
+      "phase": "First historical delivery",
+      "title": "Compare entry setups and price/volume alternatives",
+      "depends_on": [
+        "T02",
+        "H02",
+        "H03"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Run frozen initial-entry, confirmation and retest/resumption alternatives",
+        "Compare price-only, price/activity, quiet/control and missed/failed opportunities using matched definitions",
+        "Retain separate versions and all trials"
+      ],
+      "deliverable": "Matched historical experiment comparison report",
+      "acceptance": [
+        {
+          "id": "T03.1",
+          "criterion": "No overlapping setup/scenario alternatives are counted as independent trades"
+        },
+        {
+          "id": "T03.2",
+          "criterion": "Performance is stratified by setup, basis, timing and coverage"
+        }
+      ],
+      "hypotheses": [
+        "breakout",
+        "pullback",
+        "relative_volume",
+        "quiet_to_active"
+      ]
+    },
+    {
+      "id": "D01",
+      "phase": "Market evidence",
+      "title": "Qualify instruments, symbol mappings and available entitlements",
+      "depends_on": [],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Directory snapshot, authenticated historical reads and account observations exist.",
+      "steps": [
+        "Inspect existing provider access before selecting another service",
+        "Reconcile exchange/broker symbols, stock/ETF types, listing dates, delistings and specialized ETFs",
+        "Record licensing, retention, quotas, price and allowed uses; label unavailable features"
+      ],
+      "deliverable": "Instrument/provider capability registry and explicit coverage constraints",
+      "acceptance": [
+        {
+          "id": "D01.1",
+          "criterion": "No warrant/preferred/inverse/leveraged instrument silently inherits ordinary stock eligibility"
+        },
+        {
+          "id": "D01.2",
+          "criterion": "Discovery is independent of account balance and prior winners"
+        },
+        {
+          "id": "D01.3",
+          "criterion": "Total operating-cost projection stays within agreed $25/month or identifies a specific unapproved overage"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "D02",
+      "phase": "Market evidence",
+      "title": "Acquire and freeze sufficiently varied historical cohorts",
+      "depends_on": [
+        "D01",
+        "R01"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Choose dated cohorts before outcome inspection, including quiet/active, failed and losing cases",
+        "Obtain warm-up and complete future holding periods over multiple market conditions",
+        "Use prospective membership when historical membership cannot be obtained; never backdate directories",
+        "Freeze development/evaluation datasets and selection history"
+      ],
+      "deliverable": "Coverage-qualified datasets with dated selection, history and future-exit coverage",
+      "acceptance": [
+        {
+          "id": "D02.1",
+          "criterion": "Representative claims have documented selection/coverage support"
+        },
+        {
+          "id": "D02.2",
+          "criterion": "Failed or unavailable symbols remain in the selection record"
+        },
+        {
+          "id": "D02.3",
+          "criterion": "Previously inspected history is never called unseen validation"
+        }
+      ],
+      "hypotheses": [
+        "quiet_to_active",
+        "capital_allocation"
+      ]
+    },
+    {
+      "id": "D03",
+      "phase": "Market evidence",
+      "title": "Resolve calendar, sparse bars, revisions and corporate actions",
+      "depends_on": [
+        "D01"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Clock checks and expected-session gap guards exist.",
+      "steps": [
+        "Qualify timezones, start/end bar convention, market sessions, holidays and shortened days",
+        "Distinguish documented no-trade intervals from missing feed data; never invent zero-volume candles",
+        "Capture splits/dividends/symbol changes/revisions and adjusted/raw conventions",
+        "Preserve immutable revisions and failure lineage"
+      ],
+      "deliverable": "Reusable quality adapter and explicit eligibility masks by experiment",
+      "acceptance": [
+        {
+          "id": "D03.1",
+          "criterion": "Missing entire sessions and edges are detected against the declared calendar"
+        },
+        {
+          "id": "D03.2",
+          "criterion": "Corporate actions cannot fabricate momentum or leakage"
+        },
+        {
+          "id": "D03.3",
+          "criterion": "A bad input blocks its affected case/family rather than all unrelated research"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "D04",
+      "phase": "Market evidence",
+      "title": "Measure execution evidence and conservative stress assumptions",
+      "depends_on": [
+        "D01"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Determine available historical quote/trade evidence and live quote timestamps",
+        "Capture actual paper spread, receipt, approval and fill latency",
+        "Compare observed evidence with declared bar-fill assumptions and liquidity/participation stresses"
+      ],
+      "deliverable": "Execution-quality dataset and scenario calibration report",
+      "acceptance": [
+        {
+          "id": "D04.1",
+          "criterion": "Trade prints are never presented as executable bid/ask or depth"
+        },
+        {
+          "id": "D04.2",
+          "criterion": "Costs, partials, gaps and stale prices are visible; unsupported precision remains labeled"
+        }
+      ],
+      "hypotheses": [
+        "execution"
+      ]
+    },
+    {
+      "id": "D05",
+      "phase": "Market evidence",
+      "title": "Capture market, sector, breadth and peer context",
+      "depends_on": [
+        "D01"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Collect aligned benchmark/sector histories and dated memberships",
+        "Define breadth coverage and economic peer relationships before testing",
+        "Align all observations by actual availability"
+      ],
+      "deliverable": "Versioned context features and missing-coverage flags",
+      "acceptance": [
+        {
+          "id": "D05.1",
+          "criterion": "Five or nineteen captured symbols are not labeled market breadth"
+        },
+        {
+          "id": "D05.2",
+          "criterion": "Future constituent/peer information is excluded"
+        }
+      ],
+      "hypotheses": [
+        "market_sector",
+        "breadth",
+        "peer_lead_lag"
+      ]
+    },
+    {
+      "id": "D06",
+      "phase": "Market evidence",
+      "title": "Capture timestamped catalysts and news versions",
+      "depends_on": [
+        "D01"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Qualify existing-access news/event sources and terms",
+        "Preserve original availability, source, revisions, earnings proximity and duplicates",
+        "Keep unknown news distinct from no catalyst and compare rumor/verified information explicitly"
+      ],
+      "deliverable": "Cited, timestamped catalyst archive and event/source model",
+      "acceptance": [
+        {
+          "id": "D06.1",
+          "criterion": "Later story revisions do not enter earlier decisions"
+        },
+        {
+          "id": "D06.2",
+          "criterion": "Recycled stories are clustered rather than counted as multiple independent catalysts"
+        }
+      ],
+      "hypotheses": [
+        "catalyst",
+        "news_novelty"
+      ]
+    },
+    {
+      "id": "P01",
+      "phase": "Account and management",
+      "title": "Connect chronological comparative allocation to persisted account events",
+      "depends_on": [
+        "T01",
+        "M01"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Acquisition planner, PaperLedger and portfolio_replay exist.",
+      "steps": [
+        "Compare simultaneous opportunities against shared cash and risk and retaining cash",
+        "Persist reservations, entries, marks, unsettled proceeds, costs and equity snapshots",
+        "Apply chronological settlement and external-flow conventions; retain censored holdings"
+      ],
+      "deliverable": "Reconciled historical account ledger and equity/drawdown curve",
+      "acceptance": [
+        {
+          "id": "P01.1",
+          "criterion": "One dollar and one risk allowance cannot fund multiple overlapping independent cases"
+        },
+        {
+          "id": "P01.2",
+          "criterion": "Fees, settlement and unrealized P&L reconcile; incomplete valuations prevent full-return claims"
+        },
+        {
+          "id": "P01.3",
+          "criterion": "Later exit outcomes do not change earlier allocations"
+        }
+      ],
+      "hypotheses": [
+        "capital_allocation"
+      ]
+    },
+    {
+      "id": "P02",
+      "phase": "Account and management",
+      "title": "Compare protective stops, partial profits and trailing/time exits",
+      "depends_on": [
+        "P01"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "management_replay.py implements partial/trailing alternatives.",
+      "steps": [
+        "Persist original stop versus predeclared structure/ATR protection",
+        "Compare hold, partial exit, trailing and time horizons on mutually exclusive account paths",
+        "Include stop gaps, profit giveback, fees per exit and unresolved exits"
+      ],
+      "deliverable": "Matched position-management account comparisons",
+      "acceptance": [
+        {
+          "id": "P02.1",
+          "criterion": "Stop adjustments use prior completed evidence and take effect prospectively"
+        },
+        {
+          "id": "P02.2",
+          "criterion": "Partial quantities and remaining basis/risk reconcile"
+        },
+        {
+          "id": "P02.3",
+          "criterion": "Planned-risk ceilings are not claimed as guaranteed maximum losses"
+        }
+      ],
+      "hypotheses": [
+        "management"
+      ]
+    },
+    {
+      "id": "P03",
+      "phase": "Account and management",
+      "title": "Implement controlled additions and combined protection",
+      "depends_on": [
+        "P02"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Compare no add, separately protected add, combined protection and partial-profit alternatives",
+        "Count all additions under the same trade risk ceiling",
+        "Track total exposure, entry-to-stop planned loss and current-value giveback separately"
+      ],
+      "deliverable": "Addition/giveback simulator and portfolio comparisons",
+      "acceptance": [
+        {
+          "id": "P03.1",
+          "criterion": "No new 1% risk allowance is granted per addition"
+        },
+        {
+          "id": "P03.2",
+          "criterion": "Stops are not tightened merely to permit extra shares"
+        },
+        {
+          "id": "P03.3",
+          "criterion": "Partial/nonfilled additions and combined protection remain auditable"
+        }
+      ],
+      "hypotheses": [
+        "management",
+        "capital_allocation"
+      ]
+    },
+    {
+      "id": "P04",
+      "phase": "Account and management",
+      "title": "Complete exposure, overnight and daily session controls",
+      "depends_on": [
+        "P01"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "paper_entry_pause and cumulative risk arithmetic exist.",
+      "steps": [
+        "Implement configurable concentration/correlation and specialized-ETF eligibility without adopting unapproved limits",
+        "Qualify overnight event/session protection and maximum holding alternatives",
+        "Persist the agreed paper-only 3% session pause including stale-equity/restart handling"
+      ],
+      "deliverable": "Persisted portfolio/session controller and risk-policy proposals",
+      "acceptance": [
+        {
+          "id": "P04.1",
+          "criterion": "1% per-trade including adds and 5% aggregate ceilings remain enforced"
+        },
+        {
+          "id": "P04.2",
+          "criterion": "Paper daily pause excludes external flows, does not liquidate, and continues scanning/protection"
+        },
+        {
+          "id": "P04.3",
+          "criterion": "Unanswered reviews, stale marks and restart cannot silently enable new exposure"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "P05",
+      "phase": "Account and management",
+      "title": "Stress partial execution and broker/session lifecycle",
+      "depends_on": [
+        "P03",
+        "P04",
+        "D04"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Model partial/rejected/nonfilled entries and exits, halts, gaps and out-of-hours protection",
+        "Reconcile amendments, cancellation races, remaining quantities and lost confirmations",
+        "Qualify broker settlement and account restrictions without assuming leverage"
+      ],
+      "deliverable": "Execution/reconciliation state machine exercised with recorded/fabricated fault cases",
+      "acceptance": [
+        {
+          "id": "P05.1",
+          "criterion": "Unknown order state is reconciled before duplicate submission or risk release"
+        },
+        {
+          "id": "P05.2",
+          "criterion": "Protective quantity tracks actual filled exposure; insufficient evidence cannot report a closed profitable trade"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "H10",
+      "phase": "Additional intelligence",
+      "title": "Implement the accepted technical variants",
+      "depends_on": [
+        "S01",
+        "D03"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Freeze separate compression/expansion, ADX/directional movement, Bollinger squeeze and moving-average/momentum variants",
+        "Implement opening-range, previous-day-high, support/resistance and trendline comparisons",
+        "Record warm-up, thresholds and correlated feature relationships"
+      ],
+      "deliverable": "Separate technical experiment specs, feature code and prior-only checks",
+      "acceptance": [
+        {
+          "id": "H10.1",
+          "criterion": "Every named variant has its own runnable spec or explicit evidence blocker"
+        },
+        {
+          "id": "H10.2",
+          "criterion": "Correlated indicators do not become additive invented confidence"
+        }
+      ],
+      "hypotheses": [
+        "technical_variants",
+        "opening_previous_high"
+      ]
+    },
+    {
+      "id": "H11",
+      "phase": "Additional intelligence",
+      "title": "Qualify and test VWAP reclaim/retest",
+      "depends_on": [
+        "S01",
+        "D03"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Resolve provider VWAP semantics versus session VWAP approximation",
+        "Freeze reclaim/retest and extension rules",
+        "Compare against plain price/volume controls"
+      ],
+      "deliverable": "VWAP experiment with provenance and approximation labels",
+      "acceptance": [
+        {
+          "id": "H11.1",
+          "criterion": "Supplied per-bar VWAP is not assumed to be exact cumulative session VWAP"
+        },
+        {
+          "id": "H11.2",
+          "criterion": "All reclaimed levels were observable before entry"
+        }
+      ],
+      "hypotheses": [
+        "vwap"
+      ]
+    },
+    {
+      "id": "H12",
+      "phase": "Additional intelligence",
+      "title": "Test relative strength, breadth and economic peer lead/lag",
+      "depends_on": [
+        "S01",
+        "D05"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Implement market/sector weakness-strength comparisons and breadth participation",
+        "Freeze peer selection and lead/lag windows before outcomes",
+        "Compare marginal value against price-only baselines"
+      ],
+      "deliverable": "Context-family experiments and matched ablations",
+      "acceptance": [
+        {
+          "id": "H12.1",
+          "criterion": "Dated membership and aligned benchmark evidence accompany each result"
+        },
+        {
+          "id": "H12.2",
+          "criterion": "Missing breadth/peer evidence disables that feature only"
+        }
+      ],
+      "hypotheses": [
+        "market_sector",
+        "breadth",
+        "peer_lead_lag"
+      ]
+    },
+    {
+      "id": "H13",
+      "phase": "Additional intelligence",
+      "title": "Test catalyst-only, technical-only and combined cases",
+      "depends_on": [
+        "S01",
+        "D06"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Freeze catalyst quality, freshness and entry confirmation rules",
+        "Keep three distinct signal bases and their entry setups",
+        "Evaluate new/recycled stories, earnings/gap contexts and later price response"
+      ],
+      "deliverable": "Catalyst/news experiments with cited information snapshots",
+      "acceptance": [
+        {
+          "id": "H13.1",
+          "criterion": "Catalyst-only does not inherit a mandatory technical-momentum signal"
+        },
+        {
+          "id": "H13.2",
+          "criterion": "Unknown news is not relabeled absent; no future news enters a recommendation"
+        }
+      ],
+      "hypotheses": [
+        "catalyst",
+        "news_novelty"
+      ]
+    },
+    {
+      "id": "H14",
+      "phase": "Additional intelligence",
+      "title": "Test reclaim and continuation versus exhaustion",
+      "depends_on": [
+        "S01",
+        "D03"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Define failed-breakdown/reclaim separately from an ordinary breakout",
+        "Freeze persistence, extension, pullback and exhaustion labels",
+        "Include stalled continuation, reversals and false positives"
+      ],
+      "deliverable": "Separate reclaim/persistence strategies and matched failure cases",
+      "acceptance": [
+        {
+          "id": "H14.1",
+          "criterion": "Outcome labels do not become input features at earlier decision times"
+        },
+        {
+          "id": "H14.2",
+          "criterion": "Continuation and exhaustion claims retain sample counts and regime/time context"
+        }
+      ],
+      "hypotheses": [
+        "reclaim",
+        "persistence_exhaustion"
+      ]
+    },
+    {
+      "id": "H15",
+      "phase": "Additional intelligence",
+      "title": "Evaluate AI-assisted intelligence and retrieval incrementally",
+      "depends_on": [
+        "H12",
+        "H13",
+        "H14",
+        "LLM02"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Implement cited document ingestion, chunk/version lineage and bounded retrieval",
+        "Freeze model/prompt/features and latency/cost budgets",
+        "Compare simple rules against AI-assisted decisions and remove one evidence group at a time"
+      ],
+      "deliverable": "Operational retrieval evaluation and frozen AI ablation runs",
+      "acceptance": [
+        {
+          "id": "H15.1",
+          "criterion": "External text is data, never operational instructions"
+        },
+        {
+          "id": "H15.2",
+          "criterion": "No uncited answer or correlated story duplication supplies invented certainty"
+        },
+        {
+          "id": "H15.3",
+          "criterion": "AI is retained only on measured decision value with visible cost and failure evidence"
+        }
+      ],
+      "hypotheses": [
+        "learning"
+      ]
+    },
+    {
+      "id": "LLM01",
+      "phase": "Model suitability",
+      "title": "Define model jobs and benchmark existing-access candidates",
+      "depends_on": [],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "App/research code has no production LLM API client or model routing.",
+      "steps": [
+        "Inventory actual configured model access without exposing credentials",
+        "Keep scanning math, sizing, risk, cash, order state and replay in deterministic code",
+        "Define labeled news extraction/deduplication, catalyst reasoning, retrieval and user-explanation tasks",
+        "Benchmark suitable existing-access candidates on task accuracy, grounding, structured output, failure behavior, latency and full cost"
+      ],
+      "deliverable": "Model/job matrix and reproducible task-specific evaluation set",
+      "acceptance": [
+        {
+          "id": "LLM01.1",
+          "criterion": "No model is called best or suitable merely because it is newer, larger or used in this chat"
+        },
+        {
+          "id": "LLM01.2",
+          "criterion": "Candidate access, current price, licensing, privacy and runtime support are verified before adoption"
+        },
+        {
+          "id": "LLM01.3",
+          "criterion": "Model calls cannot set prices/risk limits, approve orders or turn external text into instructions"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "LLM02",
+      "phase": "Model suitability",
+      "title": "Implement evidence-backed routing, budgets and model provenance",
+      "depends_on": [
+        "LLM01"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Research schema has document/retrieval/learning records; operating routing is not built.",
+      "steps": [
+        "Select a task-suitable lower-cost model only where quality meets predeclared requirements; escalate ambiguous cases explicitly",
+        "Use a stronger reasoning model for tasks where measured improvement justifies cost/latency; evaluate embeddings separately",
+        "Persist model/provider, prompt/schema version, input sources, output, latency, cost and fallback reason",
+        "Enforce monthly budget, caching, timeouts and safe unavailable/degraded behavior"
+      ],
+      "deliverable": "Server-side model registry/router with measured job assignments and audit records",
+      "acceptance": [
+        {
+          "id": "LLM02.1",
+          "criterion": "A cheap model cannot silently replace a failed critical reasoning result without qualification"
+        },
+        {
+          "id": "LLM02.2",
+          "criterion": "No credential/private data enters client code or unnecessary provider calls"
+        },
+        {
+          "id": "LLM02.3",
+          "criterion": "Actual incremental decision value is tested against the deterministic baseline; model changes need versioned evaluation"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "V01",
+      "phase": "Historical evaluation",
+      "title": "Run the broader frozen experiment matrix",
+      "depends_on": [
+        "T03",
+        "D02",
+        "D03",
+        "P02"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Execute supported families on development data with negative/no-entry and failure records",
+        "Run horizon/cost/delay sensitivities and independent session/opportunity clustering",
+        "Match cash and same-window benchmarks, capital occupancy and losses/tails"
+      ],
+      "deliverable": "Reproducible full historical matrix with declared evidence scope",
+      "acceptance": [
+        {
+          "id": "V01.1",
+          "criterion": "Report expectancy, realized/unrealized equity, drawdown, tail losses, costs, exposure and uncertainty on valid denominators"
+        },
+        {
+          "id": "V01.2",
+          "criterion": "Dependent scenarios are alternatives; no summing independent case returns into account ROI"
+        },
+        {
+          "id": "V01.3",
+          "criterion": "Unsupported additional families stay pending and visible rather than being silently dropped"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "V02",
+      "phase": "Historical evaluation",
+      "title": "Freeze candidates and evaluate later unseen evidence",
+      "depends_on": [
+        "V01"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Preserve all selection/tuning history and candidate hashes",
+        "Register evaluation windows, comparison metrics and proposed pass/fail criteria before opening results",
+        "Run matched later evaluation; retain failures and explain extensions"
+      ],
+      "deliverable": "Audited held-out evaluation and explicit candidate decision",
+      "acceptance": [
+        {
+          "id": "V02.1",
+          "criterion": "Development tuning cannot see held-out outcomes"
+        },
+        {
+          "id": "V02.2",
+          "criterion": "No statistical or profitability pass is fabricated when evidence is insufficient"
+        },
+        {
+          "id": "V02.3",
+          "criterion": "Negative results can complete a valid experiment without marking a strategy effective"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "U01",
+      "phase": "Usable product",
+      "title": "Connect authenticated application APIs to authoritative records",
+      "depends_on": [
+        "DB01"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Password-protected Render app and GET-only broker data exist.",
+      "steps": [
+        "Configure least-privilege server access to the designated hosted database",
+        "Implement bounded queries for runs, opportunities, decisions, accounts and health",
+        "Separate historical, ghost, broker-paper and actual account observations in every response"
+      ],
+      "deliverable": "Persistent private API with server-only credentials and provenance",
+      "acceptance": [
+        {
+          "id": "U01.1",
+          "criterion": "Restart does not lose decision/account state"
+        },
+        {
+          "id": "U01.2",
+          "criterion": "Unauthorized reads/writes fail and no secret reaches browser code"
+        },
+        {
+          "id": "U01.3",
+          "criterion": "Missing or stale fields are unavailable, not synthetic zeros"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "U02",
+      "phase": "Usable product",
+      "title": "Present the first historical report in the dashboard",
+      "depends_on": [
+        "T02",
+        "U01"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Show experiment selection, buy/sell examples and gain/loss in plain language",
+        "Explain position/cash histories, realized versus unrealized and return denominators",
+        "Show data quality and exact modeled/observed labels without technical homework"
+      ],
+      "deliverable": "Working historical-results screen backed by stored records",
+      "acceptance": [
+        {
+          "id": "U02.1",
+          "criterion": "Screen numbers reconcile to selected run/fills/account ledger"
+        },
+        {
+          "id": "U02.2",
+          "criterion": "Synthetic demonstrations are isolated from actual account and historical results"
+        },
+        {
+          "id": "U02.3",
+          "criterion": "Desktop and phone workflows are readable and bounded in response time"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "U03",
+      "phase": "Usable product",
+      "title": "Implement shared review, modify, wait, deny, expiry and feedback",
+      "depends_on": [
+        "U01",
+        "P04"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Store original and revised recommendation terms with opportunity identity",
+        "Recalculate size, price validity, fees and risk after every edit",
+        "Require explicit final approval for any authorized order path; retain denial/no response/expiry",
+        "Implement recommendation feedback and distinct preference proposal review"
+      ],
+      "deliverable": "Authenticated dashboard actions and immutable shared decision history",
+      "acceptance": [
+        {
+          "id": "U03.1",
+          "criterion": "Modify alone does not approve; stale/changed/duplicate terms cannot authorize execution"
+        },
+        {
+          "id": "U03.2",
+          "criterion": "A feedback click cannot change a standing preference or active protective order"
+        },
+        {
+          "id": "U03.3",
+          "criterion": "Existing trading authority remains disabled"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "U04",
+      "phase": "Usable product",
+      "title": "Expose comparative opportunity and position guidance clearly",
+      "depends_on": [
+        "U02",
+        "U03",
+        "P02"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Show where/when/price/scale, competing uses of capital and reasons to retain cash",
+        "Display current stop coverage, unrealized giveback, holding risks and next review",
+        "Add simple pause/resume, settings, source freshness and failure explanations"
+      ],
+      "deliverable": "Integrated decision dashboard and conversational explanation endpoint",
+      "acceptance": [
+        {
+          "id": "U04.1",
+          "criterion": "Ranking shows conditional estimates and evidence quality without invented expected ROI"
+        },
+        {
+          "id": "U04.2",
+          "criterion": "Account, recommendation and historical screens use the same reconciled records"
+        },
+        {
+          "id": "U04.3",
+          "criterion": "User can understand the proposed action and consequence without interpreting test counts"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "A01",
+      "phase": "Proactive operation",
+      "title": "Run incremental continuous qualified discovery",
+      "depends_on": [
+        "H01",
+        "H02",
+        "H03",
+        "U01",
+        "D01"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Maintain completed-bar checkpoints and incremental baselines",
+        "Scan regular sessions continuously across declared coverage; qualify extended-hours eligibility separately",
+        "Recover missed windows on restart without future information or duplicate opportunities"
+      ],
+      "deliverable": "Hosted scanner with durable checkpoints, coverage and latency metrics",
+      "acceptance": [
+        {
+          "id": "A01.1",
+          "criterion": "A laptop shutdown does not stop intended hosted work"
+        },
+        {
+          "id": "A01.2",
+          "criterion": "Every qualifying distinct recommendation is retained/delivered; updates are labeled rather than silently suppressing opportunities"
+        },
+        {
+          "id": "A01.3",
+          "criterion": "Stale/partial feeds cannot create fresh executable recommendations"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "A02",
+      "phase": "Proactive operation",
+      "title": "Deliver notifications and shared Telegram reviews",
+      "depends_on": [
+        "A01",
+        "U03"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Connect the chosen notification channel with account-bound authorization",
+        "Deliver recommendations, updates, expiry and failure notices with deduplication/retries",
+        "Route dashboard and Telegram actions through one decision authority"
+      ],
+      "deliverable": "Reliable notification delivery and review workflows",
+      "acceptance": [
+        {
+          "id": "A02.1",
+          "criterion": "Repeated delivery/clicks cannot duplicate decisions or authorize different terms"
+        },
+        {
+          "id": "A02.2",
+          "criterion": "Delivery failure has visible retries/escalation and does not become user denial"
+        },
+        {
+          "id": "A02.3",
+          "criterion": "Existing positions retain monitoring/protection while new exposure is paused"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "A03",
+      "phase": "Proactive operation",
+      "title": "Monitor open exposure and event/session risk",
+      "depends_on": [
+        "A01",
+        "P04",
+        "P05",
+        "U04"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Continuously reconcile account/position/protection observations",
+        "Produce stop, profit-taking, addition and overnight reviews from current evidence",
+        "Handle stale quotes, missed sessions and absent responses using explicit configured behavior"
+      ],
+      "deliverable": "Persistent proactive position-management service in ghost mode",
+      "acceptance": [
+        {
+          "id": "A03.1",
+          "criterion": "No unapproved stop widening, addition or liquidation"
+        },
+        {
+          "id": "A03.2",
+          "criterion": "Current account risk and guidance reconcile to persisted fills and protection state"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "A04",
+      "phase": "Proactive operation",
+      "title": "Qualify deployment, recovery, security and operating costs",
+      "depends_on": [
+        "U01",
+        "A01"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Add measured health/freshness/latency objectives, structured job attempts and cost tracking",
+        "Test restart, provider outage, backups/restore, migration recovery, rollback and secret handling",
+        "Verify always-on needs versus current free-service sleep within $25/month; propose any paid change explicitly"
+      ],
+      "deliverable": "Recovery runbook, measured service qualification and release pipeline",
+      "acceptance": [
+        {
+          "id": "A04.1",
+          "criterion": "Restored state reproduces last completed research/account checkpoint without duplicate work"
+        },
+        {
+          "id": "A04.2",
+          "criterion": "Runtime logs contain no credentials or private payloads"
+        },
+        {
+          "id": "A04.3",
+          "criterion": "CI/build/hosted behavior match the exact released revision; no paid resource is silently added"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "L01",
+      "phase": "Learning and tuning",
+      "title": "Persist complete decision and matched alternative outcomes",
+      "depends_on": [
+        "P01",
+        "U03"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Store accept/modify/deny/no-response and recommendation baseline alternatives",
+        "Link selection, timing, execution and management effects to exact versions",
+        "Preserve negative trials, missing outcomes and rejected feedback"
+      ],
+      "deliverable": "Queryable learning evidence with complete opportunity/decision lineage",
+      "acceptance": [
+        {
+          "id": "L01.1",
+          "criterion": "Preference fit is evaluated separately from predictive return"
+        },
+        {
+          "id": "L01.2",
+          "criterion": "Unanswered/declined cases are not inferred losses or preferences"
+        },
+        {
+          "id": "L01.3",
+          "criterion": "Learned evidence reconciles to the original run and user terms"
+        }
+      ],
+      "hypotheses": [
+        "learning"
+      ]
+    },
+    {
+      "id": "L02",
+      "phase": "Learning and tuning",
+      "title": "Operate comparison, drift and improvement jobs",
+      "depends_on": [
+        "L01",
+        "V02",
+        "H15"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Run bounded scheduled comparisons and drift checks with durable job records",
+        "Generate evidence-backed candidate proposals and cost/quality changes",
+        "Require independent matched evaluation and retain failed proposals"
+      ],
+      "deliverable": "Operating learning/evaluation jobs and visible proposal history",
+      "acceptance": [
+        {
+          "id": "L02.1",
+          "criterion": "Schema triggers are exercised through actual writer/job workflows"
+        },
+        {
+          "id": "L02.2",
+          "criterion": "A backtest pass cannot auto-promote a strategy or rewrite historical decisions"
+        },
+        {
+          "id": "L02.3",
+          "criterion": "Retrieval/model/prompt changes retain versions and incremental-value evidence"
+        }
+      ],
+      "hypotheses": [
+        "learning"
+      ]
+    },
+    {
+      "id": "L03",
+      "phase": "Learning and tuning",
+      "title": "Implement approved preference and strategy adoption",
+      "depends_on": [
+        "L02",
+        "U03"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Show proposal evidence, exact revised terms and approve/modify/deny",
+        "Keep pending/denied/unanswered proposals inactive",
+        "Version adoption, effective time, rollback and impact monitoring"
+      ],
+      "deliverable": "Controlled preference/strategy adoption workflow",
+      "acceptance": [
+        {
+          "id": "L03.1",
+          "criterion": "Risk limits and active protection cannot change under a preference approval"
+        },
+        {
+          "id": "L03.2",
+          "criterion": "Approval binds final reviewed content and cannot be replayed against another version"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "Q01",
+      "phase": "Forward paper readiness",
+      "title": "Run historical end-to-end reconciliation and release review",
+      "depends_on": [
+        "V02",
+        "P03",
+        "P05",
+        "U04",
+        "A02",
+        "A03",
+        "A04",
+        "L01"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Replay discovery through comparison, review, modeled fills, account, management, reporting and learning records",
+        "Inject lost messages, stale quotes, failed writes, missing bars and restarts",
+        "Review final proposed operating settings and unresolved O01-O11 items"
+      ],
+      "deliverable": "Evidence-backed readiness dossier and exact proposed paper configuration",
+      "acceptance": [
+        {
+          "id": "Q01.1",
+          "criterion": "Same settings/data reconcile across API, UI, DB and reports"
+        },
+        {
+          "id": "Q01.2",
+          "criterion": "Every proposed active capability has evidence, and disabled/pending research families are visible"
+        },
+        {
+          "id": "Q01.3",
+          "criterion": "Outstanding choices identify a concrete consequence and do not restart settled Discovery"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "Q02",
+      "phase": "Forward paper readiness",
+      "title": "Execute hosted forward ghost evaluation",
+      "depends_on": [
+        "Q01"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Freeze candidate rules and collect subsequent recommendations with simulated decisions/fills",
+        "Evaluate approximately one month as intended, extending where independent evidence is inadequate",
+        "Compare costs, drawdown, misses, paper pauses, timeliness and user usability with predeclared criteria"
+      ],
+      "deliverable": "Forward ghost record and paper-readiness evaluation",
+      "acceptance": [
+        {
+          "id": "Q02.1",
+          "criterion": "Later evidence was genuinely unseen when each recommendation was made"
+        },
+        {
+          "id": "Q02.2",
+          "criterion": "Calendar duration alone cannot manufacture sufficient sample or profitability"
+        },
+        {
+          "id": "Q02.3",
+          "criterion": "Results identify proceed/revise/stop with reasons; no actual order transport is activated"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "B01",
+      "phase": "Optional broker paper",
+      "title": "Review exact broker-paper order authority and configuration",
+      "depends_on": [
+        "Q01"
+      ],
+      "status": "pending",
+      "authority": "separate_order_authorization",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Present designated sandbox environment, enabled order types, protection, limits and fail-safe actions",
+        "Obtain separate explicit authorization before creating broker paper orders",
+        "Keep this branch disabled while internal ghost evaluation proceeds"
+      ],
+      "deliverable": "Specific broker-paper authorization record or explicit disabled status",
+      "acceptance": [
+        {
+          "id": "B01.1",
+          "criterion": "Existing account/data access and prior go messages are not silently upgraded to order-submission authority"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "B02",
+      "phase": "Optional broker paper",
+      "title": "Implement and verify isolated broker-paper execution",
+      "depends_on": [
+        "B01",
+        "P05",
+        "U03",
+        "A04"
+      ],
+      "status": "pending",
+      "authority": "separate_order_authorization",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Implement sandbox-only adapter with environment pinning and idempotent approved intents",
+        "Reconcile paper order lifecycle, fills, partials, stops and amendments",
+        "Prevent production endpoints and credentials from entering sandbox execution"
+      ],
+      "deliverable": "Authorized sandbox integration and broker-observed forward paper run",
+      "acceptance": [
+        {
+          "id": "B02.1",
+          "criterion": "Fault tests cannot submit a production order"
+        },
+        {
+          "id": "B02.2",
+          "criterion": "Every paper order has specific authorization and reconciled broker state"
+        },
+        {
+          "id": "B02.3",
+          "criterion": "Sandbox fills remain distinct from historical modeled fills"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "LIVE01",
+      "phase": "Future live release",
+      "title": "Prepare live-release proposal without enabling trading",
+      "depends_on": [
+        "Q02",
+        "L03"
+      ],
+      "status": "pending",
+      "authority": "research",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Reconcile historical, forward ghost and any authorized broker-paper evidence",
+        "Present unresolved live daily-loss, exposure, instrument and protection choices with concrete proposed terms",
+        "Assess broker eligibility, outage/overnight protection, costs and rollback"
+      ],
+      "deliverable": "Concrete reviewable live-release proposal with all remaining gates",
+      "acceptance": [
+        {
+          "id": "LIVE01.1",
+          "criterion": "Research/paper settings are not automatically adopted as live settings"
+        },
+        {
+          "id": "LIVE01.2",
+          "criterion": "No funding, purchase, production order or automatic strategy adoption occurs"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "LIVE02",
+      "phase": "Future live release",
+      "title": "Obtain explicit live-trading and funding decisions",
+      "depends_on": [
+        "LIVE01"
+      ],
+      "status": "pending",
+      "authority": "separate_live_authorization",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Ask for specific final production order scope only after the proposal is complete",
+        "Treat funding/purchases as separately authorized actions",
+        "Keep production submission disabled until the exact authorization and risk terms are recorded"
+      ],
+      "deliverable": "Explicit live-release decision or retained disabled state",
+      "acceptance": [
+        {
+          "id": "LIVE02.1",
+          "criterion": "No test, plan status or approval file substitutes for actual explicit user authorization"
+        }
+      ],
+      "hypotheses": []
+    },
+    {
+      "id": "LIVE03",
+      "phase": "Future live release",
+      "title": "Release authorized production execution and monitor",
+      "depends_on": [
+        "LIVE02",
+        "B02",
+        "A04"
+      ],
+      "status": "pending",
+      "authority": "separate_live_authorization",
+      "owner": "assistant",
+      "reuse": "Build the missing integration; preserve existing records.",
+      "steps": [
+        "Only within separately authorized scope, configure isolated production execution and reconciliation",
+        "Verify initial protection, recovery, alerts and exact limits before release",
+        "Monitor agreed risk/performance/drift and preserve pause/rollback authority"
+      ],
+      "deliverable": "Separately authorized production release with operating evidence",
+      "acceptance": [
+        {
+          "id": "LIVE03.1",
+          "criterion": "Production remains inaccessible when authorization, entitlement, freshness or reconciliation fails"
+        },
+        {
+          "id": "LIVE03.2",
+          "criterion": "Live outcomes remain distinct from modeled/paper outcomes"
+        }
+      ],
+      "hypotheses": []
+    }
+  ]
+}

@@ -43,3 +43,34 @@ async function loadAccount(){
 }
 loadAccount();
 setInterval(()=>{if(!document.hidden)loadAccount();},30000);
+
+let assessmentTimer=null;
+function renderAssessment(data){
+ const status=document.getElementById('assessment-status'),root=document.getElementById('assessment-result');
+ root.replaceChildren();clearTimeout(assessmentTimer);
+ const running=['running','queued'].includes(data.status);
+ document.getElementById('assessment-start').disabled=running;
+ if(running){status.textContent=`Example assessment in progress: ${clean(data.stage??'preparing evidence')}. No trade will be submitted.`;assessmentTimer=setTimeout(loadAssessment,3000);return;}
+ if(data.status!=='complete'){status.textContent=data.reason??(data.status==='not_started'?'Ready to run a synthetic example.':'Saved assessment is unavailable.');return;}
+ status.textContent='Saved synthetic assessment - not a current market recommendation.';
+ const assessment=data.assessment,chosen=data.selected_option;
+ root.append(el('h3',chosen?`Paper review: ${chosen.symbol}`:'Retain cash'));
+ const options=el('div');
+ (data.options??[]).forEach(o=>options.append(el('p',`${o.symbol}: ${o.quantity} modeled shares; capital ${money(o.entry_cash)}; planned risk ${money(o.planned_risk)}. Target geometry is experimental.`)));
+ root.append(options);
+ (assessment.claims??[]).forEach(c=>{const article=el('article');article.append(el('strong',`${clean(c.kind)} - ${clean(c.support)} support`),el('p',c.text));(c.citations??[]).forEach(s=>article.append(el('p',`${s.source_id}: ${s.quote}`,'muted')));root.append(article);});
+ root.append(el('h3','What remains unknown'));
+ (assessment.missing_information??[]).forEach(t=>root.append(el('p',t)));
+ root.append(el('p',`Engine baseline comparison: ${data.baseline_agreement?'same paper option':'different choice'}. Incremental trading value has not been established.`));
+ const cost=data.cost_complete?`$${Number(data.reported_cost_usd).toFixed(6)}`:'Not fully reconciled';
+ root.append(el('p',`Assessment time: ${(data.elapsed_ms/1000).toFixed(1)} seconds. Reported API cost: ${cost}. Same evidence reuses this saved result.`,'muted'));
+ root.append(el('p','Sources and model responses are retained for evaluation. No learning change or strategy adoption occurred. Exact citation matches do not independently verify every conclusion.','muted'));
+}
+async function loadAssessment(){try{const r=await fetch('/api/assessment',{cache:'no-store',signal:AbortSignal.timeout(15000)});if(!r.ok)throw Error();renderAssessment(await r.json());}catch{document.getElementById('assessment-status').textContent='Assessment status could not be loaded. No automatic paid retry will run.';document.getElementById('assessment-start').disabled=false;}}
+document.getElementById('assessment-start').addEventListener('click',async()=>{
+ document.getElementById('assessment-start').disabled=true;
+ document.getElementById('assessment-status').textContent='Preparing the synthetic evidence bundle...';
+ try{const r=await fetch('/api/assessment/start',{method:'POST',headers:{'Content-Type':'application/json','X-Ghost-Review':'1'},body:JSON.stringify({kind:'synthetic_ghost_review'}),signal:AbortSignal.timeout(15000)});if(!r.ok)throw Error();renderAssessment(await r.json());}
+ catch{document.getElementById('assessment-status').textContent='The start response was lost. Checking the saved status before any retry.';await loadAssessment();}
+});
+loadAssessment();

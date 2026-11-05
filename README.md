@@ -1,8 +1,10 @@
 # VisionAIry Trader
 
+**Follow the current [executable delivery plan](docs/EXECUTION_PLAN.md).** Its JSON task graph, acceptance criteria and evidence controller govern remaining work. Older dated status notes are history, not completion authority. Run `python research/execution_plan.py next` to continue without restarting Discovery. Model/job evaluation and routing are explicitly included; a bounded synthetic ghost-assessment integration now connects the selected models; continuous discovery and current-market recommendations remain pending.
+
 Personal momentum research and ghost-trading platform.
 
-**Status:** research prototype with a deployed password-protected mechanics dashboard at https://visionairy-trader-research.onrender.com. It displays synthetic account/management experiments only. The preserved pilot remains private in Supabase. No live trading, hosted market scanner, Telegram application or demonstrated profitable strategy is running.
+**Status:** research prototype with a deployed password-protected mechanics dashboard at https://visionairy-trader-research.onrender.com. It reads authenticated broker account observations and provides a separately labeled synthetic mechanics example; historical results and live recommendations are not yet integrated. The preserved pilot remains private in Supabase. No live trading, hosted market scanner, Telegram application or demonstrated profitable strategy is running.
 
 ## Architecture
 
@@ -19,7 +21,7 @@ Supabase project details are supplied through environment configuration; credent
 - Initial price/relative-activity benchmark replay and sensitivity scenarios.
 - Deduplicated, versioned SQLite research data, run lineage and consistent snapshots.
 - Cost/sizing arithmetic preflight.
-- 175 research/replay/storage/import/selection/decision/UI checks and 7 sizing checks.
+- Research/replay/storage/import/selection/decision/UI, sizing, retry and delivery-controller checks; current counts are recorded with release evidence.
 - Nonblocking account refresh with stale-number suppression, request timing and on-demand demo computation; free-host wake-up remains a separate limitation.
 - Measured hypothesis/data readiness: see docs/HYPOTHESIS_READINESS.md. The five-symbol captured archive supports diagnostics, not representative strategy validation.
 - Authenticated Tradier account-data endpoint with pinned read-only GET routes. Requires a securely configured environment/token before any real account connection is claimed; unavailable values remain null, and measured account return stays unavailable without a reconciled baseline and cash flows.
@@ -75,3 +77,7 @@ Run `python research/archive_diagnostic.py --database data/original/research_sna
 ## Existing-access historical collection
 
 Authenticated `/api/history` and `/api/calendar` expose only bounded server-side research GETs; the production token remains in Render secrets. `research/history_collection.py` freezes a price-blind directory coverage sample; `research/collect_history.mjs` exports a bounded, resumable `collect(workspaceRoot, batchLimit)` using the existing private dashboard access file. `research/collection_diagnostic.py` preserves failures/gaps and uses explicit expected calendar sessions. Captures/results remain excluded under `data/`; they do not establish historical membership, execution prices or profitable returns. Current verification: 197 research/UI + 7 sizing = 204 software checks. See docs/HYPOTHESIS_READINESS.md for reproduction and actual evidence limits.
+
+## Evidence-based ghost example
+
+The private dashboard has an explicit example-assessment action using Ling for extraction and Nemotron for research. It preserves source-linked claims and model-call receipts in the existing Supabase database; repeated identical evidence reuses the saved result. The example is synthetic, separate from broker observations, and submits no orders. See [MODEL_RUNTIME.md](docs/MODEL_RUNTIME.md) for boundaries, cost controls and unfinished live scanner/retrieval/learning work.
