@@ -20,6 +20,33 @@ export function decodeReply(raw) {
     reply.result.content?.find(block => block.type === 'text')?.text ?? '{}');
 }
 
+// XFMS may rank a model after dropping an unanswered case. Require complete
+// coverage before using that ranking for this project's routing recommendation.
+export function reviewReport(report, expectedTaskCount, requiredChecks) {
+  if (!Number.isInteger(expectedTaskCount) || expectedTaskCount < 1
+      || !Array.isArray(requiredChecks) || !requiredChecks.length)
+    throw new Error('Explicit task count and mandatory checks are required');
+  const rejected = {};
+  const eligible = (report.order ?? []).filter(model => {
+    const reasons = [];
+    if (report.excluded?.[model] || report.held_for_a_second_look?.[model])
+      reasons.push('An unresolved requirement failure remains');
+    if ((report.dropped ?? []).some(cell => cell.model === model))
+      reasons.push('At least one task returned no usable answer');
+    const rows = report.each_model_on_each_requirement?.[model] ?? {};
+    for (const check of requiredChecks) {
+      const match = /^passed (\d+) of (\d+) tasks\b/.exec(rows[check] ?? '');
+      if (!match || Number(match[1]) !== expectedTaskCount
+          || Number(match[2]) !== expectedTaskCount)
+        reasons.push(`Incomplete passing evidence: ${check}`);
+    }
+    if (reasons.length) rejected[model] = reasons;
+    return !reasons.length;
+  });
+  return { recommended: eligible[0] ?? null, eligible, rejected,
+    support: 'Automated grading of the prepared task suite; not independent validation or evidence of trading profitability' };
+}
+
 async function atomicJson(path, value) {
   const temp = `${path}.${randomUUID()}.tmp`;
   await writeFile(temp, JSON.stringify(value, null, 2));

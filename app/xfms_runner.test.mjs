@@ -3,7 +3,18 @@ import assert from 'node:assert/strict';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { decodeReply, startBenchmark } from './xfms_runner.mjs';
+import { decodeReply, startBenchmark, reviewReport } from './xfms_runner.mjs';
+
+test('a dropped task disqualifies the service winner despite a perfect partial score', () => {
+  const report = { order: ['partial', 'complete'],
+    dropped: [{ model: 'partial', task: 't4', error: 'empty answer' }],
+    each_model_on_each_requirement: {
+      partial: { grounding: 'passed 5 of 5 tasks' },
+      complete: { grounding: 'passed 6 of 6 tasks' } } };
+  assert.deepEqual(reviewReport(report, 6, ['grounding']).eligible, ['complete']);
+  assert.equal(reviewReport(report, 6, ['grounding']).recommended, 'complete');
+  assert.equal(reviewReport(report, 6, ['missing check']).recommended, null);
+});
 
 test('SSE notifications do not hide the final report', () => {
   const raw = 'event: message\r\ndata: {"method":"ping"}\r\n\r\n'
