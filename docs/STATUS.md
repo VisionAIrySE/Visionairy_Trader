@@ -2,6 +2,17 @@
 
 ## Current release
 
+### November 5: explicit paper targets, liquidity and comparison cash
+
+The current-session worker now retains 2R and 3R target alternatives, derived only from original setup terms and completed setup-time bars. Expected return and win probability remain unset; risk multiples are labeled experimental geometry. Fresh quote timestamps, contiguous recent bar volume and a disclosed one-percent participation assumption constrain paper capacity; unknown displayed-size units are never silently multiplied. Closed-session and missing-liquidity reasons remain explicit even without a cash setting.
+
+A private comparison form lets the owner choose simulation cash and a target scenario. No mandatory paper amount was agreed; the hosted setting remains unset until the owner chooses. The configuration is an empty counterfactual comparison budget, not broker capital or an active position ledger. Existing one-percent/five-percent planned-risk constraints apply. Costs remain explicit uncalibrated assumptions.
+
+246 research/dashboard and 7 sizing checks pass, including a positive synthetic open-session setup-to-allocation case and unchanged negative guards. Source release 99e17ad23d8200cdeb6dd6a83f7e0417ff5129cd is live as dep-dbmh15k9v7es73ef8lo0. Hosted invalid cash returned 400 and comparison cash remained not_configured. The hosted evidence refresh completed in 52 seconds: twenty sampled histories, twenty detected patterns, forty target alternatives and twenty liquidity decisions. Stale postmarket quote evidence stayed unknown rather than becoming a fill/size assumption. Owner cash remained not_configured. The final display exposes conditional rank, modeled quantity, capital, planned risk, entry ceiling and remaining shared cash when those inputs pass. Final release verification follows deployment. See PAPER_COMPARISONS.md.
+
+Publishing note: the connector's expected-head mutation returned repeated GitHub GraphQL server errors. The commit/tree and source branch existed, but main was unchanged. After verifying the exact remote parent, an explicit force=false fast-forward-only update succeeded. This preserves unrelated branch changes and does not require new credentials or permission changes. The attempted pull-request creation failed before a PR existed; no PR merge or attachment is claimed.
+
+
 ### November 5: current-session bar and quote qualification connected
 
 Current-session candidate testing now uses the existing broad quote baseline and current directory capture to freeze a price-blind twenty-symbol common-share-indicated sample. It obtains the observed session calendar, validates completed five-minute OHLCV bars, retains raw source evidence, measures missing slots and checks actual bid/ask timestamps. A final clock read handles a session transition during collection. No target or paper cash is manufactured.

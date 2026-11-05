@@ -15,3 +15,7 @@ Local validation: 246 research/dashboard tests plus 7 sizing tests, including a 
 Remaining: representative target/strategy evaluation, calibrated execution evidence, active paper ledger and approval/position lifecycle, broader live strategy coverage, source-grounded model/news context and notification delivery. Qualified recommendations and unattended operation remain off.
 
 Primary field documentation: https://docs.tradier.com/market-data/get-quotes and https://docs.tradier.com/docs/timesale. The cited quote schema lists size and lot-size fields; it does not by itself establish usable executable depth for this application.
+
+Hosted verification: the twenty-symbol session test completed in 52 seconds and retained forty target alternatives and twenty liquidity decisions. The owner configuration remained not_configured. Stale postmarket bid/ask evidence retained unknown capacity instead of an invented quantity. Target source identities, experimental support and null probabilities/expected returns were present. Invalid zero cash returned 400 without changing settings. Positive hosted cash was not set by the assistant; positive persistence/allocation is tested synthetically. Previously inspected session data are not independent held-out strategy validation.
+
+Conditional comparison display exposes rank, modeled quantity, required capital, planned risk, entry ceiling and remaining shared cash when supported. This is still a scenario snapshot, not an active ledger or executed trade.

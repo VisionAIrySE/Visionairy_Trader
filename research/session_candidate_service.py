@@ -25,6 +25,7 @@ class SessionCandidateService:
             return dict(status=report['status'],worker=self.worker,page=page,page_size=25,total=len(report['events']),
                 session=report['market_clock'],scope=report['scope'],selection=report['selection'],coverage=report['coverage'],
                 started_at=report['started_at'],finished_at=report['finished_at'],setup_counts=report['setup_counts'],
+                allocation_summary={k:v for k,v in report['review']['allocation'].items() if k not in ('reviews','comparisons')},
                 paper_comparison_config=report.get('paper_comparison_config',{}),cost_assumptions=report.get('cost_assumptions',{}),
                 rows=[dict(event=e,review=reviews[e['event_id']],targets=report.get('target_hypotheses',{}).get(e['event_id'],[]),
                     liquidity=report.get('liquidity_reviews',{}).get(e['event_id'])) for e in report['events'][page*25:(page+1)*25]],
