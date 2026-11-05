@@ -11,7 +11,7 @@ import time
 import urllib.request
 import uuid
 
-VERSION = 'ghost-assessment-v3'
+VERSION = 'ghost-assessment-v4'
 MODELS = {'news': ('inclusionai/ling-3.1-flash',),
           'research': ('nvidia/nemotron-3.5-lightning', 'inclusionai/ling-3.1-flash')}
 MAX_PRICE = {'prompt': 0.2, 'completion': 0.6}  # USD per million tokens; provider routing ceiling
@@ -169,6 +169,10 @@ class ModelAssessment:
         reserve = (D(len(canonical(messages).encode()) + 4096) * D(str(MAX_PRICE['prompt']))
                    + D(MAX_TOKENS[kind]) * D(str(MAX_PRICE['completion']))) / D(1000000)
         for index, model in enumerate(MODELS[kind]):
+            provider_profile = dict(require_parameters=True, data_collection='deny', max_price=MAX_PRICE)
+            if model == 'nvidia/nemotron-3.5-lightning':
+                provider_profile.update(only=['deepinfra/bf16'], allow_fallbacks=False)
+            reasoning_profile = {'enabled': False} if kind == 'news' else {'enabled': True}
             call_id = str(uuid.uuid4())
             metadata = dict(id=call_id, job_id=job_id, kind=kind, model=model,
                 prompt_version=VERSION, schema_sha256=digest(schema), input_sha256=digest(messages),
@@ -176,8 +180,7 @@ class ModelAssessment:
                     document_version=s['document_version'], available_at=s['available_at']) for s in sources],
                 reserved_usd=str(reserve), fallback_reason='primary_failed_validation_or_transport' if index else None)
             metadata['runtime_profile'] = dict(max_tokens=MAX_TOKENS[kind],
-                reasoning={'enabled': False} if kind == 'news' else {'effort': 'low'},
-                provider=dict(require_parameters=True, data_collection='deny', max_price=MAX_PRICE))
+                reasoning=reasoning_profile, provider=provider_profile)
             self.store.call('reserve', metadata)
             started = self.clock()
             receipt = dict(metadata, status='unknown', output=None, cost_usd=None)
@@ -187,8 +190,7 @@ class ModelAssessment:
                     {'Authorization': 'Bearer ' + self.api_key, 'Content-Type': 'application/json',
                      'X-OpenRouter-Title': 'VisionAIry Trader ghost assessment'},
                     dict(model=model, messages=messages, max_tokens=MAX_TOKENS[kind], temperature=0,
-                         reasoning={'enabled': False} if kind == 'news' else {'effort': 'low'},
-                         provider=dict(require_parameters=True, data_collection='deny', max_price=MAX_PRICE),
+                         reasoning=reasoning_profile, provider=provider_profile,
                          response_format=dict(type='json_schema', json_schema=dict(
                              name=kind + '_assessment', strict=True, schema=schema)),
                          stream=False, usage={'include': True}), timeout=60)
@@ -203,7 +205,10 @@ class ModelAssessment:
                 choices = response.get('choices') or []
                 if not choices or choices[0].get('finish_reason') != 'stop':
                     raise AssessmentError('Incomplete model response')
-                answer = json.loads(choices[0]['message']['content'])
+                content = choices[0].get('message', {}).get('content')
+                if not isinstance(content, str) or not content.strip():
+                    raise AssessmentError('No final model answer')
+                answer = json.loads(content)
                 validate_claims(answer, sources,
                     choices=['cash'] + [o['id'] for o in context.get('options', [])] if kind == 'research' else None)
                 if receipt.get('served_model') != model:
