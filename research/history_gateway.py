@@ -5,6 +5,7 @@ No credential export, order transport, disk writes or implicit study qualificati
 import os
 import threading
 import time
+import re
 from datetime import datetime,timezone
 
 from broker_readonly import TradierReader,validate_history_params,ProviderReadError
@@ -17,10 +18,18 @@ class HistoryGateway:
         self.opener=opener;self.clock=clock;self.lock=threading.Lock();self.next_read=0
 
     def read(self,kind,params):
-        path={'history':'markets/timesales','calendar':'markets/calendar','lookup':'markets/lookup'}.get(kind)
+        path={'history':'markets/timesales','calendar':'markets/calendar','lookup':'markets/lookup',
+              'quotes':'markets/quotes','clock':'markets/clock'}.get(kind)
         query=dict(params)
         if kind=='history':query['session_filter']='open'
-        try:validate_history_params(path,query)
+        try:
+            if kind=='quotes':
+                if (set(query)!={'symbols'} or not isinstance(query['symbols'],str)
+                        or not re.fullmatch(r'[A-Z0-9./^-]+(?:,[A-Z0-9./^-]+){0,49}',query['symbols'])):
+                    raise DataError('Bounded explicit quote symbols required')
+            elif kind=='clock':
+                if query:raise DataError('Market clock takes no query parameters')
+            else:validate_history_params(path,query)
         except (DataError,TypeError):return 400,dict(status='invalid_request',error='Invalid or unbounded research-data request')
         if not self.lock.acquire(blocking=False):return 429,dict(status='busy',retry_after_seconds=2)
         try:
@@ -58,6 +67,11 @@ class HistoryGateway:
                     if 'securities' not in payload:
                         raise DataError('Missing security lookup evidence')
                     result['mapping_confirmed']=False
+                elif kind=='quotes':
+                    if 'quotes' not in payload:raise DataError('Missing quote collection')
+                    result['recommendation_qualified']=False
+                elif kind=='clock':
+                    if not isinstance(payload.get('clock'),dict):raise DataError('Missing market clock')
                 elif not isinstance(payload.get('calendar'),dict):
                     raise DataError('Missing calendar evidence')
                 return 200,result

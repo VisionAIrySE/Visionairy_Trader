@@ -6,6 +6,22 @@ from test_broker_readonly import Provider
 
 
 class HistoryGatewayTests(unittest.TestCase):
+    def test_market_quotes_and_clock_are_bounded_production_reads(self):
+        provider=Provider({'markets/quotes':{'quotes':{'quote':{'symbol':'TEST','last':'10','trade_date':1793890000000}}},
+                           'markets/clock':{'clock':{'state':'open'}}})
+        for kind,params in [('quotes',{'symbols':'TEST,OTHER'}),('clock',{})]:
+            gateway=HistoryGateway({'TRADIER_PRODUCTION_TOKEN':'private-test-key'},provider)
+            code,result=gateway.read(kind,params)
+            self.assertEqual(code,200)
+            self.assertEqual(result['source']['environment'],'production')
+            self.assertNotIn('private-test-key',json.dumps(result))
+        self.assertTrue(all(r.get_method()=='GET' for r in provider.calls))
+        gateway=HistoryGateway({'TRADIER_PRODUCTION_TOKEN':'private-test-key'},provider)
+        for kind,params in [('quotes',{'symbols':'A','url':'https://evil.example'}),
+                            ('quotes',{'symbols':','.join(['A']*51)}),('quotes',{'symbols':'../secret?token=x'}),
+                            ('clock',{'state':'closed'})]:
+            self.assertEqual(gateway.read(kind,params)[0],400)
+
     def setUp(self):
         self.params=dict(symbol='TEST',interval='5min',start='2026-10-01 09:30',end='2026-11-03 16:00')
         self.row=dict(time='2026-10-01T09:30:00',timestamp=1790861400,

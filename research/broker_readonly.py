@@ -84,7 +84,11 @@ class TradierReader:
         url=self._base+path+('?' + urllib.parse.urlencode(params) if params else '')
         req=urllib.request.Request(url,method='GET',headers={'Authorization':'Bearer '+self._token,'Accept':'application/json'})
         try:
-            with self._opener.open(req,timeout=5) as response:raw=response.read(2*1024*1024+1)
+            with self._opener.open(req,timeout=5) as response:
+                raw=response.read(2*1024*1024+1)
+                headers=getattr(response,'headers',{})
+                rate_limits={key:headers.get(key) for key in ('X-Ratelimit-Allowed','X-Ratelimit-Used',
+                    'X-Ratelimit-Available','X-Ratelimit-Expiry') if headers.get(key) is not None}
         except urllib.error.HTTPError as exc:
             body=exc.read(4096)
             if exc.code==429 or b'Quota Violation' in body:
@@ -100,7 +104,8 @@ class TradierReader:
         if not isinstance(payload,dict) or payload.get('errors'):raise DataError('Tradier returned an error')
         return payload,dict(provider='Tradier',endpoint=path.split('/')[-1],retrieved_at=int(self._clock()),
             payload_sha256=hashlib.sha256(raw).hexdigest(),environment=self.environment,
-            provider_as_of=None,timestamp_note='Retrieval time is not a provider valuation timestamp')
+            provider_as_of=None,timestamp_note='Retrieval time is not a provider valuation timestamp',
+            rate_limit_headers=rate_limits)
 
     def snapshot(self,account_id=None):
         result=dict(status='unavailable',provider='Tradier',environment=self.environment,
