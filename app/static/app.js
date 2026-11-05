@@ -64,7 +64,7 @@ function renderAssessment(data){
  root.append(el('p',`Engine baseline comparison: ${data.baseline_agreement?'same paper option':'different choice'}. Incremental trading value has not been established.`));
  const cost=data.cost_complete?`$${Number(data.reported_cost_usd).toFixed(6)}`:'Not fully reconciled';
  root.append(el('p',`Assessment time: ${(data.elapsed_ms/1000).toFixed(1)} seconds. Reported API cost: ${cost}. Same evidence reuses this saved result.`,'muted'));
- root.append(el('p','Sources and model responses are retained for evaluation. No learning change or strategy adoption occurred. Exact citation matches do not independently verify every conclusion.','muted'));
+ root.append(el('p','Sources and model responses are retained for evaluation. No learning change or strategy adoption occurred. Citations show stored evidence; conclusions still require evaluation.','muted'));
 }
 async function loadAssessment(){try{const r=await fetch('/api/assessment',{cache:'no-store',signal:AbortSignal.timeout(15000)});if(!r.ok)throw Error();renderAssessment(await r.json());}catch{document.getElementById('assessment-status').textContent='Assessment status could not be loaded. No automatic paid retry will run.';document.getElementById('assessment-start').disabled=false;}}
 document.getElementById('assessment-start').addEventListener('click',async()=>{

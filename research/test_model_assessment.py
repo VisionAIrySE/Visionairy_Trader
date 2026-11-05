@@ -32,7 +32,7 @@ def context():
 def reply(payload, text=None, choice=None):
     body=json.loads(payload['messages'][1]['content'])
     claim=dict(kind='fact',text=text or 'The supplied notice says approval is pending.',support='limited',
-        citations=[{'source_id':'s1','quote':'approval is pending'}])
+        citations=[{'source_id':'s1'}])
     result={'claims':[claim],'missing_information':['No independent evidence of profitable trading.']}
     if 'options' in body:result['choice']=choice or 'paper-a'
     return dict(id='generation-test',model=payload['model'],provider='fixture-provider',
@@ -53,6 +53,7 @@ class AssessmentTests(unittest.TestCase):
         self.assertTrue(report['baseline_agreement'])
         self.assertEqual(report['incremental_decision_value'],'not_established_by_this_fixture')
         self.assertEqual(report['reported_cost_usd'],'0.0002')
+        self.assertEqual(report['assessment']['claims'][0]['citations'][0]['quote'],original['sources'][0]['text'])
         self.assertEqual(len(store.calls),2)
         self.assertEqual(original,context())
         cached=ModelAssessment(store,'private-test-key',transport).run(context())
@@ -99,9 +100,10 @@ class AssessmentTests(unittest.TestCase):
     def test_invented_citations_unknown_options_and_monetary_overrides_fail(self):
         good=reply({'messages':[{}, {'content':json.dumps(context())}],'model':'test'})
         result=json.loads(good['choices'][0]['message']['content'])
-        for change in ('citation','choice','override','fact_without_source'):
+        for change in ('citation','unknown_source','choice','override','fact_without_source'):
             bad=copy.deepcopy(result)
             if change=='citation':bad['claims'][0]['citations'][0]['quote']='approval confirmed'
+            if change=='unknown_source':bad['claims'][0]['citations'][0]['source_id']='invented'
             if change=='choice':bad['choice']='unauthorized-order'
             if change=='override':bad['quantity']=999
             if change=='fact_without_source':bad['claims'][0]['citations']=[]
