@@ -17,13 +17,15 @@ from mechanics_demo import run_demo
 from broker_readonly import configured_snapshot
 from account_cache import AccountCache
 from history_gateway import HistoryGateway
+from assessment_service import AssessmentService
 
 
-def make_handler(report,username,password_hash,account_provider=configured_snapshot,report_factory=run_demo,history_provider=None):
+def make_handler(report,username,password_hash,account_provider=configured_snapshot,report_factory=run_demo,history_provider=None,assessment_service=None):
     if not username or len(password_hash)!=64 or any(c not in '0123456789abcdef' for c in password_hash):
         raise ValueError('Private dashboard credentials must be configured')
     account_cache=AccountCache(account_provider)
     history_provider=history_provider or HistoryGateway().read
+    assessment_service=assessment_service or AssessmentService()
     report_cache={'report':report};report_lock=threading.Lock()
     class Handler(BaseHTTPRequestHandler):
         def log_message(self,*args):pass  # Never log Authorization headers or research payloads.
@@ -56,6 +58,8 @@ def make_handler(report,username,password_hash,account_provider=configured_snaps
                 return self.send(200,data)
             if self.path=='/api/account':
                 return self.send(200,account_cache.get())
+            if self.path=='/api/assessment':
+                return self.send(200,assessment_service.latest())
             route=urlsplit(self.path)
             if route.path in ('/api/history','/api/calendar','/api/lookup'):
                 if len(route.query)>500:return self.send(400,dict(error='Research query too long'))
@@ -68,7 +72,20 @@ def make_handler(report,username,password_hash,account_provider=configured_snaps
             if self.path in files:
                 name,kind=files[self.path];return self.send(200,(ROOT/'app'/'static'/name).read_bytes(),kind)
             return self.send(404,dict(error='Not found'))
-        def do_POST(self):return self.send(405,dict(error='This research dashboard has no action or trading endpoints'))
+        def do_POST(self):
+            self.request_started=time.monotonic()
+            if self.path!='/api/assessment/start':
+                return self.send(405,dict(error='This dashboard has no trading endpoints'))
+            if not self.authorized():return self.send(401,dict(error='Authentication required'))
+            if self.headers.get('X-Ghost-Review')!='1':
+                return self.send(403,dict(error='Explicit same-origin ghost review required'))
+            try:
+                length=int(self.headers.get('Content-Length','0'))
+                if not 0<length<=128:raise ValueError()
+                payload=json.loads(self.rfile.read(length))
+                if payload!={'kind':'synthetic_ghost_review'}:raise ValueError()
+            except (ValueError,TypeError):return self.send(400,dict(error='Known bounded review required'))
+            return self.send(202,assessment_service.start())
     return Handler
 
 
