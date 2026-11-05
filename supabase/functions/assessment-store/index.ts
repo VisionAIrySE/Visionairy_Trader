@@ -13,10 +13,73 @@ Deno.serve(async req => {
     return Response.json({ error: 'unauthorized' }, { status: 401 });
   try {
     const raw = await req.text();
-    if (raw.length > 700000) return Response.json({ error: 'too_large' }, { status: 413 });
+    if (raw.length > 4000000) return Response.json({ error: 'too_large' }, { status: 413 });
     const { operation, payload: p } = JSON.parse(raw);
     if (!p || typeof p !== 'object') throw Error();
     const result = await sql.begin(async tx => {
+      if (operation === 'scan_universe_put') {
+        if (!/^[0-9a-f]{64}$/.test(p.sha256 || '') || typeof p.packed_universe !== 'string'
+            || p.packed_universe.length > 450000) throw Error();
+        await tx`insert into trader.jobs(kind,idempotency_key,payload,status,checkpoint)
+          values ('market_universe_v1',${'market_universe:' + p.sha256},${tx.json(p)},'complete','{}'::jsonb)
+          on conflict (idempotency_key) do nothing`;
+        return { saved: true };
+      }
+      if (operation === 'scan_universe_get') {
+        const rows=await tx`select payload from trader.jobs where kind='market_universe_v1' and status='complete'
+          order by available_at desc limit 1`;
+        return rows[0]?.payload || { error: 'universe_not_configured' };
+      }
+      if (operation === 'scan_state') {
+        const rows=await tx`select checkpoint from trader.jobs where kind='market_scan_state_v1'
+          and idempotency_key='market_scan_current_state_v1' limit 1`;
+        return rows[0]?.checkpoint || {};
+      }
+      if (operation === 'scan_latest') {
+        await tx`update trader.jobs set status='failed',checkpoint=jsonb_set(jsonb_set(checkpoint,
+          '{summary,status}','"interrupted"'::jsonb),'{summary,stage}','"lease_expired_requires_review"'::jsonb)
+          where kind='market_scan_cycle_v1' and status='running' and lease_until<=now()`;
+        const rows=await tx`select id,status,checkpoint from trader.jobs where kind='market_scan_cycle_v1'
+          order by available_at desc limit 1`;
+        return rows[0] || { status: 'not_started', checkpoint: {} };
+      }
+      if (operation === 'scan_begin') {
+        if (!uuid.test(p.id || '') || p.summary?.version !== 'market-monitor-v1'
+            || p.summary?.orders_submitted !== 0) throw Error();
+        await tx`select pg_advisory_xact_lock(hashtext('visionairy_market_scan_cycle'))`;
+        const active=await tx`select id,checkpoint from trader.jobs where kind='market_scan_cycle_v1'
+          and status='running' and lease_until>now() order by available_at desc limit 1`;
+        if (active.length) return { created: false, ...active[0].checkpoint.summary };
+        await tx`update trader.jobs set status='failed',checkpoint=checkpoint || ${tx.json({
+          interruption: 'lease_expired_no_full_cycle_claim' })}
+          where kind='market_scan_cycle_v1' and status='running' and lease_until<=now()`;
+        await tx`insert into trader.jobs(id,kind,idempotency_key,payload,status,lease_until,checkpoint)
+          values (${p.id},'market_scan_cycle_v1',${'market_scan:' + p.id},${tx.json({ version:'market-monitor-v1' })},
+          'running',now()+interval '10 minutes',${tx.json({ summary: p.summary })})`;
+        return { created: true, id: p.id };
+      }
+      if (operation === 'scan_progress' || operation === 'scan_finish') {
+        if (!uuid.test(p.id || '') || p.summary?.version !== 'market-monitor-v1'
+            || p.summary?.orders_submitted !== 0 || p.summary?.recommendations_generated !== 0) throw Error();
+        const rows=await tx`select id from trader.jobs where id=${p.id} and kind='market_scan_cycle_v1'
+          and status='running' for update`;
+        if (rows.length!==1) throw Error();
+        const terminal=operation==='scan_finish';
+        const state=terminal?(p.summary.status==='failed'?'failed':p.summary.status==='cancelled'?'cancelled':'complete'):'running';
+        const checkpoint={summary:p.summary,packed_events:p.packed_events || null,
+          packed_issues:p.packed_issues || null,sources:p.sources || []};
+        await tx`update trader.jobs set status=${state},checkpoint=${tx.json(checkpoint)} where id=${p.id}`;
+        if (terminal && p.summary.status==='complete' && p.packed_state) {
+          if (typeof p.packed_state!=='string' || p.packed_state.length>1300000) throw Error();
+          // Only operational baseline state rotates. Immutable cycle summaries,
+          // every trigger's before/after evidence and failures remain retained.
+          await tx`insert into trader.jobs(kind,idempotency_key,payload,status,checkpoint)
+            values ('market_scan_state_v1','market_scan_current_state_v1','{}'::jsonb,'complete',
+              ${tx.json({ packed_state:p.packed_state,cycle_id:p.id,summary:p.summary })})
+            on conflict(idempotency_key) do update set checkpoint=excluded.checkpoint`;
+        }
+        return { saved: true };
+      }
       if (operation === 'create') {
         if (!/^[0-9a-f]{64}$/.test(p.request_hash) || p.context?.mode !== 'ghost'
             || p.context?.orders_submitted !== 0) throw Error();

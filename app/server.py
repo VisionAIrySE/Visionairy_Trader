@@ -18,14 +18,16 @@ from broker_readonly import configured_snapshot
 from account_cache import AccountCache
 from history_gateway import HistoryGateway
 from assessment_service import AssessmentService
+from scanner_service import ScannerService
 
 
-def make_handler(report,username,password_hash,account_provider=configured_snapshot,report_factory=run_demo,history_provider=None,assessment_service=None):
+def make_handler(report,username,password_hash,account_provider=configured_snapshot,report_factory=run_demo,history_provider=None,assessment_service=None,scanner_service=None):
     if not username or len(password_hash)!=64 or any(c not in '0123456789abcdef' for c in password_hash):
         raise ValueError('Private dashboard credentials must be configured')
     account_cache=AccountCache(account_provider)
     history_provider=history_provider or HistoryGateway().read
     assessment_service=assessment_service or AssessmentService()
+    scanner_service=scanner_service or ScannerService()
     report_cache={'report':report};report_lock=threading.Lock()
     class Handler(BaseHTTPRequestHandler):
         def log_message(self,*args):pass  # Never log Authorization headers or research payloads.
@@ -61,6 +63,14 @@ def make_handler(report,username,password_hash,account_provider=configured_snaps
             if self.path=='/api/assessment':
                 return self.send(200,assessment_service.latest())
             route=urlsplit(self.path)
+            if route.path=='/api/scanner':
+                try:
+                    parameters=parse_qs(route.query,strict_parsing=True,max_num_fields=1)
+                    if set(parameters)-{'page'} or any(len(v)!=1 for v in parameters.values()):raise ValueError()
+                    page=int(parameters.get('page',['0'])[0])
+                    if not 0<=page<=10000:raise ValueError()
+                except (ValueError,TypeError):return self.send(400,dict(error='Bounded scanner page required'))
+                return self.send(200,scanner_service.latest(page))
             if route.path in ('/api/history','/api/calendar','/api/lookup','/api/quotes','/api/clock'):
                 if len(route.query)>10000:return self.send(400,dict(error='Research query too long'))
                 try:params=parse_qs(route.query,keep_blank_values=True,max_num_fields=8,strict_parsing=True)
@@ -74,9 +84,18 @@ def make_handler(report,username,password_hash,account_provider=configured_snaps
             return self.send(404,dict(error='Not found'))
         def do_POST(self):
             self.request_started=time.monotonic()
-            if self.path!='/api/assessment/start':
+            if self.path not in ('/api/assessment/start','/api/scanner/start','/api/scanner/stop'):
                 return self.send(405,dict(error='This dashboard has no trading endpoints'))
             if not self.authorized():return self.send(401,dict(error='Authentication required'))
+            if self.path in ('/api/scanner/start','/api/scanner/stop'):
+                if self.headers.get('X-Research-Scan')!='1':return self.send(403,dict(error='Explicit research scan required'))
+                try:
+                    length=int(self.headers.get('Content-Length','0'))
+                    if not 0<length<=128:raise ValueError()
+                    expected='coverage_probe' if self.path.endswith('/start') else 'stop_scan'
+                    if json.loads(self.rfile.read(length))!={'kind':expected}:raise ValueError()
+                except (ValueError,TypeError):return self.send(400,dict(error='Known bounded scan required'))
+                return self.send(202,scanner_service.start(True) if self.path.endswith('/start') else scanner_service.stop())
             if self.headers.get('X-Ghost-Review')!='1':
                 return self.send(403,dict(error='Explicit same-origin ghost review required'))
             try:

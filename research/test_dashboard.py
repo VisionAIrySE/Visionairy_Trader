@@ -32,7 +32,7 @@ class DashboardTests(unittest.TestCase):
         return int(lines[0].split()[1]),dict(line.split(': ',1) for line in lines[1:]),body
     def auth(self):return 'Basic '+base64.b64encode(b'test:test-password').decode()
     def test_all_dashboard_and_api_routes_are_private(self):
-        for path in ('/','/app.js','/style.css','/api/research','/api/account','/api/assessment','/api/quotes?symbols=TEST','/api/clock','/api/history?symbol=TEST','/api/calendar?month=10','/api/lookup?q=PSA','/../README.md'):
+        for path in ('/','/app.js','/style.css','/api/research','/api/account','/api/assessment','/api/scanner','/api/quotes?symbols=TEST','/api/clock','/api/history?symbol=TEST','/api/calendar?month=10','/api/lookup?q=PSA','/../README.md'):
             self.assertEqual(self.get(path)[0],401)
     def test_invalid_credentials_and_malformed_base64_are_rejected(self):
         for value in ('Basic invalid','Basic '+base64.b64encode(b'test:wrong').decode(),'Bearer fake'):
@@ -103,5 +103,26 @@ class DashboardTests(unittest.TestCase):
             self.assertEqual(self.get('/api/assessment',self.auth())[0],200)
         finally:self.handler=original
 
+
+    def test_scanner_controls_are_private_bounded_and_do_not_block_status(self):
+        class Scanner:
+            def __init__(self):self.calls=[]
+            def latest(self,page):self.calls.append(('latest',page));return {'summary':{'status':'running'}}
+            def start(self,probe):self.calls.append(('start',probe));return {'status':'running'}
+            def stop(self):self.calls.append(('stop',));return {'status':'stopping'}
+        original=self.handler;scanner=Scanner()
+        self.handler=server.make_handler({},'test',hashlib.sha256(b'test-password').hexdigest(),scanner_service=scanner)
+        try:
+            self.assertEqual(self.get('/api/scanner/start',method='POST')[0],401)
+            self.assertEqual(self.get('/api/scanner/stop',self.auth(),method='POST')[0],403)
+            self.assertEqual(self.get('/api/scanner?page=-1',self.auth())[0],400)
+            self.assertEqual(self.get('/api/scanner?page=0&page=1',self.auth())[0],400)
+            self.assertEqual(self.get('/api/scanner?page=1',self.auth())[0],200)
+            for action,kind in [('start','coverage_probe'),('stop','stop_scan')]:
+                body=('{"kind":"'+kind+'"}').encode()
+                self.assertEqual(self.get('/api/scanner/'+action,self.auth(),method='POST',payload=body,
+                    extra_headers={'X-Research-Scan':'1'})[0],202)
+            self.assertEqual(scanner.calls,[('latest',1),('start',True),('stop',)])
+        finally:self.handler=original
 
 if __name__=='__main__':unittest.main()

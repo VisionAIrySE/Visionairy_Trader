@@ -74,3 +74,27 @@ document.getElementById('assessment-start').addEventListener('click',async()=>{
  catch{document.getElementById('assessment-status').textContent='The start response was lost. Checking the saved status before any retry.';await loadAssessment();}
 });
 loadAssessment();
+
+let scannerTimer=null,scannerPage=0;
+function renderScanner(data){
+ const s=data.summary??{},root=document.getElementById('scanner-result');root.replaceChildren();
+ const running=s.status==='running';
+ document.getElementById('scanner-start').disabled=running;
+ document.getElementById('scanner-stop').disabled=!running;
+ document.getElementById('scanner-status').textContent=`${clean(s.status??'unavailable')}: ${clean(s.stage??'not started')}. ${s.completed_batches??0}/${s.total_batches??'?'} batches. ${s.observed_count??0} usable observations / ${s.universe_count??'?'} listings. No qualified buy recommendations generated.`;
+ root.append(el('p',`Market: ${clean(s.market_clock?.state??'unverified')}. Missing: ${s.missing_count??0}; invalid: ${s.invalid_count??0}; symbol mappings pending: ${s.unsupported_count??0}.`));
+ root.append(el('p',data.autorun_enabled?'Scheduled collection is enabled; coverage and freshness still require review.':'Continuous monitoring is not activated. This button runs one coverage test.'));
+ if(s.finished_at)root.append(el('p',`Saved ${new Date(s.finished_at*1000).toISOString()}. Fresh regular-session observations: ${s.fresh_regular_count??'not measured'}.`));
+ root.append(el('p','A closed-market test verifies access and coverage. Completed bars, volume baselines, tradability, ranking, risk and notifications still need qualification.','muted'));
+ (data.events??[]).forEach(e=>root.append(el('p',`${clean(e.symbol)}: research snapshot change ${(Number(e.price_rise)*100).toFixed(2)}%, ${e.new_shares} additional reported shares over ${e.window_seconds}s. Entry not qualified.`)));
+ if(data.total_events>50){const previous=el('button','Previous leads'),next=el('button','Next leads');previous.disabled=scannerPage===0;next.disabled=(scannerPage+1)*50>=data.total_events;previous.onclick=()=>{scannerPage--;loadScanner();};next.onclick=()=>{scannerPage++;loadScanner();};root.append(previous,next);}
+ clearTimeout(scannerTimer);if(running)scannerTimer=setTimeout(loadScanner,3000);
+}
+async function loadScanner(){try{const r=await fetch(`/api/scanner?page=${scannerPage}`,{cache:'no-store',signal:AbortSignal.timeout(15000)});if(!r.ok)throw Error();renderScanner(await r.json());}catch{document.getElementById('scanner-status').textContent='Monitoring status could not be retrieved. No completed coverage is assumed.';clearTimeout(scannerTimer);scannerTimer=setTimeout(loadScanner,10000);}}
+async function controlScanner(action){
+ document.getElementById('scanner-status').textContent=action==='stop'?'Requesting stop after the current bounded read...':'Starting one market coverage test...';
+ try{const r=await fetch(`/api/scanner/${action}`,{method:'POST',headers:{'Content-Type':'application/json','X-Research-Scan':'1'},body:JSON.stringify({kind:action==='stop'?'stop_scan':'coverage_probe'}),signal:AbortSignal.timeout(15000)});if(!r.ok)throw Error();const value=await r.json();document.getElementById('scanner-status').textContent=value.reason??value.status;await loadScanner();}catch{document.getElementById('scanner-status').textContent='Control response unavailable. Checking saved progress before another start.';await loadScanner();}
+}
+document.getElementById('scanner-start').addEventListener('click',()=>controlScanner('start'));
+document.getElementById('scanner-stop').addEventListener('click',()=>controlScanner('stop'));
+loadScanner();
