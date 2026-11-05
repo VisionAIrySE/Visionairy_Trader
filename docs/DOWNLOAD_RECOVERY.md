@@ -1,5 +1,19 @@
 # Failed-history recovery
 
+## Verified resolution
+
+The download is recovered. The saved directory identifies PSA-K as Public Storage's Series K 4.75% cumulative preferred depositary shares. Tradier lookup for PSA returned the exact same description and exchange under **PSA'K**. This verifies a provider-symbol mapping, not a substitution with common stock. A company-name lookup returned no securities; an issuer-symbol lookup supplied the identity evidence.
+
+The deployed diagnostic revealed that the original symbol receives upstream HTTP 400, a permanent request failure that was previously hidden inside an application 502. Correcting the mapping also required allowing the provider's apostrophe symbol in bounded, URL-encoded GET requests. Tests verify that arbitrary routes and injection strings remain rejected.
+
+The one-day mapped probe returned 40 bars. The full original October 1-November 3 range returned **811 unique five-minute bars across all 24 expected trading sessions**. Calendars imply 1,872 possible regular-session slots; 1,061 are absent. Those absences are preserved and are not assumed to mean zero volume or an unchanged price. Recovery therefore resolves retrieval, not sparse-history qualification or strategy performance.
+
+All 26 preexisting collection JSON files remain byte-for-byte unchanged. The mapped raw capture, exact directory/provider identity, original plan link, hashes and validation report are retained separately under ignored data/download_recovery. The recovery is not silently merged into the original frozen diagnostic. Explicit reconciliation remains a research-integration step.
+
+Release 9b168a7e41aae84903d1a7274c1609126afab490 deployed the protected lookup and error diagnostics. Follow-up 3c3df2bee837800e60dd834a5ceb3868652804ff deployed the provider-symbol correction as Render dep-dbltiqbncjis738io7cg, verified live. GitHub checks passed for both releases; published file hashes matched. Local verification totals 208 research/UI, 7 sizing and 5 Node collector checks (220). Hosted health returned 200 in 120 ms; anonymous lookup returned 401. No orders or paid resources were added.
+
+## Investigation and recovery method
+
 The original PSA-K request returned an application 502 containing a generic Tradier failure. Two later attempts recorded generic network failures. They do not establish that all three reached the provider.
 
 November 4, 2026 Pacific-time investigation:
@@ -18,4 +32,4 @@ Recovery workflow:
 5. Reconcile the recovery with the collection diagnostic explicitly. Existing code refuses query revisions under the original frozen plan; do not overwrite that plan to bypass reconciliation.
 6. If identity is confirmed but bars remain unavailable, retain an unavailable case with reason. Independent usable histories can still enter their supported experiments.
 
-The lookup route and diagnostic error changes require hosted release and readback before recovery is complete. Lookup results themselves do not confirm a mapping. No order or new paid resource is part of this recovery.
+The lookup route and diagnostic error changes are now deployed and verified as described above. Future lookup results still require identity reconciliation before a mapping is accepted. No order or new paid resource is part of this recovery.
