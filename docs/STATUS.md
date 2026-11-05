@@ -2,6 +2,15 @@
 
 ## Current release
 
+### November 5: current-session bar and quote qualification connected
+
+Current-session candidate testing now uses the existing broad quote baseline and current directory capture to freeze a price-blind twenty-symbol common-share-indicated sample. It obtains the observed session calendar, validates completed five-minute OHLCV bars, retains raw source evidence, measures missing slots and checks actual bid/ask timestamps. A final clock read handles a session transition during collection. No target or paper cash is manufactured.
+
+The real hosted probe completed in 54 seconds: twenty observed symbol histories, 1,186 bars, ten complete histories, 374 missing slots, 18 breakout patterns and 2 pullback resumptions. All reviews remained unranked/zero-quantity: the clock was postmarket and signals stale; target/liquidity and reconciled paper-capital requirements remain. It is a bounded current-session feed diagnostic, not full-market strategy operation or a profitable-trade result.
+
+241 research/dashboard and 7 sizing checks passed, with JavaScript syntax checked. Tests include timestamp freshness, incomplete-bar exclusion, malformed clocks, sparse coverage, permissions, cancellation including a stop during the final quote read, and private bounded HTTP controls. Existing historical diagnostics, market monitor and model example remain reachable. The final deployment/cancellation check is recorded after it completes. See CURRENT_SESSION_CANDIDATES.md.
+
+
 ### November 5: independent setups and retained candidate qualification
 
 Added independent breakout and pullback-resumption detection without a quiet-stock prerequisite, preserving the existing quiet cohort. Experimental specification 3ee675fbcc8feb3be9dbda26fa8ebdef339ef8ff09ceb660a9d614d800104f6f was frozen before the captured-cohort run. The run retained 255 breakout and 32 resumption patterns across the existing 21-request coverage plan; 19 histories were observed, one mapping remained blocked and the original preferred-symbol capture remained failed. Its separate recovery was not silently substituted.
