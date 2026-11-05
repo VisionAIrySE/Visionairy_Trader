@@ -11,7 +11,7 @@ import time
 import urllib.request
 import uuid
 
-VERSION = 'ghost-assessment-v4'
+VERSION = 'ghost-assessment-v5'
 MODELS = {'news': ('inclusionai/ling-3.1-flash',),
           'research': ('nvidia/nemotron-3.5-lightning', 'inclusionai/ling-3.1-flash')}
 MAX_PRICE = {'prompt': 0.2, 'completion': 0.6}  # USD per million tokens; provider routing ceiling
@@ -172,7 +172,7 @@ class ModelAssessment:
             provider_profile = dict(require_parameters=True, data_collection='deny', max_price=MAX_PRICE)
             if model == 'nvidia/nemotron-3.5-lightning':
                 provider_profile.update(only=['deepinfra/bf16'], allow_fallbacks=False)
-            reasoning_profile = {'enabled': False} if kind == 'news' else {'enabled': True}
+            reasoning_profile = {'enabled': False} if kind == 'news' else {'mode': 'provider_default_as_benchmarked'}
             call_id = str(uuid.uuid4())
             metadata = dict(id=call_id, job_id=job_id, kind=kind, model=model,
                 prompt_version=VERSION, schema_sha256=digest(schema), input_sha256=digest(messages),
@@ -186,14 +186,17 @@ class ModelAssessment:
             receipt = dict(metadata, status='unknown', output=None, cost_usd=None)
             failure = None
             try:
+                request_body = dict(model=model, messages=messages, max_tokens=MAX_TOKENS[kind], temperature=0,
+                    provider=provider_profile,
+                    response_format=dict(type='json_schema', json_schema=dict(
+                        name=kind + '_assessment', strict=True, schema=schema)),
+                    stream=False, usage={'include': True})
+                if kind == 'news':
+                    request_body['reasoning'] = reasoning_profile
                 response = self.transport('https://openrouter.ai/api/v1/chat/completions',
                     {'Authorization': 'Bearer ' + self.api_key, 'Content-Type': 'application/json',
                      'X-OpenRouter-Title': 'VisionAIry Trader ghost assessment'},
-                    dict(model=model, messages=messages, max_tokens=MAX_TOKENS[kind], temperature=0,
-                         reasoning=reasoning_profile, provider=provider_profile,
-                         response_format=dict(type='json_schema', json_schema=dict(
-                             name=kind + '_assessment', strict=True, schema=schema)),
-                         stream=False, usage={'include': True}), timeout=60)
+                    request_body, timeout=60)
                 receipt.update(provider=response.get('provider'), served_model=response.get('model'),
                     generation_id=response.get('id'), usage=response.get('usage'), raw_response=response)
                 raw_cost = response.get('usage', {}).get('cost')
