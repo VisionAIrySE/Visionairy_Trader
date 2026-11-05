@@ -112,7 +112,7 @@ class MarketMonitor:
         prior=self.store.call('scan_state',{})
         previous=unpack(prior['packed_state']) if prior.get('packed_state') else {}
         summary=dict(id=cycle_id,version=VERSION,status='running',stage='collecting_quotes',
-            started_at=int(self.now()),market_clock=clock,market_clock_source=clock_source,
+            started_at=int(self.now()),progress_at=int(self.now()),market_clock=clock,market_clock_source=clock_source,
             universe_sha256=universe['source_sha256'],universe_available_at=universe['available_at'],
             universe_count=len(symbols),requested_count=0,observed_count=0,missing_count=0,invalid_count=0,
             unsupported_count=0,completed_batches=0,coverage_probe=coverage_probe,
@@ -179,7 +179,7 @@ class MarketMonitor:
                     except DataError as exc:
                         summary['invalid_count']+=1;issues.append({'symbol':symbol,'reason':str(exc)})
                 summary.update(requested_count=summary['requested_count']+len(batch),
-                    observed_count=len(observations),candidate_count=len(events),
+                    observed_count=len(observations),candidate_count=len(events),progress_at=int(self.now()),
                     completed_batches=summary['completed_batches']+1)
                 self.store.call('scan_progress',{'id':cycle_id,'summary':summary})
                 self.pause(.8)  # measured batches and provider quotas still need qualification

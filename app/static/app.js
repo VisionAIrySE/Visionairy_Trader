@@ -78,7 +78,10 @@ loadAssessment();
 let scannerTimer=null,scannerPage=0;
 function renderScanner(data){
  const s=data.summary??{},root=document.getElementById('scanner-result');root.replaceChildren();
+ const worker=data.worker_status;
+ if(worker?.status==='failed')root.append(el('p','The latest worker could not complete feed or listing preparation. The previous saved cycle below is retained.'));
  const running=s.status==='running';
+ if(running&&s.progress_at&&Date.now()/1000-s.progress_at>30)root.append(el('p',`No new batch checkpoint for ${Math.floor(Date.now()/1000-s.progress_at)} seconds. The stop control remains available.`));
  document.getElementById('scanner-start').disabled=running;
  document.getElementById('scanner-stop').disabled=!running;
  document.getElementById('scanner-status').textContent=`${clean(s.status??'unavailable')}: ${clean(s.stage??'not started')}. ${s.completed_batches??0}/${s.total_batches??'?'} batches. ${s.observed_count??0} usable observations / ${s.universe_count??'?'} listings. No qualified buy recommendations generated.`;

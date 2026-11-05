@@ -39,10 +39,15 @@ def parse_directory(text, kind):
 
 
 def snapshot(nasdaq_path, other_path, available_at):
+    return snapshot_bytes({'nasdaq':Path(nasdaq_path).read_bytes(),
+                           'other':Path(other_path).read_bytes()},available_at)
+
+
+def snapshot_bytes(directories,available_at):
     records = {}
     sources = []
-    for path,kind in ((Path(nasdaq_path),'nasdaq'),(Path(other_path),'other')):
-        raw=path.read_bytes()
+    for kind in ('nasdaq','other'):
+        raw=directories[kind]
         rows,footer=parse_directory(raw.decode('utf-8-sig'),kind)
         sources.append(dict(directory=kind,sha256=hashlib.sha256(raw).hexdigest(),
                             provider_creation_label=footer,listing_rows=len(rows)))
