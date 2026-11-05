@@ -2,6 +2,15 @@
 
 ## Current release
 
+### November 5: independent setups and retained candidate qualification
+
+Added independent breakout and pullback-resumption detection without a quiet-stock prerequisite, preserving the existing quiet cohort. Experimental specification 3ee675fbcc8feb3be9dbda26fa8ebdef339ef8ff09ceb660a9d614d800104f6f was frozen before the captured-cohort run. The run retained 255 breakout and 32 resumption patterns across the existing 21-request coverage plan; 19 histories were observed, one mapping remained blocked and the original preferred-symbol capture remained failed. Its separate recovery was not silently substituted.
+
+All 287 reviews remain unranked/zero-quantity because contemporary executable quotes, supported targets and reconciled paper capital were not supplied. The result is an exploratory historical detection diagnostic, with no financial outcomes or qualified recommendations. The candidate review adapter connects exact setup terms to the existing cost/risk assessment and shared-capital planner; positive allocation is tested synthetically, not inferred from historical pattern counts.
+
+235 research/dashboard and 7 sizing checks passed. The private candidate API/UI serves bounded pages with stable source identities and blocking reasons. The complete compressed report was saved in the existing authenticated job store and its identity read back. Release d780280a1c5dab30810cca8ab1e4a6145e090305 is live as dep-dbmg4egu01pc73899d1g. Hosted page 0 returned 25 reviews and page 11 returned the last 12, with all 287 blocked for missing quote/target and paper-capital evidence; no rank/quantity was invented. Invalid negative pages returned 400; anonymous access returned 401. The HTML candidate panel was served successfully. These are authenticated API/source-level checks, not a visual browser assertion. See CANDIDATE_QUALIFICATION.md.
+
+
 ### November 5: daily universe refresh and visible stall detection
 
 Operational monitor status publication was explicitly authorized by the user and completed in dcc2d152f4932a1a0c56b38cf4fd15bc732a5b2b. The subsequent code release c5ec659cf111142c42c55caec862b298607af1a6 is live as dep-dbmfpgjm8hqs73e3nti0.
