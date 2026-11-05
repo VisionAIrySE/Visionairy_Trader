@@ -19,3 +19,5 @@ Hosted verification on November 5, 2026 completed a price-blind twenty-symbol sa
 The cancellation follow-up checks after final provider reads before saving a completed record; its focused test passes. User instructions require configurable simulation capital and do not prescribe a mandatory paper balance. This implementation therefore does not silently choose or infer paper cash from the tentative live funding amount.
 
 Primary source references: https://docs.tradier.com/docs/timesale and https://docs.tradier.com/reference/brokerage-api-markets-get-quotes. Provider field definitions do not themselves establish execution quality, fill availability, corporate-action adjustment or complete stream coverage.
+
+Final release a0893be431f5aa054febd57a70957055dde6e102 is live as dep-dbmgb9g473hc73966ub0. A fresh authenticated start/stop check returned the stop acknowledgment in 68 ms; the preceding completed twenty-pattern report was preserved. The worker subsequently reported cancelled/stopped, and the published dashboard contains the explicit cancellation message. Acknowledgement alone was not treated as proof of cancellation.
