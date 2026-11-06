@@ -17,6 +17,48 @@ Deno.serve(async req => {
     const { operation, payload: p } = JSON.parse(raw);
     if (!p || typeof p !== 'object') throw Error();
     const result = await sql.begin(async tx => {
+      if (operation === 'history_capture_claim') {
+        const rows=await tx`select id,payload,checkpoint from trader.jobs
+          where kind='alpaca_holdout_capture_v1' and
+          ((status='queued' and available_at<=now()) or (status='running' and lease_until<now()))
+          order by available_at,id for update skip locked limit 1`;
+        if (!rows.length) return {job:null};
+        const job=rows[0];job.checkpoint.lease_token=crypto.randomUUID();
+        await tx`update trader.jobs set status='running',lease_until=now()+interval '120 seconds',
+          attempts=attempts+1,checkpoint=${tx.json(job.checkpoint)} where id=${job.id}`;
+        return {job};
+      }
+      if (operation === 'history_capture_finish' || operation === 'history_capture_fail') {
+        if (!uuid.test(p.id||'') || !uuid.test(p.lease_token||'')) throw Error();
+        const rows=await tx`select checkpoint from trader.jobs where id=${p.id}
+          and kind='alpaca_holdout_capture_v1' and status='running' and lease_until>now()
+          and checkpoint->>'lease_token'=${p.lease_token} for update`;
+        if (!rows.length) return {saved:false};
+        const cp=rows[0].checkpoint;
+        if (operation === 'history_capture_finish') {
+          if (!/^[0-9a-f]{64}$/.test(p.page?.sha256||'') || typeof p.page?.gzip_base64!=='string'
+              || p.page.gzip_base64.length>3500000 || !Number.isSafeInteger(p.page.bars) || p.page.bars<0
+              || !(p.next_page_token===null || (typeof p.next_page_token==='string' && p.next_page_token.length>0 && p.next_page_token.length<=4096 && p.next_page_token!==cp.next_page_token))) throw Error();
+          const index=cp.pages||0;
+          await tx`insert into trader.jobs(kind,idempotency_key,payload,status)
+            values('alpaca_holdout_page_v1',${p.id+':'+index},${tx.json(p.page)},'complete')`;
+          Object.assign(cp,{pages:index+1,bars:(cp.bars||0)+p.page.bars,next_page_token:p.next_page_token,
+            failures:0,last_success:Date.now()/1000,last_error:null});
+          delete cp.lease_token;
+          await tx`update trader.jobs set status=${p.next_page_token?'queued':'complete'},checkpoint=${tx.json(cp)},
+            lease_until=null,available_at=now() where id=${p.id}`;
+        } else {
+          if (!['transport','invalid_configuration_or_response'].includes(p.reason) && !/^provider_http_[0-9]{3}$/.test(p.reason||'')) throw Error();
+          const failures=(cp.failures||0)+1;
+          const transient=p.http_status===null || [408,429].includes(p.http_status) || (p.http_status>=500 && p.http_status<=599);
+          const retry=transient && failures<8;
+          const delay=retry?Math.min(900,15*2**(failures-1)):0;
+          Object.assign(cp,{failures,last_error:p.reason,last_failure:Date.now()/1000});delete cp.lease_token;
+          await tx`update trader.jobs set status=${retry?'queued':'failed'},checkpoint=${tx.json(cp)},
+            lease_until=null,available_at=now()+(${delay} * interval '1 second') where id=${p.id}`;
+        }
+        return {saved:true};
+      }
       if (operation === 'history_capture_status') {
         const rows=await tx`select status,count(*)::int as batches,
           coalesce(sum((checkpoint->>'pages')::int),0)::int as pages,

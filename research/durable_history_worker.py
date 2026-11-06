@@ -95,15 +95,22 @@ def tick(queue,env):
     queue.finish(job,page,token)
     return True
 
+class HostedQueue:
+    def __init__(self):
+        from model_assessment import HostedAssessmentStore
+        self.store=HostedAssessmentStore()
+    def claim(self):return self.store.call('history_capture_claim',{}).get('job')
+    def finish(self,job,page,next_token):
+        return self.store.call('history_capture_finish',dict(id=job['id'],lease_token=job['checkpoint']['lease_token'],page=page,next_page_token=next_token)).get('saved',False)
+    def fail(self,job,http_status=None,reason='transport'):
+        return self.store.call('history_capture_fail',dict(id=job['id'],lease_token=job['checkpoint']['lease_token'],http_status=http_status,reason=reason))
+
 def main():
-    import psycopg
-    if not all(os.environ.get(k) for k in ('HISTORY_DATABASE_URL','ALPACA_API_KEY','ALPACA_API_SECRET')):
+    if not all(os.environ.get(k) for k in ('ASSESSMENT_STORE_URL','ASSESSMENT_STORE_TOKEN','ALPACA_API_KEY','ALPACA_API_SECRET')):
         raise SystemExit('Required worker secrets are not configured')
+    queue=HostedQueue()
     while True:
-        try:
-            with psycopg.connect(os.environ['HISTORY_DATABASE_URL'],autocommit=True,connect_timeout=10,options='-c statement_timeout=30000') as db:
-                queue=Queue(db)
-                while True:time.sleep(1 if tick(queue,os.environ) else 15)
+        try:time.sleep(1 if tick(queue,os.environ) else 15)
         except Exception:
             print('History worker reconnecting; committed progress retained',flush=True)
             time.sleep(30)

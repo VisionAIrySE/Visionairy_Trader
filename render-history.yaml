@@ -1,0 +1,19 @@
+services:
+  - type: worker
+    name: visionairy-trader-history
+    runtime: python
+    region: oregon
+    plan: 0.5c-512mb
+    repo: https://github.com/VisionAIrySE/Visionairy_Trader
+    branch: durable-history-worker
+    buildCommand: python -m unittest discover -s research -p test_durable_history_worker.py
+    startCommand: python research/durable_history_worker.py
+    envVars:
+      - key: ASSESSMENT_STORE_URL
+        value: https://kbzpmvfrwfsbdhwafbow.supabase.co/functions/v1/assessment-store
+      - key: ASSESSMENT_STORE_TOKEN
+        sync: false
+      - key: ALPACA_API_KEY
+        sync: false
+      - key: ALPACA_API_SECRET
+        sync: false
