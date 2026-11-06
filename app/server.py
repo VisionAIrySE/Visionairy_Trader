@@ -76,6 +76,13 @@ def make_handler(report,username,password_hash,account_provider=configured_snaps
             if not self.authorized():
                 if self.path=='/':return self.send(303,b'',extra_headers={'Location':'/login'})
                 return self.send(401,dict(error='Sign in to view this private dashboard'))
+            if self.path in ('/downloads','/downloads.js'):
+                filename,kind=('downloads.html','text/html; charset=utf-8') if self.path=='/downloads' else ('downloads.js','text/javascript; charset=utf-8')
+                return self.send(200,(ROOT/'app'/'static'/filename).read_bytes(),kind)
+            if self.path=='/api/download-status':
+                from model_assessment import HostedAssessmentStore
+                try:return self.send(200,HostedAssessmentStore().call('history_capture_status',{}))
+                except Exception:return self.send(503,dict(status='unavailable',error='Download status could not be read. Progress is unknown.'))
             if self.path=='/api/research':
                 with report_lock:
                     if report_cache['report'] is None:report_cache['report']=report_factory()

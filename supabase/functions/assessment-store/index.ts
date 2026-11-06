@@ -17,6 +17,19 @@ Deno.serve(async req => {
     const { operation, payload: p } = JSON.parse(raw);
     if (!p || typeof p !== 'object') throw Error();
     const result = await sql.begin(async tx => {
+      if (operation === 'history_capture_status') {
+        const rows=await tx`select status,count(*)::int as batches,
+          coalesce(sum((checkpoint->>'pages')::int),0)::int as pages,
+          coalesce(sum((checkpoint->>'bars')::bigint),0)::text as bars,
+          max((checkpoint->>'last_success')::double precision) as last_success,
+          count(*) filter(where status='running' and lease_until<now())::int as expired_leases,
+          min(available_at) filter(where status='queued') as next_attempt
+          from trader.jobs where kind='alpaca_holdout_capture_v1' group by status`;
+        const errors=await tx`select checkpoint->>'last_error' as category,count(*)::int as batches
+          from trader.jobs where kind='alpaca_holdout_capture_v1' and status in ('failed','queued')
+          and checkpoint->>'last_error' is not null group by checkpoint->>'last_error'`;
+        return {groups:rows,errors,checked_at:new Date().toISOString(),orders_submitted:0};
+      }
       if (operation === 'historical_simulation_put') {
         if (p.version!=='historical-trade-test-v1' || p.orders_submitted!==0
             || !/^[0-9a-f]{64}$/.test(p.sha256 || '') || typeof p.packed_report!=='string'
