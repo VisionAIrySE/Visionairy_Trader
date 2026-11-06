@@ -42,6 +42,27 @@ def calendar_sessions(captures,start,end):
     return sessions
 
 
+def load_attempts(folder,plan_sha256):
+    folder=Path(folder)
+    captures={};attempts=[]
+    for path in folder.glob('*.json'):
+        if len(path.stem)!=64 and '.attempt-' not in path.stem:continue
+        capture=json.loads(path.read_text(encoding='utf-8'))
+        if capture.get('plan_sha256')!=plan_sha256:raise ValueError('Capture belongs to another collection plan')
+        symbol=capture['query']['symbol']
+        attempts.append(capture)
+        prior=captures.get(symbol)
+        if prior is not None and prior['query']!=capture['query']:
+            raise ValueError('Multiple query revisions require explicit reconciliation')
+        if prior is None or (prior['response']['status']!='observed' and
+                (capture['response']['status']=='observed' or capture['retrieved_at']>prior['retrieved_at'])):
+            captures[symbol]=capture
+        elif capture['response']['status']=='observed' and prior['response']['status']=='observed':
+            if digest(capture['response'])!=digest(prior['response']):
+                raise ValueError('Conflicting successful revisions require explicit reconciliation')
+    return captures,attempts
+
+
 def run(folder,start,end):
     if type(start) is not int or type(end) is not int or start>=end:
         raise ValueError('Explicit ordered UTC evaluation bounds required')
@@ -49,16 +70,10 @@ def run(folder,start,end):
     if digest({k:v for k,v in plan.items() if k!='plan_sha256'})!=plan.get('plan_sha256'):
         raise ValueError('Frozen collection plan content hash differs')
     calendars=[json.loads(p.read_text(encoding='utf-8')) for p in sorted(folder.glob('calendar_*.json'))]
-    captures={}
-    for path in folder.glob('*.json'):
-        if len(path.stem)!=64:continue
-        capture=json.loads(path.read_text(encoding='utf-8'))
-        if capture.get('plan_sha256')!=plan['plan_sha256']:raise ValueError('Capture belongs to another collection plan')
-        symbol=capture['query']['symbol']
-        if symbol in captures:raise ValueError('Multiple revisions require explicit reconciliation')
-        captures[symbol]=capture
+    captures,attempts=load_attempts(folder,plan['plan_sha256'])
     manifest=dict(version='calendar_aware_collection_diagnostic_v1',plan=plan,
         calendars_sha256=digest(calendars),captures_sha256=digest(captures),
+        attempts_sha256=digest(sorted(attempts,key=lambda a:(a['query']['symbol'],a['retrieved_at']))),
         evaluation_start=start,evaluation_end=end,
         code_sha256={p:hashlib.sha256(Path(__file__).with_name(p).read_bytes()).hexdigest()
                     for p in ('collection_diagnostic.py','discovery_selection.py','setup_detection.py')})

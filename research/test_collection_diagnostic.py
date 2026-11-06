@@ -1,13 +1,35 @@
 from datetime import datetime,timedelta,timezone
 from decimal import Decimal as D
 import unittest
+import json
+from pathlib import Path
+import tempfile
 
-from collection_diagnostic import calendar_sessions
+from collection_diagnostic import calendar_sessions,load_attempts
 from discovery_selection import Observation,SelectionPolicy,scan_symbol
 from replay import DataError
 
 
 class CalendarDiagnosticTests(unittest.TestCase):
+    def test_recovered_attempt_is_consumed_without_losing_later_failure(self):
+        with tempfile.TemporaryDirectory() as folder:
+            identity='a'*64
+            for suffix,when,state in (('',1,'unavailable'),('.attempt-2',2,'observed'),('.attempt-3',3,'unavailable')):
+                capture=dict(plan_sha256='plan',query={'symbol':'TEST'},retrieved_at=str(when),
+                    http_status=200 if state=='observed' else 502,response={'status':state})
+                Path(folder,identity+suffix+'.json').write_text(json.dumps(capture))
+            selected,attempts=load_attempts(folder,'plan')
+            self.assertEqual(3,len(attempts));self.assertEqual('observed',selected['TEST']['response']['status'])
+
+    def test_different_successful_revisions_cannot_be_silently_selected(self):
+        with tempfile.TemporaryDirectory() as folder:
+            for index in (1,2):
+                capture=dict(plan_sha256='plan',query={'symbol':'TEST'},retrieved_at=str(index),
+                    http_status=200,response={'status':'observed','price':index})
+                Path(folder,'a'*64+('.attempt-'+str(index))+'.json').write_text(json.dumps(capture))
+            with self.assertRaisesRegex(ValueError,'Conflicting successful'):
+                load_attempts(folder,'plan')
+
     def calendar(self,rows):return [dict(status='observed',payload={'calendar':{'days':{'day':rows}}})]
     def test_missing_calendar_day_is_not_inferred_closed(self):
         rows=[dict(date='2026-10-01',status='closed')]
