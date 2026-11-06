@@ -17,6 +17,14 @@ Deno.serve(async req => {
     const { operation, payload: p } = JSON.parse(raw);
     if (!p || typeof p !== 'object') throw Error();
     const result = await sql.begin(async tx => {
+      if (operation === 'history_capture_export') {
+        if (!Number.isSafeInteger(p.offset) || p.offset<0 || p.offset>10000) throw Error();
+        const pending=await tx`select count(*)::int as n from trader.jobs where kind='alpaca_holdout_capture_v1' and status<>'complete'`;
+        if (pending[0].n) return {error:'capture_incomplete'};
+        const pages=await tx`select id,payload from trader.jobs where kind='alpaca_holdout_page_v1'
+          order by id limit 5 offset ${p.offset}`;
+        return {pages};
+      }
       if (operation === 'history_capture_claim') {
         const rows=await tx`select id,payload,checkpoint from trader.jobs
           where kind='alpaca_holdout_capture_v1' and
