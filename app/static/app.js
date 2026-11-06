@@ -89,6 +89,20 @@ function renderScanner(data){
  root.append(el('p',data.autorun_enabled?'Scheduled collection is enabled; coverage and freshness still require review.':'Continuous monitoring is not activated. This button runs one coverage test.'));
  if(s.finished_at)root.append(el('p',`Saved ${new Date(s.finished_at*1000).toISOString()}. Fresh regular-session observations: ${s.fresh_regular_count??'not measured'}.`));
  root.append(el('p','A closed-market test verifies access and coverage. Completed bars, volume baselines, tradability, ranking, risk and notifications still need qualification.','muted'));
+ const leaders=s.appreciation_leaders??[];
+ if(leaders.length){
+  root.append(el('h3','Observed appreciation leaders'));
+  root.append(el('p',`Showing ${leaders.length} of ${s.appreciation_leader_count??leaders.length} positive observed common-share gainers. Ordered by the larger gain since open or prior close; no minimum 10% requirement. Missing evidence is unknown.`));
+  const table=el('table'),head=el('tr'),body=el('tbody');
+  ['Stock','Last','Since prior close','Since open','Between scans','Quote status'].forEach(t=>head.append(el('th',t)));
+  const pct=v=>v==null?'Unknown':`${Number(v).toFixed(2)}%`;
+  leaders.forEach(r=>{const row=el('tr');
+   [r.symbol,money(r.last),pct(r.gain_from_prior_close_pct),pct(r.gain_from_open_pct),
+    r.recent_change_pct==null?'Unknown':`${pct(r.recent_change_pct)} / ${r.recent_window_seconds}s`,
+    r.fresh_regular_session?'Fresh at capture':'Not fresh regular-session evidence'].forEach(v=>row.append(el('td',v)));
+   body.append(row);
+  });const heading=el('thead');heading.append(head);table.append(heading,body);const wrap=el('div',undefined,'table-wrap');wrap.append(table);root.append(wrap);
+ }else root.append(el('p','No appreciation ranking saved in this scan. Run a new broad scan; an older coverage test does not establish the absence of gainers.'));
  (data.events??[]).forEach(e=>root.append(el('p',`${clean(e.symbol)}: research snapshot change ${(Number(e.price_rise)*100).toFixed(2)}%, ${e.new_shares} additional reported shares over ${e.window_seconds}s. Entry not qualified.`)));
  if(data.total_events>50){const previous=el('button','Previous leads'),next=el('button','Next leads');previous.disabled=scannerPage===0;next.disabled=(scannerPage+1)*50>=data.total_events;previous.onclick=()=>{scannerPage--;loadScanner();};next.onclick=()=>{scannerPage++;loadScanner();};root.append(previous,next);}
  clearTimeout(scannerTimer);if(running)scannerTimer=setTimeout(loadScanner,3000);
@@ -152,3 +166,26 @@ document.getElementById('paper-review-form').addEventListener('submit',async e=>
  catch{status.textContent='Save response unavailable. Checking the saved setting before another submission.';await loadPaperConfig();}finally{button.disabled=false;}
 });
 loadPaperConfig();
+
+let historicalPage=0;
+const pacific=t=>t==null?'Incomplete':new Date(t*1000).toLocaleString('en-US',{timeZone:'America/Los_Angeles'});
+async function loadHistoricalTrades(){
+ const status=document.getElementById('history-status'),summary=document.getElementById('history-summary'),root=document.getElementById('history-trades');
+ try{const scenario=document.getElementById('history-scenario').value,view=document.getElementById('history-view').value;
+ const r=await fetch(`/api/historical-simulation?page=${historicalPage}&scenario=${scenario}&view=${view}`,{cache:'no-store',signal:AbortSignal.timeout(15000)});if(!r.ok)throw Error();const d=await r.json();summary.replaceChildren();root.replaceChildren();
+ if(d.status!=='historical_trade_simulation'){status.textContent='Historical trade results are not available.';return;}
+ status.textContent=`Captured period: ${pacific(d.period.start)} to ${pacific(d.period.end)} Pacific. Separate scenarios each start with ${money(d.spec.initial_cash)}.`;
+ const table=el('table'),head=el('tr');['Scenario','Closed trades','Gains / losses','Ending modeled equity','Closed-trade net P&L'].forEach(x=>cell(head,x));table.append(head);
+ d.scenarios.forEach(s=>{const row=el('tr');[clean(s.name),s.summary.closed_trades,`${s.summary.wins} / ${s.summary.losses}`,s.status==='joint_counterfactual_closed'?money(s.ending_equity):'Unresolved',money(s.summary.closed_trade_net_pnl)].forEach(x=>cell(row,x));table.append(row);});summary.append(table);
+ const chosen=d.scenarios.find(s=>s.name===d.scenario),ind=chosen.independent_summary;
+ summary.append(el('p',`Shared-account cohort: complete histories only, with enough future holding-period coverage. ${chosen.eligible_patterns} patterns eligible; ${chosen.excluded_patterns} outside that cohort/horizon. Unselected cases remain retained.`));
+ summary.append(el('p',`Broader standalone cases: ${ind.closed_trades} closed, closed-case P&L ${money(ind.closed_trade_net_pnl)}, ${ind.unresolved_entered} entered cases unresolved. Each standalone case uses its own capital snapshot; this sum is not a portfolio return.`,'muted'));
+ summary.append(el('p','Entry is modeled at the next bar open; spread, slippage, fees, whole-share sizing, stops, targets, time exits and settlement are explicit assumptions. Missing evidence remains unresolved. This inspected sample does not establish strategy profitability.','muted'));
+ const trades=el('table'),heading=el('tr');['Symbol','Entry (Pacific)','Exit (Pacific)','Shares','Entry price','Exit price','Net P&L','Outcome / reason'].forEach(x=>cell(heading,x));trades.append(heading);
+ (d.rows??[]).forEach(t=>{const row=el('tr');[t.symbol,pacific(t.entry_at),pacific(t.exit_at),t.quantity??0,t.entry_price==null?'—':'$'+Number(t.entry_price).toFixed(6),t.exit_price==null?'—':'$'+Number(t.exit_price).toFixed(6),money(t.net_pnl),clean(t.exit_reason??t.reasons?.join('; ')??t.status)].forEach(x=>cell(row,x));trades.append(row);});root.append(trades);
+ if(!d.rows.length)root.append(el('p','No trades in this scenario/view. In the 2R case, no entries cleared the after-cost reward/risk requirement.'));
+ const previous=el('button','Previous results'),next=el('button','Next results');previous.disabled=historicalPage===0;next.disabled=(historicalPage+1)*25>=d.total;previous.onclick=()=>{historicalPage--;loadHistoricalTrades();};next.onclick=()=>{historicalPage++;loadHistoricalTrades();};root.append(previous,next);
+ }catch{status.textContent='Historical results could not be loaded. No return is assumed.';}
+}
+['history-scenario','history-view'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{historicalPage=0;loadHistoricalTrades();}));
+loadHistoricalTrades();

@@ -1,0 +1,41 @@
+{
+  "version": "historical_1000_3r_v1",
+  "role": "exploratory_historical_trade_simulation",
+  "initial_cash": "1000.00",
+  "primary": "3R_base",
+  "bar_minutes": 5,
+  "holding_trading_minutes": 780,
+  "maximum_calendar_days": 7,
+  "allow_overnight": true,
+  "entry_delay_seconds": 0,
+  "maximum_entry_change": "0.01",
+  "assumed_full_spread": "0.002",
+  "fee_per_side": "0",
+  "prior_volume_participation": "0.01",
+  "minimum_net_reward_to_risk": "2",
+  "settlement_sessions": 1,
+  "portfolio_cohort": "complete_histories_by_calendar_slots_before_outcome_inspection",
+  "require_complete_entry_horizon_for_portfolio": true,
+  "entry_quote_basis": "modeled_from_completed_setup_close_not_observed_bid_ask",
+  "scenarios": [
+    {
+      "name": "3R_base",
+      "target_multiple": "3",
+      "slippage": "0.002"
+    },
+    {
+      "name": "2R_comparison",
+      "target_multiple": "2",
+      "slippage": "0.002"
+    },
+    {
+      "name": "3R_cost_stress",
+      "target_multiple": "3",
+      "slippage": "0.005"
+    }
+  ],
+  "management": "fixed_original_stop_target_or_time_no_partials_no_trailing",
+  "predeclared_before_outcome_run": true,
+  "selection_basis": "existing_frozen_history_collection_all_requests_retained",
+  "statistical_validation": "not_unseen_not_representative_no_adoption"
+}

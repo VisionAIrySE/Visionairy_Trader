@@ -14,6 +14,7 @@ import uuid
 import zlib
 
 from broker_readonly import TradierReader, ProviderReadError
+from appreciation import appreciation_leaders
 from replay import DataError
 
 VERSION='market-monitor-v1'
@@ -66,7 +67,7 @@ def normalize_quote(row,instrument,clock,received_at,maximum_age=60):
         trade_age_seconds=str(age),security_status=kind,
         fresh_regular_session=bool(clock.get('state')=='open' and session==clock.get('date') and 0<=age<=maximum_age),
         recommendation_qualified=False)
-    for field in ('bid','ask','bid_date','ask_date','prevclose','change_percentage','average_volume'):
+    for field in ('bid','ask','bid_date','ask_date','prevclose','change_percentage','average_volume','open'):
         try:result[field]=str(numeric(row.get(field),allow_negative=field=='change_percentage'))
         except DataError:result[field]=None
     return result
@@ -194,6 +195,9 @@ class MarketMonitor:
             if final_clock.get('clock',{}).get('state')!='open':
                 summary['regular_entry_review_available']=False
             else:summary['regular_entry_review_available']=clock.get('state')=='open'
+            leaders=appreciation_leaders(observations,clock['date'],previous)
+            summary.update(appreciation_leaders=leaders[:50],appreciation_leader_count=len(leaders),
+                appreciation_basis='positive_appreciation_from_open_or_prior_close_not_buy_score')
             self.store.call('scan_finish',{'id':cycle_id,'summary':summary,'packed_events':pack(events),
                 'packed_issues':pack(issues),'sources':sources,'packed_state':pack(observations)})
             return summary

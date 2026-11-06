@@ -24,10 +24,11 @@ from scanner_service import ScannerService
 from candidate_service import CandidateService
 from session_candidate_service import SessionCandidateService
 from paper_review_config import PaperReviewConfig
+from historical_simulation_service import HistoricalSimulationService
 from replay import DataError
 
 
-def make_handler(report,username,password_hash,account_provider=configured_snapshot,report_factory=run_demo,history_provider=None,assessment_service=None,scanner_service=None,candidate_service=None,session_candidate_service=None,paper_review_config=None):
+def make_handler(report,username,password_hash,account_provider=configured_snapshot,report_factory=run_demo,history_provider=None,assessment_service=None,scanner_service=None,candidate_service=None,session_candidate_service=None,paper_review_config=None,historical_simulation_service=None):
     if not username or len(password_hash)!=64 or any(c not in '0123456789abcdef' for c in password_hash):
         raise ValueError('Private dashboard credentials must be configured')
     account_cache=AccountCache(account_provider)
@@ -37,6 +38,7 @@ def make_handler(report,username,password_hash,account_provider=configured_snaps
     candidate_service=candidate_service or CandidateService()
     session_candidate_service=session_candidate_service or SessionCandidateService()
     paper_review_config=paper_review_config or PaperReviewConfig()
+    historical_simulation_service=historical_simulation_service or HistoricalSimulationService()
     sessions={};session_lock=threading.Lock();login_attempts={}
     report_cache={'report':report};report_lock=threading.Lock()
     class Handler(BaseHTTPRequestHandler):
@@ -86,6 +88,14 @@ def make_handler(report,username,password_hash,account_provider=configured_snaps
             if self.path=='/api/assessment':
                 return self.send(200,assessment_service.latest())
             route=urlsplit(self.path)
+            if route.path=='/api/historical-simulation':
+                try:
+                    parameters=parse_qs(route.query,strict_parsing=True,max_num_fields=3)
+                    if set(parameters)-{'page','scenario','view'} or any(len(v)!=1 for v in parameters.values()):raise ValueError()
+                    page=int(parameters.get('page',['0'])[0]);scenario=parameters.get('scenario',[None])[0];view=parameters.get('view',['trades'])[0]
+                    if not 0<=page<=10000 or view not in ('trades','reviews') or scenario not in (None,'3R_base','2R_comparison','3R_cost_stress'):raise ValueError()
+                except (ValueError,TypeError):return self.send(400,dict(error='Known historical scenario and bounded page required'))
+                return self.send(200,historical_simulation_service.latest(page,scenario,view))
             if route.path in ('/api/scanner','/api/candidates','/api/session-candidates'):
                 try:
                     parameters=parse_qs(route.query,strict_parsing=True,max_num_fields=1)

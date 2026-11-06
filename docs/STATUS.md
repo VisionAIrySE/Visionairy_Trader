@@ -1,3 +1,13 @@
+## November 5 intent correction: appreciation first
+
+The owner clarified that discovery starts with unusually strong early-day appreciation and riding the move. Broad quote scanning now saves a top-50 appreciation board, with prior-close, since-open and scan-to-scan changes distinguished. The bounded chart probe now selects up to 20 observed leaders instead of a price-blind sample. There is no mandatory 10% gain threshold. Ranking is observed movement, not an expected-return forecast or approved buy.
+
+Earlier historical tests are poor-fit controls, not evidence for the corrected strategy. Their immutable experiment remains preserved. Existing breakout/pullback and fixed-R allocation checks remain diagnostic and do not yet implement a validated wave-following entry/exit policy. Representative historical replay of this corrected intent and continuous morning monitoring remain unfinished. No paid resources or orders were added.
+
+Local verification: 253 research tests, 7 sizing tests, and JavaScript syntax checking pass. Hosted deployment/readback must be verified separately. The owner explicitly approved publishing this source/documentation package to VisionAIrySE/Visionairy_Trader after the initial automatic-review rejection. Publication and hosted verification are now in progress.
+
+---
+
 # Verified development status
 
 ## Current release

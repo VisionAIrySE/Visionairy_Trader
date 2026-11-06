@@ -1,3 +1,15 @@
+## Current intent correction — November 5, 2026 (Pacific)
+
+The owner describes his actual routine as looking at movement charts early in the day, finding unusually strong appreciation and riding the wave. Stocks capable of 10–40% intraday moves describe the intended opportunity class, not an entry threshold or promised capture. This supersedes any earlier requirement that quiet-to-active behavior, a particular chart pattern or a fixed R target must define discovery.
+
+The first pass ranks observed common shares by the larger positive appreciation since open or prior close, with since-open and scan-to-scan changes shown separately. This transparent initial sort is an implementation choice, not a validated opportunity score. This includes strong intraday recoveries even when still below prior close. No minimum gain, price or capitalization cutoff is adopted. Breakouts, pullbacks, volume, news and statistical models support assessment rather than replace the core intent. User-selected $1,000 simulation cash and 3R remain saved comparison settings, not the strategy definition.
+
+The earlier frozen historical simulation is preserved as a poor-fit control. It cannot substantiate this corrected strategy. A valid follow-up must reconstruct leaders using only evidence available at each decision time, retain reversals and failures, and simulate shared cash, costs and downside. End-of-day winner selection cannot establish early detection. Representative point-in-time historical coverage and a validated wave-following exit policy remain unfinished.
+
+Current implementation: broad scan saves the top 50 appreciation leaders, and bounded chart review selects up to 20 leaders rather than a price-blind sample. Existing pattern and allocation gates still apply to diagnostic trade reviews; they have not yet been replaced by a validated wave-following recommendation policy. Scheduled collection remains off. This correction does not establish an operating morning alert service or profitable strategy.
+
+---
+
 # Stock-selection correction: intent, behavior and evidence
 
 Accepted intent comes from A54/A55 of the private Source of Truth: measure upward percentage movement and unusual participation, with a distinct previously-quiet-stock cohort. Broader accepted setup research remains separate. No ticker blacklist, price/market-cap cutoff or account-affordability restriction was agreed.

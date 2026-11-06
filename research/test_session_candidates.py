@@ -39,7 +39,7 @@ class SessionTests(unittest.TestCase):
                 if op=='paper_review_config_get':return {'status':'not_configured'}
                 if op=='scan_universe_get':return {'packed_universe':pack(universe)}
                 if op=='scan_state':return dict(cycle_id='fixture',summary={'market_clock':{'date':'2026-11-05'}},
-                    packed_state=pack({'TEST':{'security_status':'directory_and_broker_common_share_indicated'}}))
+                    packed_state=pack({'TEST':{'security_status':'directory_and_broker_common_share_indicated','session':'2026-11-05','last':'11','prevclose':'10','received_at':NOW,'trade_at_ms':NOW*1000}}))
                 saved.append((op,p));return {'saved':True}
         class Reader:
             def get(self,path,params=None):

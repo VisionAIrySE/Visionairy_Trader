@@ -17,6 +17,7 @@ from trade_evidence import target_hypotheses,paper_liquidity
 from paper_review_config import comparison_account
 from replay import DataError
 from broker_readonly import ProviderReadError
+from appreciation import appreciation_leaders
 
 
 def session_bars(payload,day,length,now):
@@ -57,13 +58,14 @@ class SessionCandidates:
             raise DataError('Current-session broad quote baseline required')
         observed=unpack(baseline['packed_state'])
         universe_symbols=set(universe['symbols'])
-        eligible=[s for s,q in observed.items() if q.get('security_status')=='directory_and_broker_common_share_indicated'
-                  and re.fullmatch(r'[A-Z0-9./^-]+',s) and s in universe_symbols]
-        symbols=sorted(eligible,key=lambda s:digest([day,s]))[:self.limit]
-        if not symbols:raise DataError('No indicated common-share coverage available')
-        # Freeze price-blind probe membership before any bar/outcome inspection.
-        selection=dict(basis='session_hash_sample_of_indicated_common_shares',symbols=symbols,
-            eligible_count=len(eligible),available_at=int(self.now()),broad_cycle_id=baseline['cycle_id'])
+        leaders=[r for r in appreciation_leaders(observed,day)
+                 if re.fullmatch(r'[A-Z0-9./^-]+',r['symbol']) and r['symbol'] in universe_symbols]
+        symbols=[r['symbol'] for r in leaders[:self.limit]]
+        if not symbols:raise DataError('No same-session positive appreciation leaders with measured baseline evidence')
+        # Freeze observed leaders before bar inspection; no future winners are consulted.
+        selection=dict(basis='observed_positive_appreciation_from_open_or_prior_close_v1',symbols=symbols,
+            eligible_count=len(leaders),leaders=leaders[:self.limit],available_at=int(self.now()),
+            broad_cycle_id=baseline['cycle_id'],not_a_buy_score=True)
         calendar,calendar_source=self.reader.get('markets/calendar',{'month':day[5:7],'year':day[:4]})
         days=calendar['calendar']['days']['day'];days=days if isinstance(days,list) else [days]
         matching=[r for r in days if r['date']==day]
@@ -139,7 +141,7 @@ class SessionCandidates:
             target_hypotheses=hypotheses,liquidity_reviews=liquidity_reviews,paper_comparison_config=config,
             cost_assumptions=dict(entry_slippage_fraction="0.002",exit_slippage_fraction="0.002",fee_per_side="0",qualification="uncalibrated_paper_assumptions"),
             quote_payload=quote_payload,spec_sha256=digest(spec),setup_counts=dict(Counter(e['setup'] for e in events)),
-            scope='twenty_symbol_current_session_feed_probe_not_full_market_strategy_scan',
+            scope='bounded_appreciation_leader_chart_review_not_full_market_recommendations',
             recommendation_qualified=False,orders_submitted=0,
             limitations=['Probe membership is not full-universe strategy coverage','Instrument and corporate-action qualification incomplete',
                 'Target multiples and participation are unvalidated paper assumptions; no active ledger or broker capital reconciliation','Not a profitability or executable recommendation test'])
