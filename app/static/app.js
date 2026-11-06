@@ -92,6 +92,7 @@ function renderScanner(data){
  const leaders=s.appreciation_leaders??[];
  if(leaders.length){
   root.append(el('h3','Observed appreciation leaders'));
+  root.append(el('p','Raw price comparisons: splits and other corporate actions have not been reconciled. Large prior-close changes may not represent appreciation. Check since-open movement and quote age before interpreting a leader.','notice'));
   root.append(el('p',`Showing ${leaders.length} of ${s.appreciation_leader_count??leaders.length} positive observed common-share gainers. Ordered by the larger gain since open or prior close; no minimum 10% requirement. Missing evidence is unknown.`));
   const table=el('table'),head=el('tr'),body=el('tbody');
   ['Stock','Last','Since prior close','Since open','Between scans','Quote status'].forEach(t=>head.append(el('th',t)));
