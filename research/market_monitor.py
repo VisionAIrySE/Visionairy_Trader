@@ -130,8 +130,7 @@ class MarketMonitor:
             return summary
         available=universe.get('available_at')
         if (not isinstance(available,(int,float)) or isinstance(available,bool)
-                or not 0<=self.now()-available<=86400
-                or datetime.fromtimestamp(available,timezone.utc).date().isoformat()!=clock.get('date')):
+                or not 0<=self.now()-available<=86400):
             summary.update(status='failed',stage='universe_refresh_required',finished_at=int(self.now()),
                 regular_entry_review_available=False)
             self.store.call('scan_finish',{'id':cycle_id,'summary':summary,'packed_events':pack([])})

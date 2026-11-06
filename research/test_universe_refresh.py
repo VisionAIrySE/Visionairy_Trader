@@ -46,3 +46,12 @@ class RefreshTests(unittest.TestCase):
         refresh,store,calls,saved=self.make();cancel=threading.Event();cancel.set()
         with self.assertRaises(ScanCancelled):refresh.refresh(store,'2026-11-05',cancel)
         self.assertEqual(calls,[]);self.assertEqual(saved,[])
+
+    def test_current_session_sources_remain_valid_after_utc_midnight(self):
+        from datetime import datetime,timezone
+        late=int(datetime(2026,11,6,0,55,tzinfo=timezone.utc).timestamp())
+        refresh,store,_,_=self.make();refresh.now=lambda:late
+        result=refresh.refresh(store,'2026-11-05')
+        self.assertTrue(current_universe(result,'2026-11-05',late))
+        self.assertFalse(current_universe(result,'2026-11-06',late))
+        self.assertFalse(current_universe(result,'2026-11-05',late+86401))

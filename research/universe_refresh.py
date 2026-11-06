@@ -16,7 +16,8 @@ def current_universe(universe,session_date,now):
         available=universe['available_at']
         if isinstance(available,bool) or not isinstance(available,(int,float)):return False
         if not 0<=now-available<=86400:return False
-        if datetime.fromtimestamp(available,timezone.utc).date().isoformat()!=session_date:return False
+        # Receipt UTC date may be the next day during the same US evening.
+        # The source creation labels below establish session identity.
         if {s['directory'] for s in universe['sources']}!={'nasdaq','other'}:return False
         for source in universe['sources']:
             match=re.fullmatch(r'File Creation Time: (\d{8})\d{2}:\d{2}',source['provider_creation_label'])
